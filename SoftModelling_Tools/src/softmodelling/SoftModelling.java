@@ -100,7 +100,7 @@ public class SoftModelling extends PApplet {
 		physics = new VerletPhysics();
 		physics.addBehavior(new GravityBehavior(new Vec3D(0, 0, 9.8f)));
 		surface = new Surface(this);
-
+		println("github check");
 		println("....................LAUNCHED...................");
 	}
 
@@ -123,6 +123,7 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
+
 	}
 	void pickBox() {
 		BoxClass picked = (BoxClass) Shape3D.pickShape(this, mouseX, mouseY);
