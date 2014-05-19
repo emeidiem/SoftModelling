@@ -26,9 +26,10 @@ public class Gui {
 	float prevMoveX, prevMoveY, prevMoveZ;
 	float valueZ;
 	Group g1, g2, g3, g4, g5;
-	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bc1, bc2, bc3, bc4, bc5;
+	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bLock, bUnlock, bc1, bc2, bc3, bc4, bc5;
 	Toggle bVertex, bEdges, bFaces, gravityOn;
 	Toggle t1;
+	Button bMove;
 	Slider2D slider2d;
 	Slider2D sliderZ;
 	Knob spl, gravityKnob, extrudeDistKnob, extrudeChanferKnob;
@@ -73,20 +74,20 @@ public class Gui {
 		buttonDefWidth = size2dSlider + offsetSliders - 50 + size2dSlider / 10;
 		// ////////////////////////////////////
 		bFaces = cp5.addToggle("FACEMODE").setPosition(margin, margin)
-				.setImages(p5.loadImage("SoftModelling_Icon_SelFace_A.png"), p5.loadImage("SoftModelling_Icon_SelFace_B.png"), p5.loadImage("SoftModelling_Icon_SelFace_B.png")).updateSize()
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_SelFace_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_B.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_B.png")).updateSize()
 				.setValue(false);
 		bEdges = cp5.addToggle("EDGEMODE").setPosition(margin, margin + sizeIcons + space)
-				.setImages(p5.loadImage("SoftModelling_Icon_SelEdge_A.png"), p5.loadImage("SoftModelling_Icon_SelEdge_B.png"), p5.loadImage("SoftModelling_Icon_SelEdge_B.png")).updateSize()
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_SelEdge_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelEdge_B.png"), p5.loadImage("icons/SoftModelling_Icon_SelEdge_B.png")).updateSize()
 				.setValue(false);
 		bVertex = cp5.addToggle("VERTEXMODE").setPosition(margin, margin + sizeIcons * 2 + space * 2)
-				.setImages(p5.loadImage("SoftModelling_Icon_SelVertex_A.png"), p5.loadImage("SoftModelling_Icon_SelVertex_B.png"), p5.loadImage("SoftModelling_Icon_SelVertex_B.png")).updateSize()
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_SelVertex_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelVertex_B.png"), p5.loadImage("icons/SoftModelling_Icon_SelVertex_B.png")).updateSize()
 				.setValue(false);
 		// ////////////////////////////////////
 		gravityOn = cp5.addToggle("UPDATE_PHYSICS").setPosition(margin, p5.height - margin - sizeIcons)
-				.setImages(p5.loadImage("SoftModelling_Icon_Gravity_A.png"), p5.loadImage("SoftModelling_Icon_Gravity_B.png"), p5.loadImage("SoftModelling_Icon_Gravity_B.png")).updateSize()
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png")).updateSize()
 				.setValue(false);
 		bc1 = cp5.addButton("circle1").setPosition(margin + sizeIcons + space, p5.height - margin - sizeIcons)
-				.setImages(p5.loadImage("SoftModelling_Icon_Gravity_A.png"), p5.loadImage("SoftModelling_Icon_Gravity_B.png"), p5.loadImage("SoftModelling_Icon_Gravity_B.png")).updateSize();
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png")).updateSize();
 		gravityKnob = cp5.addKnob("GRAVITY").setValue(9.80f).setRange(-100f, 100f).setPosition(margin + sizeIcons + space + 3, p5.height - margin - sizeIcons + 3).setRadius(sizeIcons / 2 - 3)
 				.setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281);
 		// ////////////////////////////////////
@@ -95,25 +96,37 @@ public class Gui {
 //		cp5.addButton("SELECT_ALL").setPosition(10, 45).setWidth(buttonDefWidth - 20).setId(9).setGroup(g1);
 		
 		bGrow = cp5.addButton("GROW").setPosition(margin + sizeIcons + space, margin)
-				.setImages(p5.loadImage("SoftModelling_Icon_Grow_A.png"), p5.loadImage("SoftModelling_Icon_Grow_B.png"), p5.loadImage("SoftModelling_Icon_Grow_B.png")).updateSize();
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Grow_A.png"), p5.loadImage("icons/SoftModelling_Icon_Grow_B.png"), p5.loadImage("icons/SoftModelling_Icon_Grow_B.png")).updateSize();
 		bShrink = cp5.addButton("SHRINK").setPosition(margin + sizeIcons*2 + space*2, margin)
-				.setImages(p5.loadImage("SoftModelling_Icon_Shrink_A.png"), p5.loadImage("SoftModelling_Icon_Shrink_B.png"), p5.loadImage("SoftModelling_Icon_Shrink_B.png")).updateSize();
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Shrink_A.png"), p5.loadImage("icons/SoftModelling_Icon_Shrink_B.png"), p5.loadImage("icons/SoftModelling_Icon_Shrink_B.png")).updateSize();
 
 		// ////////////////////////////////////
-		bSubdivide = cp5.addButton("SUBDIVIDE_RUN").setPosition(margin + sizeIcons + space, margin + sizeIcons+space)
-				.setImages(p5.loadImage("SoftModelling_Icon_Subdivide2_A.png"), p5.loadImage("SoftModelling_Icon_Subdivide2_B.png"), p5.loadImage("SoftModelling_Icon_Subdivide2_B.png")).updateSize();
-
+//		bMove = cp5.addToggle("ACTIVATE_MOVE").setPosition(margin + sizeIcons + space, margin + sizeIcons+space)
+//				.setImages(p5.loadImage("SoftModelling_Icon_Move_A.png"), p5.loadImage("SoftModelling_Icon_Move_B.png"), p5.loadImage("SoftModelling_Icon_Move_B.png")).updateSize()
+//				.setValue(false);
+		bMove = cp5.addButton("ACTIVATE_MOVE").setPosition(margin + sizeIcons + space, margin + sizeIcons+space)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Move_A.png"), p5.loadImage("icons/SoftModelling_Icon_Move_B.png"), p5.loadImage("icons/SoftModelling_Icon_Move_B.png")).updateSize();
 
 		// ////////////////////////////////////
-		bExtrude = cp5.addButton("EXTRUDE_RUN").setPosition(margin + sizeIcons + space, margin + sizeIcons*2+space*2)
-				.setImages(p5.loadImage("SoftModelling_Icon_Extrude_A.png"), p5.loadImage("SoftModelling_Icon_Extrude_B.png"), p5.loadImage("SoftModelling_Icon_Extrude_B.png")).updateSize();
-		bc2 = cp5.addButton("circle2").setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons*2+space*2)
-				.setImages(p5.loadImage("SoftModelling_smallCircle76_A.png"), p5.loadImage("SoftModelling_smallCircle76_B.png"), p5.loadImage("SoftModelling_smallCircle76_B.png")).updateSize();
-		extrudeDistKnob = cp5.addKnob("EXTRUSION_DISTANCE").setValue(.2f).setRange(-100, 100).setValue(30).setPosition(margin + sizeIcons * 2 + space * 2 + 3, margin + 3 + sizeIcons*2+space*2).setRadius(38 - 3).setResolution(100f)
+		bSubdivide = cp5.addButton("SUBDIVIDE_RUN").setPosition(margin + sizeIcons + space, margin + sizeIcons*2+space*2)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Subdivide2_A.png"), p5.loadImage("icons/SoftModelling_Icon_Subdivide2_B.png"), p5.loadImage("icons/SoftModelling_Icon_Subdivide2_B.png")).updateSize();
+
+		// ////////////////////////////////////
+		bLock = cp5.addButton("LOCK_ELEMENT").setPosition(margin + sizeIcons + space, margin + sizeIcons*3+space*3)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Lock_A.png"), p5.loadImage("icons/SoftModelling_Icon_Lock_B.png"), p5.loadImage("icons/SoftModelling_Icon_Lock_B.png")).updateSize();
+		bUnlock = cp5.addButton("UNLOCK_ELEMENT").setPosition(margin + sizeIcons*2 + space*2, margin + sizeIcons*3+space*3)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_UnLock_A.png"), p5.loadImage("icons/SoftModelling_Icon_UnLock_B.png"), p5.loadImage("icons/SoftModelling_Icon_UnLock_B.png")).updateSize();
+
+		// ////////////////////////////////////
+		bExtrude = cp5.addButton("EXTRUDE_RUN").setPosition(margin + sizeIcons + space, margin + sizeIcons*4+space*4)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Extrude_A.png"), p5.loadImage("icons/SoftModelling_Icon_Extrude_B.png"), p5.loadImage("icons/SoftModelling_Icon_Extrude_B.png")).updateSize();
+		bc2 = cp5.addButton("circle2").setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons*4+space*4)
+				.setImages(p5.loadImage("icons/SoftModelling_smallCircle76_A.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png")).updateSize();
+		extrudeDistKnob = cp5.addKnob("EXTRUSION_DISTANCE").setValue(.2f).setRange(-100, 100).setValue(30).setPosition(margin + sizeIcons * 2 + space * 2 + 3, margin + 3 + sizeIcons*4+space*4).setRadius(38 - 3).setResolution(100f)
 				.setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("dist");
-		bc3 = cp5.addButton("circle3").setPosition(margin + sizeIcons * 2 + space * 3 + 75, margin + sizeIcons*2+space*2)
-				.setImages(p5.loadImage("SoftModelling_smallCircle76_A.png"), p5.loadImage("SoftModelling_smallCircle76_B.png"), p5.loadImage("SoftModelling_smallCircle76_B.png")).updateSize();
-		extrudeChanferKnob = cp5.addKnob("EXTRUSION_CHANFER").setValue(.2f).setRange(0f, 1).setPosition(margin + sizeIcons * 2 + space * 3 + 75 + 3, margin + 3 + sizeIcons*2+space*2).setRadius(38 - 3).setResolution(100f)
+		bc3 = cp5.addButton("circle3").setPosition(margin + sizeIcons * 2 + space * 3 + 75, margin + sizeIcons*4+space*4)
+				.setImages(p5.loadImage("icons/SoftModelling_smallCircle76_A.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png")).updateSize();
+		extrudeChanferKnob = cp5.addKnob("EXTRUSION_CHANFER").setValue(.2f).setRange(0f, 1).setPosition(margin + sizeIcons * 2 + space * 3 + 75 + 3, margin + 3 + sizeIcons*4+space*4).setRadius(38 - 3).setResolution(100f)
 				.setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("chanfer");
 		// ////////////////////////////////////
 
@@ -156,6 +169,10 @@ public class Gui {
 			bc3.show();
 			extrudeDistKnob.show();
 			extrudeChanferKnob.show();
+			
+			bMove.show();
+			bLock.show();
+			bUnlock.show();
 		}
 		else{
 			bGrow.hide();
@@ -166,6 +183,22 @@ public class Gui {
 			bc3.hide();
 			extrudeDistKnob.hide();
 			extrudeChanferKnob.hide();
+			if ( (!bEdges.isActive()&&(!bFaces.getState())) &&  (!bVertex.isActive()&&(!bVertex.getState())) ){
+			bMove.hide();
+			bLock.hide();
+			bUnlock.hide();
+			}
+
+		}
+		
+		if ( (!bEdges.isActive()) && (!bVertex.isActive() && (!bFaces.isActive())) ){
+
+		}
+		
+		if ( (bEdges.isActive()||(bEdges.getState())) || (bVertex.isActive()||(bVertex.getState())) ){
+		bMove.show();
+		bLock.show();
+		bUnlock.show();
 		}
 
 	}
