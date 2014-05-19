@@ -56,9 +56,9 @@ class MeshClass {
 
 	void updatemesh() {
 
-		for (int h = 0; h < mesh.getVerticesAsList().size(); h++) {
+		for (int j = 0; j < mesh.getVerticesAsList().size(); j++) {
 			for (int i = 0; i < p5.surface.particles.size(); i++) {
-				HE_Vertex vv = (HE_Vertex) mesh.getVerticesAsList().get(h);
+				HE_Vertex vv = (HE_Vertex) mesh.getVerticesAsList().get(j);
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (vv.key() == p.key) {
 					vv.set(p.x, p.y, p.z);

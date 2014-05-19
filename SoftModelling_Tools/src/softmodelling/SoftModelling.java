@@ -40,7 +40,7 @@ public class SoftModelling extends PApplet {
 
 	int myColor = color(255, 0, 0);
 
-	boolean displaySelectors = false;
+	boolean displaySelectors = true;
 	boolean displayVertexKey = false;
 	boolean mouseClicked = false;
 	public boolean displayMesh = true;
@@ -75,7 +75,10 @@ public class SoftModelling extends PApplet {
 	boolean lattSelNewFaces = false;
 	boolean lattLockExtrudeParticles = false;
 
-	int exportIndex = 30;
+	// ---mouse dragging objects---//
+	boolean mouseStillPressed = false;
+
+	int exportIndex = 106;
 
 	Gui gui;
 	MeshClass mesh;
@@ -84,6 +87,7 @@ public class SoftModelling extends PApplet {
 	ToxiclibsSupport gfx;
 	Surface surface;
 	ArrayList boxesSelected = new ArrayList<BoxClass>();
+	Gizmo gizmo;
 
 	public void setup() {
 		// size(1900, 980, P3D);
@@ -100,6 +104,7 @@ public class SoftModelling extends PApplet {
 		physics = new VerletPhysics();
 		physics.addBehavior(new GravityBehavior(new Vec3D(0, 0, 9.8f)));
 		surface = new Surface(this);
+		gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
 		println("github check");
 		println("....................LAUNCHED...................");
 	}
@@ -112,6 +117,7 @@ public class SoftModelling extends PApplet {
 		} else {
 			cam.setActive(true);
 		}
+		moveGizmo();
 		if (mouseClicked) {
 			pickBox();
 			mouseClicked = false;
@@ -123,6 +129,7 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
+		gizmo.run();
 
 	}
 	void pickBox() {
@@ -132,11 +139,12 @@ public class SoftModelling extends PApplet {
 			picked.fill(color(255, 0, 0));
 			pickedPos = picked.getPosVec();
 			pickedPos3D = new Vec3D(pickedPos.x, pickedPos.y, pickedPos.z);
-			if (boxesSelected.contains(picked)) boxesSelected.add(picked);
+			if (!boxesSelected.contains(picked)) boxesSelected.add(picked);
 
 			if (this.selectionMode == 0) surface.getParticleswithKey(surface.particles, picked.key).isSelected = true;
 			if (this.selectionMode == 1) mesh.selectPickedEdges(picked);
 			if (this.selectionMode == 2) mesh.selectPickedFaces(picked);
+			gizmo.calculateCentroidSelection();
 		}
 	}
 
@@ -165,10 +173,16 @@ public class SoftModelling extends PApplet {
 		}
 
 		else {
+			// gui.updateSelector();
+			//
+			// if (theEvent.controller().name().equals("Vertex")) selectionMode
+			// = 0;
+			// if (theEvent.controller().name().equals("Edge")) selectionMode =
+			// 1;
+			// if (theEvent.controller().name().equals("Face")) selectionMode =
+			// 2;
 
-			if (theEvent.controller().name().equals("Vertex")) selectionMode = 0;
-			if (theEvent.controller().name().equals("Edge")) selectionMode = 1;
-			if (theEvent.controller().name().equals("Face")) selectionMode = 2;
+
 		}
 	}
 
@@ -292,7 +306,18 @@ public class SoftModelling extends PApplet {
 	}
 
 	void EXPORT_OBJ() {
-		HET_Export.saveToOBJ(mesh.mesh, dataPath("mesh" + exportIndex + ".obj"));
+		// Sting meshName =
+		//
+		// String meshName = ("Meshes/mesh_" + this.year() + "-" + this.month()
+		// + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" +
+		// this.second() + "_" + frameCount);
+		// HET_Export.saveToOBJ(mesh.mesh, dataPath(meshName + ".obj"));
+
+		HET_Export.saveToOBJ(mesh.mesh, dataPath("Meshes/SoftModelling_mesh_" + this.year() + "-" + this.month() + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" + this.second()
+				+ "_" + frameCount + ".obj"));
+		// HET_Export.saveToOBJ(mesh.mesh, dataPath("mesh" + exportIndex +
+		// ".obj"));
+
 		exportIndex++;
 	}
 
@@ -319,17 +344,50 @@ public class SoftModelling extends PApplet {
 		displayMesh = theFlag;
 	}
 
+	// /---SIMPLEGUI---////
+	void FACEMODE(boolean theFlag) {
+		if (theFlag) {
+			this.selectionMode = 2;
+			if (gui.bEdges.getState()) gui.bEdges.setState(false);
+			if (gui.bVertex.getState()) gui.bVertex.setState(false);
+		}
+	}
+	void EDGEMODE(boolean theFlag) {
+		if (theFlag) {
+			this.selectionMode = 1;
+			if (gui.bVertex.getState()) gui.bVertex.setState(false);
+			if (gui.bFaces.getState()) gui.bFaces.setState(false);
+		}
+	}
+	void VERTEXMODE(boolean theFlag) {
+		if (theFlag) {
+			this.selectionMode = 0;
+			if (gui.bFaces.getState()) gui.bFaces.setState(false);
+			if (gui.bEdges.getState()) gui.bEdges.setState(false);
+		}
+	}
+
 	public void mousePressed() {}
 
 	public void mouseDragged() {}
 
 	public void mouseReleased() {
-		gui.prevMoveX += (gui.slider2d.arrayValue()[0] - (gui.size2dSlider / 2)) * 10;
-		gui.prevMoveY += (gui.slider2d.arrayValue()[1] - (gui.size2dSlider / 2)) * 10;
-		gui.prevMoveZ += (gui.sliderZ.arrayValue()[1] - (gui.sizeZSlider / 2)) * 10;
-		gui.slider2d = gui.cp5.addSlider2D("PARTICLE-XY").setPosition(50, 160).setSize(gui.size2dSlider, gui.size2dSlider).setArrayValue(new float[]{gui.size2dSlider / 2, gui.size2dSlider / 2});// .disableCrosshair();
-		gui.sliderZ = gui.cp5.addSlider2D("PARTICLE-Z").setPosition(gui.offsetSliders + gui.size2dSlider, 160).setSize(gui.size2dSlider / 10, gui.size2dSlider)
-				.setArrayValue(new float[]{gui.size2dSlider / 2, gui.size2dSlider / 2}).setLabel("");
+		// gui.prevMoveX += (gui.slider2d.arrayValue()[0] - (gui.size2dSlider /
+		// 2)) * 10;
+		// gui.prevMoveY += (gui.slider2d.arrayValue()[1] - (gui.size2dSlider /
+		// 2)) * 10;
+		// gui.prevMoveZ += (gui.sliderZ.arrayValue()[1] - (gui.sizeZSlider /
+		// 2)) * 10;
+		// gui.slider2d = gui.cp5.addSlider2D("PARTICLE-XY").setPosition(50,
+		// 160).setSize(gui.size2dSlider, gui.size2dSlider).setArrayValue(new
+		// float[]{gui.size2dSlider / 2, gui.size2dSlider / 2});//
+		// .disableCrosshair();
+		// gui.sliderZ =
+		// gui.cp5.addSlider2D("PARTICLE-Z").setPosition(gui.offsetSliders +
+		// gui.size2dSlider, 160).setSize(gui.size2dSlider / 10,
+		// gui.size2dSlider)
+		// .setArrayValue(new float[]{gui.size2dSlider / 2, gui.size2dSlider /
+		// 2}).setLabel("");
 	}
 
 	public void keyPressed() {
@@ -350,9 +408,61 @@ public class SoftModelling extends PApplet {
 
 	}
 
+	public void keyReleased() {
+		if (key == 'm' || key == 'M') {
+			gizmo.isSelected = false;
+		}
+
+	}
+
+	void moveGizmo() {
+		if (keyPressed) {
+			cam.setMouseControlled(false);
+			if (key == 'm' || key == 'M') {
+
+				float scrX = 0, scrY = 0, mouseDisShortest;
+				if (!mouseStillPressed) {
+					scrX = screenX(gizmo.pos.x, gizmo.pos.y, gizmo.pos.z);
+					scrY = screenY(gizmo.pos.x, gizmo.pos.y, gizmo.pos.z);
+					mouseDisShortest = sqrt(sq(mouseX - scrX) + sq(mouseY - scrY));
+				}
+				gizmo.isSelected = true;
+
+				if (mousePressed) {
+					mouseStillPressed = true;
+					if (mouseButton == LEFT) {
+
+						// float dx = grid.px[indexGP] - gF[indexGF].x;
+						// float dy = grid.py[indexGP] - gF[indexGF].y;
+						// gF[indexGF].x += dx / 6;
+						// gF[indexGF].y += dy / 6;
+						float dx = mouseX - scrX;
+						float dy = mouseY - scrY;
+						gizmo.pos.x += dx / 60;
+						gizmo.pos.y += dy / 60;
+					} // end if
+					if (mouseButton == RIGHT) {
+						// gF[indexGF].radius += 1.0 * (pmouseY - mouseY) /
+						// 10.0;
+						// if (gF[indexGF].radius < 10) gF[indexGF].radius = 10;
+						// if (gF[indexGF].radius > 100) gF[indexGF].radius =
+						// 100;
+					} // end if
+				} else {
+					mouseStillPressed = false;
+				} // end if else
+
+			} // end if (key == 'm' || key == 'M'){
+		} else {
+			// cam.setMouseControlled(true);
+
+		}
+	}
+
 	void saveFrames() {
 		String PicName;
-		PicName = ("Images/frame_" + frameCount + ".png");
+		// PicName = ("Images/frame_" + frameCount + ".png");
+		PicName = ("Images/frame_" + this.year() + "-" + this.month() + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" + this.second() + "_" + frameCount + ".png");
 		saveFrame(PicName);
 	}
 

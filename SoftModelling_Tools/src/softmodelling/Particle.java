@@ -34,7 +34,7 @@ public class Particle extends VerletParticle {
 			// this.lock();
 		}
 		if (this.isSelected) {
-			moveXYParticle();
+//			moveXYParticle();
 		}
 	}
 
