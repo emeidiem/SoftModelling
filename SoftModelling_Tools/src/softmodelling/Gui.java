@@ -26,7 +26,7 @@ public class Gui {
 	float prevMoveX, prevMoveY, prevMoveZ;
 	float valueZ;
 	Group g1, g2, g3, g4, g5;
-	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bLock, bUnlock, bc1, bc2, bc3, bc4, bc5;
+	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect,bLock, bUnlock, bc1, bc2, bc3, bc4, bc5;
 	Toggle bVertex, bEdges, bFaces, gravityOn;
 	Toggle t1;
 	Button bMove;
@@ -99,6 +99,8 @@ public class Gui {
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Grow_A.png"), p5.loadImage("icons/SoftModelling_Icon_Grow_B.png"), p5.loadImage("icons/SoftModelling_Icon_Grow_B.png")).updateSize();
 		bShrink = cp5.addButton("SHRINK").setPosition(margin + sizeIcons*2 + space*2, margin)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Shrink_A.png"), p5.loadImage("icons/SoftModelling_Icon_Shrink_B.png"), p5.loadImage("icons/SoftModelling_Icon_Shrink_B.png")).updateSize();
+		bDeselect = cp5.addButton("DESELECT").setPosition(p5.width-margin - sizeIcons*1, margin)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Deselect_A.png"), p5.loadImage("icons/SoftModelling_Icon_Deselect_B.png"), p5.loadImage("icons/SoftModelling_Icon_Deselect_B.png")).updateSize();
 
 		// ////////////////////////////////////
 //		bMove = cp5.addToggle("ACTIVATE_MOVE").setPosition(margin + sizeIcons + space, margin + sizeIcons+space)
@@ -187,6 +189,7 @@ public class Gui {
 			bMove.hide();
 			bLock.hide();
 			bUnlock.hide();
+			//test
 			}
 
 		}
