@@ -94,7 +94,7 @@ public class SoftModelling extends PApplet {
 
 	public void setup() {
 		// size(1900, 980, P3D);
-		size(1900, 1080, P3D);
+		size(1920, 1200, P3D);
 		smooth();
 		cursor(CROSS);
 

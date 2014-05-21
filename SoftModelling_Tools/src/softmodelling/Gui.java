@@ -187,6 +187,7 @@ public class Gui {
 				.setRadius(38 - 3).setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("chanfer");
 		// ////////////////////////////////////
 
+
 		cp5.setAutoDraw(false);
 	}
 
@@ -311,10 +312,17 @@ public class Gui {
 			bMoveZDown.hide();
 		}
 
-		if (bFaces.isActive() || (bFaces.getState())) {
+		if (bFaces.isActive() || (bFaces.getState()  || (bFaces.isMouseOver( )))) {
 			bMove.setPosition(margin + sizeIcons + space, margin + sizeIcons + space);
 			bLock.setPosition(margin + sizeIcons + space, margin + sizeIcons * 3 + space * 3);
 			bUnlock.setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons * 3 + space * 3);
+			
+			bMoveUp.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + sizeIcons + space);
+			bMoveDown.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 + 4);
+			bMoveLeft.setPosition(margin + sizeIcons * 2 + space * 2 - 45 - 2 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 - 45 / 2);
+			bMoveRight.setPosition(margin + sizeIcons * 2 + space * 2 + 45 + 2 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 - 45 / 2);
+			bMoveZUp.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + sizeIcons + space);
+			bMoveZDown.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 + 4);
 			
 			bGrow.show();
 			bShrink.show();
@@ -351,13 +359,34 @@ public class Gui {
 
 		}
 
-		if ((bEdges.isActive() || (bEdges.getState())) || (bVertex.isActive() || (bVertex.getState()))) {
+		if ((bEdges.isActive() || (bEdges.getState())) || (bVertex.isActive() || (bVertex.getState())) || ((bEdges.isMouseOver() || (bVertex.isMouseOver() )))){
+			if ((!bFaces.isMouseOver( ))){
 			bMove.setPosition(margin + sizeIcons + space, margin);
 			bLock.setPosition(margin + sizeIcons + space, margin + sizeIcons * 1 + space * 1);
 			bUnlock.setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons * 1 + space * 1);
+			
+			bMoveUp.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + 0 + 0);
+			bMoveDown.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 + 4);
+			bMoveLeft.setPosition(margin + sizeIcons * 2 + space * 2 - 45 - 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 - 45 / 2);
+			bMoveRight.setPosition(margin + sizeIcons * 2 + space * 2 + 45 + 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 - 45 / 2);
+			bMoveZUp.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + 0 + 0);
+			bMoveZDown.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 + 4);
+			
 			bMove.show();
 			bLock.show();
 			bUnlock.show();
+			
+			bGrow.hide();
+			bShrink.hide();
+			bSubdivide.hide();
+			bExtrude.hide();
+			
+			extrudeDistKnob.hide();
+			extrudeChanferKnob.hide();
+			bc2.hide();
+			bc3.hide();
+			
+			}
 		}
 
 	}
