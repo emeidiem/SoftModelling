@@ -77,6 +77,7 @@ public class SoftModelling extends PApplet {
 
 	// ---mouse dragging objects---//
 	boolean mouseStillPressed = false;
+	boolean activeMover = false;
 
 	int exportIndex = 106;
 
@@ -88,6 +89,8 @@ public class SoftModelling extends PApplet {
 	Surface surface;
 	ArrayList boxesSelected = new ArrayList<BoxClass>();
 	Gizmo gizmo;
+
+	float moveUpValue = 0;
 
 	public void setup() {
 		// size(1900, 980, P3D);
@@ -105,6 +108,7 @@ public class SoftModelling extends PApplet {
 		physics.addBehavior(new GravityBehavior(new Vec3D(0, 0, 9.8f)));
 		surface = new Surface(this);
 		gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
+		
 		println("github check");
 		println("....................LAUNCHED...................");
 	}
@@ -132,6 +136,10 @@ public class SoftModelling extends PApplet {
 		gizmo.run();
 
 	}
+	public boolean sketchFullScreen() {
+		  return true;
+		}
+	
 	void pickBox() {
 		BoxClass picked = (BoxClass) Shape3D.pickShape(this, mouseX, mouseY);
 		if (picked != null) {
@@ -182,8 +190,19 @@ public class SoftModelling extends PApplet {
 			// if (theEvent.controller().name().equals("Face")) selectionMode =
 			// 2;
 
-
 		}
+		if ((!theEvent.isFrom(gui.bMove))) {
+			if ((!theEvent.isFrom(gui.bMoveLeft)) && (!theEvent.isFrom(gui.bMoveRight))) {
+				if ((!theEvent.isFrom(gui.bMoveUp)) && (!theEvent.isFrom(gui.bMoveDown))) {
+					if ((!theEvent.isFrom(gui.bMoveZDown)) && (!theEvent.isFrom(gui.bMoveZUp))) {
+						this.activeMover = false;
+					}
+				}
+			}
+		}
+		// if ((!theEvent.isFrom(gui.bMoveUp))) {
+		// gui.bMoveUp.setImage(loadImage("icons/SoftModelling_Icon_Icon_ArrowUp_B.png"));
+		// }
 	}
 
 	void SP_LENGTH(int theValue) {
@@ -365,6 +384,33 @@ public class SoftModelling extends PApplet {
 			if (gui.bFaces.getState()) gui.bFaces.setState(false);
 			if (gui.bEdges.getState()) gui.bEdges.setState(false);
 		}
+	}
+
+	void ACTIVATE_MOVE() {
+		this.activeMover = !activeMover;
+	}
+
+	void MOVE_UP() {
+		this.println("MOVE UP !!!!");
+//		for (int i = 0; i < surface.particles.size(); i++) {
+//			Particle p = (Particle) surface.particles.get(i);
+//			if (p.isSelected) {
+//				p.lock();
+//				p.z -= 10;
+//			}
+//		}
+//		// this.moveUpValue+
+//		this.gui.bMoveUp.setImage(this.gui.iconMoveUpB);
+
+	}
+	void MOVE_DOWN() {
+		this.println("MOVE DOWN !!!!");
+	}
+	void MOVE_LEFT() {
+		this.println("MOVE LEFT !!!!");
+	}
+	void MOVE_RIGHT() {
+		this.println("MOVE RIGHT !!!!");
 	}
 
 	public void mousePressed() {}
