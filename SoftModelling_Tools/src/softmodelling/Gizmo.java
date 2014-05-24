@@ -24,7 +24,7 @@ public class Gizmo {
 
 	void render() {
 		if (this.isSelected) {
-			p5.strokeWeight(17);
+			p5.strokeWeight(47);
 			p5.stroke(255, 255, 0);
 		} else {
 			p5.strokeWeight(10);

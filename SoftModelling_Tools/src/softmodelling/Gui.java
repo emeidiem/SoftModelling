@@ -27,14 +27,14 @@ public class Gui {
 	float prevMoveX, prevMoveY, prevMoveZ;
 	float valueZ;
 	Group g1, g2, g3, g4, g5;
-	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect, bLock, bUnlock, bc1, bc2, bc3, bc4, bc5, bSaveFile;
+	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect, bLock, bUnlock, bShell, bLattice, bc1, bc2, bc3, bc4, bc5, bc6, bSaveFile, bReset;
 	Toggle bVertex, bEdges, bFaces, gravityOn;
 	Toggle t1;
 	Button bMove;
 	Button bMoveDown, bMoveUp, bMoveLeft, bMoveRight, bMoveZUp, bMoveZDown;
 	Slider2D slider2d;
 	Slider2D sliderZ;
-	Knob spl, gravityKnob, extrudeDistKnob, extrudeChanferKnob;
+	Knob spl, gravityKnob, extrudeDistKnob, extrudeChanferKnob, shellDepthKnob, latticeDepthKnob, latticeOffsetKnob;
 	RadioButton radB;
 	int sizeIcons = 100;
 	int margin = 50;
@@ -88,7 +88,7 @@ public class Gui {
 				.updateSize().setValue(false);
 		// ////////////////////////////////////
 		gravityOn = cp5.addToggle("UPDATE_PHYSICS").setPosition(margin, p5.height - margin - sizeIcons)
-				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"))
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"))
 				.updateSize().setValue(false);
 		bc1 = cp5.addButton("circle1").setPosition(margin + sizeIcons + space, p5.height - margin - sizeIcons)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"))
@@ -96,18 +96,14 @@ public class Gui {
 		gravityKnob = cp5.addKnob("GRAVITY").setValue(9.80f).setRange(-100f, 100f).setPosition(margin + sizeIcons + space + 3, p5.height - margin - sizeIcons + 3).setRadius(sizeIcons / 2 - 3)
 				.setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281);
 		// ////////////////////////////////////
-		
-		// cp5.addButton("GROW").setPosition(10, 30).setSize(47,
-		// 9).setGroup(g1);
-		// cp5.addButton("SHRINK").setPosition(62, 30).setSize(47,
-		// 9).setGroup(g1);
-		// cp5.addButton("SELECT_ALL").setPosition(10,
-		// 45).setWidth(buttonDefWidth - 20).setId(9).setGroup(g1);
-		
-		bSaveFile = cp5.addButton("EXPORT_OBJ").setPosition(p5.width-sizeIcons-margin, p5.height - margin - sizeIcons)
+		bSaveFile = cp5.addButton("EXPORT_OBJ").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 2 - space)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_SaveFile_A.png"), p5.loadImage("icons/SoftModelling_Icon_SaveFile_B.png"), p5.loadImage("icons/SoftModelling_Icon_SaveFile_B.png"))
 				.updateSize();
-		
+		// ////////////////////////////////////
+		bReset = cp5.addButton("RESET_SURFACE").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Reset_A.png"), p5.loadImage("icons/SoftModelling_Icon_Reset_C.png"), p5.loadImage("icons/SoftModelling_Icon_Reset_C.png"))
+				.updateSize();
+		// ////////////////////////////////////
 		bGrow = cp5.addButton("GROW").setPosition(margin + sizeIcons + space, margin)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Grow_A.png"), p5.loadImage("icons/SoftModelling_Icon_Grow_B.png"), p5.loadImage("icons/SoftModelling_Icon_Grow_B.png")).updateSize();
 		bShrink = cp5.addButton("SHRINK").setPosition(margin + sizeIcons * 2 + space * 2, margin)
@@ -116,14 +112,7 @@ public class Gui {
 		bDeselect = cp5.addButton("DESELECT").setPosition(p5.width - margin - sizeIcons * 1, margin)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Deselect_A.png"), p5.loadImage("icons/SoftModelling_Icon_Deselect_B.png"), p5.loadImage("icons/SoftModelling_Icon_Deselect_B.png"))
 				.updateSize();
-
 		// ////////////////////////////////////
-		// bMove = cp5.addToggle("ACTIVATE_MOVE").setPosition(margin + sizeIcons
-		// + space, margin + sizeIcons+space)
-		// .setImages(p5.loadImage("SoftModelling_Icon_Move_A.png"),
-		// p5.loadImage("SoftModelling_Icon_Move_B.png"),
-		// p5.loadImage("SoftModelling_Icon_Move_B.png")).updateSize()
-		// .setValue(false);
 		bMove = cp5.addButton("ACTIVATE_MOVE").setPosition(margin + sizeIcons + space, margin + sizeIcons + space)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Move_A.png"), p5.loadImage("icons/SoftModelling_Icon_Move_B.png"), p5.loadImage("icons/SoftModelling_Icon_Move_B.png")).updateSize();
 
@@ -185,9 +174,35 @@ public class Gui {
 				.updateSize();
 		extrudeChanferKnob = cp5.addKnob("EXTRUSION_CHANFER").setValue(.2f).setRange(0f, 1).setPosition(margin + sizeIcons * 2 + space * 3 + 75 + 3, margin + 3 + sizeIcons * 4 + space * 4)
 				.setRadius(38 - 3).setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("chanfer");
+
 		// ////////////////////////////////////
+		bShell = cp5.addButton("SHELL_RUN").setPosition(margin + sizeIcons + space, margin + sizeIcons * 5 + space * 5)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Shell_A.png"), p5.loadImage("icons/SoftModelling_Icon_Shell_B.png"), p5.loadImage("icons/SoftModelling_Icon_Shell_B.png"))
+				.updateSize();
+		bc4 = cp5.addButton("circle4").setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons * 5 + space * 5)
+				.setImages(p5.loadImage("icons/SoftModelling_smallCircle76_A.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"))
+				.updateSize();
+		shellDepthKnob = cp5.addKnob("SHELL_DEPTH").setValue(.2f).setRange(-100, 100).setValue(30).setPosition(margin + sizeIcons * 2 + space * 2 + 3, margin + 3 + sizeIcons * 5 + space * 5)
+				.setRadius(38 - 3).setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("dist");
 
-
+		// ////////////////////////////////////
+		bLattice = cp5.addButton("LATTICE_RUN").setPosition(margin + sizeIcons + space, margin + sizeIcons * 6 + space * 6)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Lattice_A.png"), p5.loadImage("icons/SoftModelling_Icon_Lattice_B.png"), p5.loadImage("icons/SoftModelling_Icon_Lattice_B.png"))
+				.updateSize();
+		bc5 = cp5.addButton("circle5").setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons * 6 + space * 6)
+				.setImages(p5.loadImage("icons/SoftModelling_smallCircle76_A.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"))
+				.updateSize();
+		latticeDepthKnob = cp5.addKnob("LATTICE_DEPTH").setValue(.2f).setRange(-100, 100).setValue(30).setPosition(margin + sizeIcons * 2 + space * 2 + 3, margin + 3 + sizeIcons * 6 + space * 6)
+				.setRadius(38 - 3).setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("dist");
+		bc6 = cp5.addButton("circle6").setPosition(margin + sizeIcons * 2 + space * 3 + 75, margin + sizeIcons * 6 + space * 6)
+				.setImages(p5.loadImage("icons/SoftModelling_smallCircle76_A.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"))
+				.updateSize();
+		latticeOffsetKnob = cp5.addKnob("LATTICE_WIDTH").setValue(1.2f).setRange(0, 150).setPosition(margin + sizeIcons * 2 + space * 3 + 75 + 3, margin + 3 + sizeIcons * 6 + space * 6)
+				.setRadius(38 - 3).setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("offset");
+		// ////////////////////////////////////
+		bMove.hide();
+		bLock.hide();
+		bUnlock.hide();
 		cp5.setAutoDraw(false);
 	}
 
@@ -195,26 +210,6 @@ public class Gui {
 		if (p5.selectionMode == 2) bFaces.setValue(true);
 		if (p5.selectionMode == 1) bEdges.setValue(true);
 		if (p5.selectionMode == 0) bVertex.setValue(true);
-
-		// if (bFaces.getState()){
-		// if (bEdges.getState())bEdges.setState(false);
-		// if (bVertex.getState())bVertex.setState(false);
-		// p5.selectionMode = 2;
-		// p5.println("selectionMode"+p5.selectionMode);
-		// }
-		// if (bEdges.getState()){
-		// if (bVertex.getState())bVertex.setState(false);
-		// if (bFaces.getState())bFaces.setState(false);
-		// p5.selectionMode = 1;
-		// p5.println("selectionMode"+p5.selectionMode);
-		// }
-		// if (bVertex.getState()){
-		// if (bFaces.getState())bFaces.setState(false);
-		// if (bEdges.getState())bEdges.setState(false);
-		// p5.selectionMode = 0;
-		// p5.println("selectionMode"+p5.selectionMode);
-		// }
-
 	}
 
 	void updateMover() {
@@ -312,18 +307,46 @@ public class Gui {
 			bMoveZDown.hide();
 		}
 
-		if (bFaces.isActive() || (bFaces.getState()  || (bFaces.isMouseOver( )))) {
+		if ((bEdges.isMousePressed()) || (bVertex.isMousePressed())) {
+			bFaces.setImages(p5.loadImage("icons/SoftModelling_Icon_SelFace_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_B.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_B.png"));
+		}
+		if ((bFaces.isMousePressed())) {
+			bFaces.setImages(p5.loadImage("icons/SoftModelling_Icon_SelFace_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_C.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_C.png"));
+		}
+
+		if ((bFaces.isMousePressed()) || (bVertex.isMousePressed())) {
+			bEdges.setImages(p5.loadImage("icons/SoftModelling_Icon_SelEdge_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelEdge_B.png"), p5.loadImage("icons/SoftModelling_Icon_SelEdge_B.png"));
+		}
+		if ((bEdges.isMousePressed())) {
+			bEdges.setImages(p5.loadImage("icons/SoftModelling_Icon_SelEdge_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelEdge_C.png"), p5.loadImage("icons/SoftModelling_Icon_SelEdge_C.png"));
+		}
+
+		if ((bEdges.isMousePressed()) || (bFaces.isMousePressed())) {
+			bVertex.setImages(p5.loadImage("icons/SoftModelling_Icon_SelVertex_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelVertex_B.png"),
+					p5.loadImage("icons/SoftModelling_Icon_SelVertex_B.png"));
+		}
+		if ((bVertex.isMousePressed())) {
+			bVertex.setImages(p5.loadImage("icons/SoftModelling_Icon_SelVertex_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelVertex_C.png"),
+					p5.loadImage("icons/SoftModelling_Icon_SelVertex_C.png"));
+		}
+		if ((gravityOn.isMouseOver())) {
+			gravityOn.setImage(p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"));
+		} else {
+			gravityOn.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"));
+		}
+
+		if (bFaces.isActive() || (bFaces.getState() || (bFaces.isMouseOver()))) {
 			bMove.setPosition(margin + sizeIcons + space, margin + sizeIcons + space);
 			bLock.setPosition(margin + sizeIcons + space, margin + sizeIcons * 3 + space * 3);
 			bUnlock.setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons * 3 + space * 3);
-			
+
 			bMoveUp.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + sizeIcons + space);
 			bMoveDown.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 + 4);
 			bMoveLeft.setPosition(margin + sizeIcons * 2 + space * 2 - 45 - 2 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 - 45 / 2);
 			bMoveRight.setPosition(margin + sizeIcons * 2 + space * 2 + 45 + 2 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 - 45 / 2);
 			bMoveZUp.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + sizeIcons + space);
 			bMoveZDown.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + sizeIcons + space + sizeIcons / 2 + 4);
-			
+
 			bGrow.show();
 			bShrink.show();
 			bSubdivide.show();
@@ -332,6 +355,14 @@ public class Gui {
 			bc3.show();
 			extrudeDistKnob.show();
 			extrudeChanferKnob.show();
+			bShell.show();
+			bc4.show();
+			shellDepthKnob.show();
+			bLattice.show();
+			bc5.show();
+			latticeDepthKnob.show();
+			bc6.show();
+			latticeOffsetKnob.show();
 
 			bMove.show();
 			bLock.show();
@@ -346,46 +377,97 @@ public class Gui {
 			bc3.hide();
 			extrudeDistKnob.hide();
 			extrudeChanferKnob.hide();
-			if ((!bEdges.isActive() && (!bFaces.getState())) && (!bVertex.isActive() && (!bVertex.getState()))) {
-				bMove.hide();
-				bLock.hide();
-				bUnlock.hide();
+			bShell.hide();
+			bc4.hide();
+			shellDepthKnob.hide();
+			bLattice.hide();
+			bc5.hide();
+			latticeDepthKnob.hide();
+			bc6.hide();
+			latticeOffsetKnob.hide();
+
+			if ((!bEdges.isActive() && (!bFaces.getState())) && (!bVertex.isActive() && (!bVertex.getState()))   && (!bVertex.isMouseOver() && (!bVertex.isMouseOver())) ) {
+//				bMove.hide();
+//				bLock.hide();
+//				bUnlock.hide();
 				// test
 			}
 
 		}
-
+//		
+//		if (!bFaces.isActive() && (!bEdges.isActive() && (!bVertex.isActive()))) {
+//			bMove.hide();
+//			bLock.hide();
+//			bUnlock.hide();	
+//		}
+		if ((!p5.modeSelected) && (!bFaces.isMouseOver())){
+			bMove.hide();
+			bLock.hide();
+			bUnlock.hide();	
+		}
+//		if (bEdges.isActive() || (bEdges.getState() || (bEdges.isMouseOver()))) {
+//			bMove.show();
+//			bLock.show();
+//			bUnlock.show();		
+//		}
+//		if (bVertex.isActive() || (bVertex.getState() || (bVertex.isMouseOver()))) {
+//			bMove.show();
+//			bLock.show();
+//			bUnlock.show();		
+//		}
 		if ((!bEdges.isActive()) && (!bVertex.isActive() && (!bFaces.isActive()))) {
 
 		}
 
-		if ((bEdges.isActive() || (bEdges.getState())) || (bVertex.isActive() || (bVertex.getState())) || ((bEdges.isMouseOver() || (bVertex.isMouseOver() )))){
-			if ((!bFaces.isMouseOver( ))){
-			bMove.setPosition(margin + sizeIcons + space, margin);
-			bLock.setPosition(margin + sizeIcons + space, margin + sizeIcons * 1 + space * 1);
-			bUnlock.setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons * 1 + space * 1);
-			
-			bMoveUp.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + 0 + 0);
-			bMoveDown.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 + 4);
-			bMoveLeft.setPosition(margin + sizeIcons * 2 + space * 2 - 45 - 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 - 45 / 2);
-			bMoveRight.setPosition(margin + sizeIcons * 2 + space * 2 + 45 + 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 - 45 / 2);
-			bMoveZUp.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + 0 + 0);
-			bMoveZDown.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 + 4);
-			
-			bMove.show();
-			bLock.show();
-			bUnlock.show();
-			
-			bGrow.hide();
-			bShrink.hide();
-			bSubdivide.hide();
-			bExtrude.hide();
-			
-			extrudeDistKnob.hide();
-			extrudeChanferKnob.hide();
-			bc2.hide();
-			bc3.hide();
-			
+		if ((bEdges.isActive() || (bEdges.getState())) || (bVertex.isActive() || (bVertex.getState())) || ((bEdges.isMouseOver() || (bVertex.isMouseOver())))) {
+			if ((!bFaces.isMouseOver())) {
+				
+				bMove.show();
+				bLock.show();
+				bUnlock.show();
+				
+				bMove.setPosition(margin + sizeIcons + space, margin);
+				bLock.setPosition(margin + sizeIcons + space, margin + sizeIcons * 1 + space * 1);
+				bUnlock.setPosition(margin + sizeIcons * 2 + space * 2, margin + sizeIcons * 1 + space * 1);
+
+				bMoveUp.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + 0 + 0);
+				bMoveDown.setPosition(margin + sizeIcons * 2 + space * 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 + 4);
+				bMoveLeft.setPosition(margin + sizeIcons * 2 + space * 2 - 45 - 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 - 45 / 2);
+				bMoveRight.setPosition(margin + sizeIcons * 2 + space * 2 + 45 + 2 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 - 45 / 2);
+				bMoveZUp.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + 0 + 0);
+				bMoveZDown.setPosition(margin + sizeIcons * 3 + space * 3 + sizeIcons / 2, margin + 0 + 0 + sizeIcons / 2 + 4);
+
+//				if (bMove.isActive()) {
+//					bMoveUp.show();
+//					bMoveDown.show();
+//					bMoveLeft.show();
+//					bMoveRight.show();
+//					bMoveZUp.show();
+//					bMoveZDown.show();
+//				}
+				bMove.show();
+				bLock.show();
+				bUnlock.show();
+
+				bGrow.hide();
+				bShrink.hide();
+				bSubdivide.hide();
+				bExtrude.hide();
+
+				extrudeDistKnob.hide();
+				extrudeChanferKnob.hide();
+				bc2.hide();
+				bc3.hide();
+
+				bShell.hide();
+				bc4.hide();
+				shellDepthKnob.hide();
+				bLattice.hide();
+				bc5.hide();
+				latticeDepthKnob.hide();
+				bc6.hide();
+				latticeOffsetKnob.hide();
+
 			}
 		}
 

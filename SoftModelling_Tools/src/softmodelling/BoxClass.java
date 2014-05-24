@@ -1,10 +1,9 @@
 package softmodelling;
 
 import processing.core.PApplet;
-import shapes3d.Box;
 import toxi.geom.Vec3D;
 
-public class BoxClass extends Box {
+public class BoxClass extends Vec3D {
 
 	SoftModelling p5;
 
@@ -16,11 +15,12 @@ public class BoxClass extends Box {
 	// 1 = Edge
 	// 2 = Face
 	int key;
+	int scrX, scrY;
 
 	// ////////////////CONSTRUCTOR
 	BoxClass(SoftModelling _p5, float _x, float _y, float _z, int _type, int _key) {
 
-		super(_p5, _x, _y, _z); // everything coming from the SuperClass
+		super(_x, _y, _z); // everything coming from the SuperClass
 		// (VerletParticle)
 		p5 = _p5;
 		x = _x;
@@ -31,20 +31,33 @@ public class BoxClass extends Box {
 	}
 	// /////////////////////////
 	void run() {
-		pos = new Vec3D(this.getPosVec().x, getPosVec().y, getPosVec().z);
+		// pos = new Vec3D(this.getPosVec().x, getPosVec().y, getPosVec().z);
 		render();
 		renderkey();
+
 	}
 
 	void render() {
 		if (p5.selectionMode == this.type) {
-			if (p5.displaySelectors) this.draw();
-			if (!isSelected) {
-				if (type == 0) this.fill(p5.color(255));
-				if (type == 1) this.fill(p5.color(255));
-				if (type == 2) this.fill(p5.color(255));
-			} else {
-				this.fill(p5.color(255, 0, 0));
+			if (p5.displaySelectors) {
+				p5.strokeWeight(15);
+				if (!isSelected) {
+					p5.stroke(100,255);
+
+				} else {
+					p5.stroke(255, 0, 0,255);
+				}
+				p5.point(x, y, z);
+				
+				p5.strokeWeight(10);
+				if (!isSelected) {
+					p5.stroke(255,255);
+
+				} else {
+					p5.stroke(255, 0, 0,255);
+				}
+				p5.point(x, y, z);
+				
 			}
 		}
 	}
@@ -52,7 +65,7 @@ public class BoxClass extends Box {
 	void renderkey() {
 		if (p5.displayVertexKey) {
 			if (p5.selectionMode == type) {
-				p5.fill(255,255,0);
+				p5.fill(255, 255, 0);
 				p5.pushMatrix();
 				p5.translate(pos.x - 5, pos.y, pos.z + 25);
 				p5.rotateX(p5.radians(-90));

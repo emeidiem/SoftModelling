@@ -26,10 +26,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import controlP5.*;
-import shapes3d.utils.*;
-import shapes3d.*;
 import toxi.processing.*;
 import wblut.hemesh.HET_Export;
+import wblut.hemesh.HET_Selector;
 import wblut.processing.WB_Render;
 
 public class SoftModelling extends PApplet {
@@ -47,8 +46,8 @@ public class SoftModelling extends PApplet {
 	boolean updatePhysics = false;
 	boolean unlockParticle = false;
 
-	PVector pickedPos = new PVector();
-	Vec3D pickedPos3D = new Vec3D();
+	PVector pickedPos;
+	Vec3D pickedPos3D;
 	int boxSize = 5;
 
 	boolean addingRowsOrCols = false;
@@ -72,12 +71,13 @@ public class SoftModelling extends PApplet {
 	float latticeDepth = 0;
 	float latticeWidth = 0;
 	boolean lattSelOldFaces = false;
-	boolean lattSelNewFaces = false;
+	boolean lattSelNewFaces = true;
 	boolean lattLockExtrudeParticles = false;
 
 	// ---mouse dragging objects---//
 	boolean mouseStillPressed = false;
 	boolean activeMover = false;
+	boolean modeSelected = false;
 
 	int exportIndex = 106;
 
@@ -87,29 +87,41 @@ public class SoftModelling extends PApplet {
 	VerletPhysics physics;
 	ToxiclibsSupport gfx;
 	Surface surface;
-	ArrayList boxesSelected = new ArrayList<BoxClass>();
+	ArrayList boxesSelected;
 	Gizmo gizmo;
-
+	HET_Selector selector;
 	float moveUpValue = 0;
 
 	public void setup() {
+
 		// size(1900, 980, P3D);
 		size(1920, 1200, P3D);
 		smooth();
 		cursor(CROSS);
-
 		cam = new PeasyCam(this, 600);
 		cam.lookAt(0, 0, 0);
-
+		physics = new VerletPhysics();
+		physics.addBehavior(new GravityBehavior(new Vec3D(0, 0, gravityValue)));
+		physics.springs.clear();
+		physics.particles.clear();
 		gui = new Gui(this);
+		initAll();
+
+	}
+
+	void initAll() {
+
+		pickedPos = new PVector();
+		pickedPos3D = new Vec3D();
+
 		mesh = new MeshClass(this);
 		render = new WB_Render(this);
-		physics = new VerletPhysics();
-		physics.addBehavior(new GravityBehavior(new Vec3D(0, 0, 9.8f)));
 		surface = new Surface(this);
+		boxesSelected = new ArrayList<BoxClass>();
+		boxesSelected.clear();
 		gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
-		
-		println("github check");
+//		selector = new HET_Selector(this); // initialize the selector
+		this.mesh.printCheck();
 		println("....................LAUNCHED...................");
 	}
 
@@ -122,11 +134,6 @@ public class SoftModelling extends PApplet {
 			cam.setActive(true);
 		}
 		moveGizmo();
-		if (mouseClicked) {
-			pickBox();
-			mouseClicked = false;
-		}
-		renderPickedBox();
 		gui.run();
 		if (updatePhysics) {
 			physics.update();
@@ -135,37 +142,43 @@ public class SoftModelling extends PApplet {
 		mesh.run();
 		gizmo.run();
 
+
 	}
-	public boolean sketchFullScreen() {
-		  return true;
+	
+	void hitDetect() {
+		  
+		ArrayList locators = new ArrayList<BoxClass>();
+		if (this.selectionMode == 0)locators = mesh.boxArrayVertices;
+		if (this.selectionMode == 1)locators = mesh.boxArrayEdges;
+		if (this.selectionMode == 2)locators = mesh.boxArrayFaces;
+		if (locators.size()>0){
+		  for(int i=0; i<locators.size(); i++) {
+			  BoxClass b = (BoxClass) locators.get(i);
+		    int x = (int) (screenX(b.x,b.y,b.z));
+		    int y = (int) (screenY(b.x,b.y,b.z));
+
+		    int precision = 5;
+		    if (x > mouseX-precision && x < mouseX+precision && y > mouseY-precision && y < mouseY+precision) {
+		       b.isSelected=true;
+		       if (this.selectionMode == 0)surface.getParticleswithKey(surface.particles,b.key).isSelected=true;
+		       if (this.selectionMode == 1)mesh.selectPickedEdges(b);
+		       if (this.selectionMode == 2)mesh.selectPickedFaces(b);
+		       this.println("PSelect");
+		    }
+		  }}
 		}
 	
-	void pickBox() {
-		BoxClass picked = (BoxClass) Shape3D.pickShape(this, mouseX, mouseY);
-		if (picked != null) {
-			picked.isSelected = true;
-			picked.fill(color(255, 0, 0));
-			pickedPos = picked.getPosVec();
-			pickedPos3D = new Vec3D(pickedPos.x, pickedPos.y, pickedPos.z);
-			if (!boxesSelected.contains(picked)) boxesSelected.add(picked);
-
-			if (this.selectionMode == 0) surface.getParticleswithKey(surface.particles, picked.key).isSelected = true;
-			if (this.selectionMode == 1) mesh.selectPickedEdges(picked);
-			if (this.selectionMode == 2) mesh.selectPickedFaces(picked);
-			gizmo.calculateCentroidSelection();
-		}
+	public boolean sketchFullScreen() {
+		return false;
 	}
 
-	void renderPickedBox() {
-		strokeWeight(30);
-		stroke(255, 0, 255, 100);
-		point(pickedPos3D.x, pickedPos3D.y, pickedPos3D.z);
-	}
-
-	public void mouseClicked() {
+	public void mousePressed() {
 		mouseClicked = true;
 		if (mouseButton == RIGHT) {
 			mesh.deselectAll();
+		}
+		else{
+			hitDetect();
 		}
 	}
 
@@ -366,6 +379,7 @@ public class SoftModelling extends PApplet {
 	// /---SIMPLEGUI---////
 	void FACEMODE(boolean theFlag) {
 		if (theFlag) {
+			modeSelected = true;
 			this.selectionMode = 2;
 			if (gui.bEdges.getState()) gui.bEdges.setState(false);
 			if (gui.bVertex.getState()) gui.bVertex.setState(false);
@@ -373,6 +387,7 @@ public class SoftModelling extends PApplet {
 	}
 	void EDGEMODE(boolean theFlag) {
 		if (theFlag) {
+			modeSelected = true;
 			this.selectionMode = 1;
 			if (gui.bVertex.getState()) gui.bVertex.setState(false);
 			if (gui.bFaces.getState()) gui.bFaces.setState(false);
@@ -380,6 +395,7 @@ public class SoftModelling extends PApplet {
 	}
 	void VERTEXMODE(boolean theFlag) {
 		if (theFlag) {
+			modeSelected = true;
 			this.selectionMode = 0;
 			if (gui.bFaces.getState()) gui.bFaces.setState(false);
 			if (gui.bEdges.getState()) gui.bEdges.setState(false);
@@ -390,30 +406,42 @@ public class SoftModelling extends PApplet {
 		this.activeMover = !activeMover;
 	}
 
-	void MOVE_UP() {
-		this.println("MOVE UP !!!!");
-//		for (int i = 0; i < surface.particles.size(); i++) {
-//			Particle p = (Particle) surface.particles.get(i);
-//			if (p.isSelected) {
-//				p.lock();
-//				p.z -= 10;
-//			}
-//		}
-//		// this.moveUpValue+
-//		this.gui.bMoveUp.setImage(this.gui.iconMoveUpB);
-
-	}
-	void MOVE_DOWN() {
-		this.println("MOVE DOWN !!!!");
-	}
-	void MOVE_LEFT() {
-		this.println("MOVE LEFT !!!!");
-	}
-	void MOVE_RIGHT() {
-		this.println("MOVE RIGHT !!!!");
+	void SHELL_RUN() {
+		latticeWidth = 1000;
+		lattSelNewFaces = true;
+		mesh.lattice();
 	}
 
-	public void mousePressed() {}
+	void SHELL_DEPTH(float theValue) {
+		latticeDepth = theValue;
+	}
+
+	void RESET_SURFACE() {
+		mesh.deselectAll();
+		mesh.mesh.clean();
+		mesh.mesh.clearEdges();
+		mesh.mesh.clearFaces();
+		mesh.mesh.clearHalfedges();
+		mesh.mesh.clearVertices();
+		mesh.mesh.clear();
+		mesh.boxArrayEdges.clear();
+		mesh.boxArrayFaces.clear();
+		mesh.boxArrayVertices.clear();
+		surface.springs.clear();
+		surface.particles.clear();
+		physics.springs.clear();
+		physics.particles.clear();
+		render = new WB_Render(this);
+		surface = new Surface(this);
+		boxesSelected.clear();
+		boxesSelected = new ArrayList<BoxClass>();
+
+		gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
+
+		initAll();
+	}
+
+//	public void mousePressed() {}
 
 	public void mouseDragged() {}
 
