@@ -159,10 +159,11 @@ class MeshClass {
 		boxArrayVertices.clear();
 		for (int i = 0; i < mesh.getVerticesAsList().size(); i++) {
 			HE_Vertex vv = (HE_Vertex) mesh.getVerticesAsList().get(i);
-//			BoxClass b = new BoxClass(p5, p5.boxSize, p5.boxSize, p5.boxSize, 0, (vv.key()));
-			BoxClass b = new BoxClass(p5, (float)vv.x,(float)vv.y,(float)vv.z, 0, (vv.key()));
+			// BoxClass b = new BoxClass(p5, p5.boxSize, p5.boxSize, p5.boxSize,
+			// 0, (vv.key()));
+			BoxClass b = new BoxClass(p5, (float) vv.x, (float) vv.y, (float) vv.z, 0, (vv.key()));
 
-//			b.fill(255);
+			// b.fill(255);
 			this.boxArrayVertices.add(b);
 			// p5.println("new box " + vv.key());
 		}
@@ -172,9 +173,9 @@ class MeshClass {
 		for (int i = 0; i < mesh.getEdgesAsList().size(); i++) {
 			HE_Edge ee = (HE_Edge) mesh.getEdgesAsList().get(i);
 			WB_Point3d wbp = ee.getEdgeCenter();
-			BoxClass b = new BoxClass(p5, (float)wbp.x,(float)wbp.y,(float)wbp.z, 1, (ee.key()));
-//			b.fill(255);
-//			b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
+			BoxClass b = new BoxClass(p5, (float) wbp.x, (float) wbp.y, (float) wbp.z, 1, (ee.key()));
+			// b.fill(255);
+			// b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
 
 			this.boxArrayEdges.add(b);
 			// p5.println("new box " + ee.key());
@@ -185,7 +186,7 @@ class MeshClass {
 		for (int i = 0; i < mesh.getFacesAsList().size(); i++) {
 			HE_Face ff = (HE_Face) mesh.getFacesAsList().get(i);
 			WB_Point3d wbp = ff.getFaceCenter();
-			BoxClass b = new BoxClass(p5, (float)wbp.x,(float)wbp.y,(float)wbp.z, 2, (ff.key()));
+			BoxClass b = new BoxClass(p5, (float) wbp.x, (float) wbp.y, (float) wbp.z, 2, (ff.key()));
 
 			this.boxArrayFaces.add(b);
 			// p5.println("new box " + ff.key());
@@ -197,10 +198,10 @@ class MeshClass {
 				BoxClass b = (BoxClass) boxArrayVertices.get(i);
 				HE_Vertex vv = (HE_Vertex) mesh.getVertexByKey(b.key);
 				b.set((float) vv.x, (float) vv.y, (float) vv.z);
-//				b.moveTo((float) vv.x, (float) vv.y, (float) vv.z);
-				b.x=(float)vv.x;
-				b.y=(float)vv.y;
-				b.z=(float)vv.z;
+				// b.moveTo((float) vv.x, (float) vv.y, (float) vv.z);
+				b.x = (float) vv.x;
+				b.y = (float) vv.y;
+				b.z = (float) vv.z;
 				b.run();
 			}
 		}
@@ -209,12 +210,13 @@ class MeshClass {
 				BoxClass b = (BoxClass) boxArrayEdges.get(i);
 				// HE_Edge ee = (HE_Edge) mesh.getEdgesAsList().get(i);
 				HE_Edge ee = (HE_Edge) mesh.getEdgeByKey(b.key);
+				
 				WB_Point3d wbp = ee.getEdgeCenter();
 				b.set((float) wbp.x, (float) wbp.y, (float) wbp.z);
-//				b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
-				b.x=(float)wbp.x;
-				b.y=(float)wbp.y;
-				b.z=(float)wbp.z;
+				// b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
+				b.x = (float) wbp.x;
+				b.y = (float) wbp.y;
+				b.z = (float) wbp.z;
 				b.run();
 			}
 		}
@@ -224,10 +226,10 @@ class MeshClass {
 				HE_Face ff = (HE_Face) mesh.getFaceByKey(b.key);
 				WB_Point3d wbp = ff.getFaceCenter();
 				b.set((float) wbp.x, (float) wbp.y, (float) wbp.z);
-//				b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
-				b.x=(float)wbp.x;
-				b.y=(float)wbp.y;
-				b.z=(float)wbp.z;
+				// b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
+				b.x = (float) wbp.x;
+				b.y = (float) wbp.y;
+				b.z = (float) wbp.z;
 				b.run();
 			}
 		}
@@ -274,6 +276,14 @@ class MeshClass {
 				selection.add(f);
 				p5.println("face " + f.key() + " selected");
 				// ////--- select Faces Particles----////
+				List edges = f.getFaceEdges();
+				for (int i = 0; i < edges.size(); i++) {
+					HE_Edge e = (HE_Edge) edges.get(i);
+					Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, e.key());
+					s.isSelected = true;
+					BoxClass be = (BoxClass) getBoxeswithKey(boxArrayEdges, e.key());
+					be.isSelected = true;
+				}
 				List vertices = f.getFaceVertices();
 				for (int j = 0; j < vertices.size(); j++) {
 					HE_Vertex v = (HE_Vertex) vertices.get(j);
@@ -350,10 +360,23 @@ class MeshClass {
 	}
 
 	void growMeshSelection() {
+		updateBoxes(true, true, true);
 		selection.grow();
 		selectBoxesWithFaces();
+
 		selection.collectVertices();
 		selectParticlesInSelection();
+		for (int h = 0; h < selection.getFacesAsList().size(); h++) {
+			HE_Face f = (HE_Face)mesh.getFaceByKey(h);
+			List edges = f.getFaceEdges();
+			for (int i = 0; i < edges.size(); i++) {
+				HE_Edge e = (HE_Edge) edges.get(i);
+				Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, e.key());
+				s.isSelected = true;
+				BoxClass be = (BoxClass) getBoxeswithKey(boxArrayEdges, e.key());
+				be.isSelected = true;
+			}
+		}
 	}
 
 	void selectBoxesWithFaces() {

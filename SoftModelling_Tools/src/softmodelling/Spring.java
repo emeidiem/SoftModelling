@@ -10,6 +10,7 @@ public class Spring extends VerletSpring {
 	Particle a, b;
 	float initlen;
 	boolean delete = false;
+	boolean isSelected = false;
 	Vec3D centroid;
 
 	// ////////////////CONSTRUCTOR

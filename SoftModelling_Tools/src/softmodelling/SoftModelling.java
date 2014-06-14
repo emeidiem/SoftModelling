@@ -77,6 +77,7 @@ public class SoftModelling extends PApplet {
 	// ---mouse dragging objects---//
 	boolean mouseStillPressed = false;
 	boolean activeMover = false;
+	boolean activeSPLen = false;
 	boolean modeSelected = false;
 
 	int exportIndex = 106;
@@ -95,7 +96,9 @@ public class SoftModelling extends PApplet {
 	public void setup() {
 
 		// size(1900, 980, P3D);
-		size(1920, 1200, P3D);
+//		size(1920, 1200, P3D);
+		size(2560, 1440, P3D);
+
 		smooth();
 		cursor(CROSS);
 		cam = new PeasyCam(this, 600);
@@ -120,7 +123,7 @@ public class SoftModelling extends PApplet {
 		boxesSelected = new ArrayList<BoxClass>();
 		boxesSelected.clear();
 		gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
-//		selector = new HET_Selector(this); // initialize the selector
+		// selector = new HET_Selector(this); // initialize the selector
 		this.mesh.printCheck();
 		println("....................LAUNCHED...................");
 	}
@@ -142,42 +145,43 @@ public class SoftModelling extends PApplet {
 		mesh.run();
 		gizmo.run();
 
-
 	}
-	
-	void hitDetect() {
-		  
-		ArrayList locators = new ArrayList<BoxClass>();
-		if (this.selectionMode == 0)locators = mesh.boxArrayVertices;
-		if (this.selectionMode == 1)locators = mesh.boxArrayEdges;
-		if (this.selectionMode == 2)locators = mesh.boxArrayFaces;
-		if (locators.size()>0){
-		  for(int i=0; i<locators.size(); i++) {
-			  BoxClass b = (BoxClass) locators.get(i);
-		    int x = (int) (screenX(b.x,b.y,b.z));
-		    int y = (int) (screenY(b.x,b.y,b.z));
 
-		    int precision = 5;
-		    if (x > mouseX-precision && x < mouseX+precision && y > mouseY-precision && y < mouseY+precision) {
-		       b.isSelected=true;
-		       if (this.selectionMode == 0)surface.getParticleswithKey(surface.particles,b.key).isSelected=true;
-		       if (this.selectionMode == 1)mesh.selectPickedEdges(b);
-		       if (this.selectionMode == 2)mesh.selectPickedFaces(b);
-		       this.println("PSelect");
-		    }
-		  }}
+	void hitDetect() {
+
+		ArrayList locators = new ArrayList<BoxClass>();
+		if (this.selectionMode == 0) locators = mesh.boxArrayVertices;
+		if (this.selectionMode == 1) locators = mesh.boxArrayEdges;
+		if (this.selectionMode == 2) locators = mesh.boxArrayFaces;
+		if (locators.size() > 0) {
+			for (int i = 0; i < locators.size(); i++) {
+				BoxClass b = (BoxClass) locators.get(i);
+				int x = (int) (screenX(b.x, b.y, b.z));
+				int y = (int) (screenY(b.x, b.y, b.z));
+
+				int precision = 5;
+				if (x > mouseX - precision && x < mouseX + precision && y > mouseY - precision && y < mouseY + precision) {
+					b.isSelected = true;
+					if (this.selectionMode == 0) surface.getParticleswithKey(surface.particles, b.key).isSelected = true;
+					if (this.selectionMode == 1) mesh.selectPickedEdges(b);
+					if (this.selectionMode == 2) mesh.selectPickedFaces(b);
+					this.println("PSelect");
+				}
+			}
 		}
-	
+	}
+
 	public boolean sketchFullScreen() {
-		return false;
+		return true;
 	}
 
 	public void mousePressed() {
 		mouseClicked = true;
 		if (mouseButton == RIGHT) {
 			mesh.deselectAll();
-		}
-		else{
+			gui.spl.setValue(100f);
+
+		} else {
 			hitDetect();
 		}
 	}
@@ -211,6 +215,11 @@ public class SoftModelling extends PApplet {
 						this.activeMover = false;
 					}
 				}
+			}
+		}
+		if ((!theEvent.isFrom(gui.bSPLen))) {
+			if ((!theEvent.isFrom(gui.spl))) {
+			this.activeSPLen = false;
 			}
 		}
 		// if ((!theEvent.isFrom(gui.bMoveUp))) {
@@ -273,6 +282,7 @@ public class SoftModelling extends PApplet {
 
 	void DESELECT(float theValue) {
 		mesh.deselectAll();
+		gui.spl.setValue(100f);
 	}
 	void SUBDIVIDE_LEVEL(int theValue) {
 		subdivLevel = theValue;
@@ -406,6 +416,10 @@ public class SoftModelling extends PApplet {
 		this.activeMover = !activeMover;
 	}
 
+	void ACTIVATE_SPLEN() {
+		this.activeSPLen = !activeSPLen;
+	}
+
 	void SHELL_RUN() {
 		latticeWidth = 1000;
 		lattSelNewFaces = true;
@@ -441,7 +455,7 @@ public class SoftModelling extends PApplet {
 		initAll();
 	}
 
-//	public void mousePressed() {}
+	// public void mousePressed() {}
 
 	public void mouseDragged() {}
 

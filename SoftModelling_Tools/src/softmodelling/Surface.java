@@ -121,11 +121,28 @@ public class Surface {
 
 	void resizeSprings() {
 		for (int i = 0; i < springs.size(); i++) {
+			BoxClass b = (BoxClass) p5.mesh.boxArrayEdges.get(i);
 			Spring s = (Spring) springs.get(i);
-			float initlength = s.initlen;
-			float newlength = initlength * ((p5.springlengthScale / 100));
-			if (newlength < 200) s.setRestLength(newlength);
+			if (b.isSelected) {
+				float initlength = s.initlen;
+//				float initlength = s.getRestLength();
+				p5.println("initlength = "+initlength);
+				float newlength = initlength * ((p5.springlengthScale/100));
+				if ((newlength < 300)&&(newlength > 1)) {
+					s.setRestLength(newlength);
+				s.initlen = newlength;
+			}}
 		}
+//		for (int i = 0; i < springs.size(); i++) {
+//			BoxClass b = (BoxClass) p5.mesh.boxArrayEdges.get(i);
+//			Spring s = (Spring) springs.get(i);
+//			if (b.isSelected) {
+//				float initlength = s.initlen;
+//				float newlength = initlength * ((p5.springlengthScale / 100));
+//				//if (newlength < 200) 
+//					s.setRestLength(newlength);
+//			}
+//		}
 	}
 
 	void deselectParticles() {

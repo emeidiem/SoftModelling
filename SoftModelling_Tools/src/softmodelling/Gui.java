@@ -27,7 +27,7 @@ public class Gui {
 	float prevMoveX, prevMoveY, prevMoveZ;
 	float valueZ;
 	Group g1, g2, g3, g4, g5;
-	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect, bLock, bUnlock, bShell, bLattice, bc1, bc2, bc3, bc4, bc5, bc6, bSaveFile, bReset;
+	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect, bSPLen, bLock, bUnlock, bShell, bLattice, bc1, bc2, bc3, bc4, bc5, bc6, bc7, bSaveFile, bReset;
 	Toggle bVertex, bEdges, bFaces, gravityOn;
 	Toggle t1;
 	Button bMove;
@@ -200,7 +200,18 @@ public class Gui {
 		latticeOffsetKnob = cp5.addKnob("LATTICE_WIDTH").setValue(1.2f).setRange(0, 150).setPosition(margin + sizeIcons * 2 + space * 3 + 75 + 3, margin + 3 + sizeIcons * 6 + space * 6)
 				.setRadius(38 - 3).setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("offset");
 		// ////////////////////////////////////
+		bSPLen = cp5.addButton("ACTIVATE_SPLEN").setPosition(margin + sizeIcons + space, margin + sizeIcons * 7 + space * 7)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_SPLen_A.png"), p5.loadImage("icons/SoftModelling_Icon_SPLen_B.png"), p5.loadImage("icons/SoftModelling_Icon_SPLen_B.png"))
+				.updateSize();
+		bc7 = cp5.addButton("circle7").setPosition(margin + sizeIcons * 1 + space * 3 + 75, margin + sizeIcons * 7 + space * 7)
+				.setImages(p5.loadImage("icons/SoftModelling_smallCircle76_A.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"), p5.loadImage("icons/SoftModelling_smallCircle76_B.png"))
+				.updateSize();
+		spl = cp5.addKnob("SP_LENGTH").setValue(100f).setRange(50f, 200f).setPosition(margin + sizeIcons * 1 + space * 3 + 75 + 3, margin + 3 + sizeIcons * 7 + space * 7).setRadius(38 - 3).setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281).setLabel("SP_length");
+
+		// ////////////////////////////////////
+
 		bMove.hide();
+		bSPLen.hide();
 		bLock.hide();
 		bUnlock.hide();
 		cp5.setAutoDraw(false);
@@ -288,24 +299,6 @@ public class Gui {
 		updateMover();
 		reArrangebuttons();
 
-		if (p5.activeMover) {
-			bMove.setImage(p5.loadImage("icons/SoftModelling_Icon_Move_B.png"));
-			bMoveUp.show();
-			bMoveDown.show();
-			bMoveLeft.show();
-			bMoveRight.show();
-			bMoveZUp.show();
-			bMoveZDown.show();
-
-		} else {
-			bMove.setImage(p5.loadImage("icons/SoftModelling_Icon_Move_A.png"));
-			bMoveUp.hide();
-			bMoveDown.hide();
-			bMoveLeft.hide();
-			bMoveRight.hide();
-			bMoveZUp.hide();
-			bMoveZDown.hide();
-		}
 
 		if ((bEdges.isMousePressed()) || (bVertex.isMousePressed())) {
 			bFaces.setImages(p5.loadImage("icons/SoftModelling_Icon_SelFace_A.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_B.png"), p5.loadImage("icons/SoftModelling_Icon_SelFace_B.png"));
@@ -334,7 +327,38 @@ public class Gui {
 		} else {
 			gravityOn.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"));
 		}
+		
+		if (p5.activeMover) {
+			bMove.setImage(p5.loadImage("icons/SoftModelling_Icon_Move_B.png"));
+			bMoveUp.show();
+			bMoveDown.show();
+			bMoveLeft.show();
+			bMoveRight.show();
+			bMoveZUp.show();
+			bMoveZDown.show();
 
+		} else {
+			bMove.setImage(p5.loadImage("icons/SoftModelling_Icon_Move_A.png"));
+			bMoveUp.hide();
+			bMoveDown.hide();
+			bMoveLeft.hide();
+			bMoveRight.hide();
+			bMoveZUp.hide();
+			bMoveZDown.hide();
+		}
+		
+		if ((!bVertex.isActive() && (!bVertex.getState())) && ((!bVertex.isMouseOver()))) {
+		if (p5.activeSPLen) {
+			bSPLen.setImage(p5.loadImage("icons/SoftModelling_Icon_SPLen_C.png"));
+			bc7.show();
+			spl.show();
+		} else {
+			bSPLen.setImage(p5.loadImage("icons/SoftModelling_Icon_SPLen_A.png"));
+			bc7.hide();
+			spl.hide();
+		}
+		}
+		
 		if (bFaces.isActive() || (bFaces.getState() || (bFaces.isMouseOver()))) {
 			bMove.setPosition(margin + sizeIcons + space, margin + sizeIcons + space);
 			bLock.setPosition(margin + sizeIcons + space, margin + sizeIcons * 3 + space * 3);
@@ -367,7 +391,14 @@ public class Gui {
 			bMove.show();
 			bLock.show();
 			bUnlock.show();
-
+			
+			bSPLen.show();
+//			bc7.show();
+//			spl.show();
+			bSPLen.setPosition(margin + sizeIcons + space, margin + sizeIcons * 7 + space * 7);
+			bc7.setPosition(margin + sizeIcons * 1 + space * 3 + 75, margin + sizeIcons * 7 + space * 7);
+			spl.setPosition(margin + sizeIcons * 1 + space * 3 + 75 + 3, margin + 3 + sizeIcons * 7 + space * 7);
+			
 		} else {
 			bGrow.hide();
 			bShrink.hide();
@@ -404,6 +435,9 @@ public class Gui {
 			bMove.hide();
 			bLock.hide();
 			bUnlock.hide();	
+			bSPLen.hide();
+			bc7.hide();
+			spl.hide();
 		}
 //		if (bEdges.isActive() || (bEdges.getState() || (bEdges.isMouseOver()))) {
 //			bMove.show();
@@ -445,9 +479,6 @@ public class Gui {
 //					bMoveZUp.show();
 //					bMoveZDown.show();
 //				}
-				bMove.show();
-				bLock.show();
-				bUnlock.show();
 
 				bGrow.hide();
 				bShrink.hide();
@@ -470,6 +501,26 @@ public class Gui {
 
 			}
 		}
+		
+		if ((bEdges.isActive() || (bEdges.getState())) || ((bEdges.isMouseOver()))) {
+			if ((!bFaces.isMouseOver())) {
+				bSPLen.show();
+//				bc7.show();
+//				spl.show();
+				bSPLen.setPosition(margin + sizeIcons + space, margin + sizeIcons * 2 + space * 2);
+				bc7.setPosition(margin + sizeIcons * 1 + space * 3 + 75, margin + sizeIcons * 2 + space * 2);
+				spl.setPosition(margin + sizeIcons * 1 + space * 3 + 75 + 3, margin + 3 + sizeIcons * 2 + space * 2);
+				// ////////////////////////////////////
+			}			
+			}
+		if ((bVertex.isActive() || (bVertex.getState())) || ((bVertex.isMouseOver()))) {
+			if ((!bFaces.isMouseOver())&&(!bEdges.isMouseOver())) {
+				bSPLen.hide();
+				bc7.hide();
+				spl.hide();
+			}			
+			}
+		
 
 	}
 
