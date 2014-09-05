@@ -1,12 +1,9 @@
 package softmodelling;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import processing.core.PApplet;
-import toxi.geom.Vec3D;
-import wblut.geom.WB_Normal3d;
 import wblut.geom.WB_Point3d;
 import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HEM_Extrude;
@@ -16,31 +13,28 @@ import wblut.hemesh.HES_DooSabin;
 import wblut.hemesh.HES_Planar;
 import wblut.hemesh.HES_PlanarMidEdge;
 import wblut.hemesh.HES_Smooth;
-import wblut.hemesh.HES_Subdividor;
 import wblut.hemesh.HES_TriDec;
 import wblut.hemesh.HE_Edge;
 import wblut.hemesh.HE_Face;
+import wblut.hemesh.HE_Halfedge;
 import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Selection;
 import wblut.hemesh.HE_Vertex;
-import wblut.processing.WB_Render;
 
-class MeshClass {
+class MeshClass extends HE_Mesh {
 
-	HE_Mesh mesh;
+	// HE_Mesh mesh;
 	SoftModelling p5;
-	ArrayList boxArrayVertices = new ArrayList<BoxClass>();
-	ArrayList boxArrayEdges = new ArrayList<BoxClass>();
-	ArrayList boxArrayFaces = new ArrayList<BoxClass>();
 	HE_Selection selection;
+
 	// ////////////////CONSTRUCTOR
-	MeshClass(SoftModelling _p5) {
+	MeshClass(SoftModelling _p5, HEC_FromFacelist facelistCreator) {
+		super(facelistCreator);
 		p5 = _p5;
-		initmesh();
-		createFacesBoxes();
-		createEdgesBoxes();
-		createVerticesBoxes();
+		// initmesh();
+
 	}
+
 	// /////////////////////////
 
 	void run() {
@@ -51,15 +45,20 @@ class MeshClass {
 		if (p5.displayMesh) {
 			rendermesh();
 		}
-		updateBoxes(true, true, true);
+		if (p5.displaySelectors) {
+			if (p5.selectionMode == 1)
+				renderSelectorsEdges();
+			if (p5.selectionMode == 2)
+				renderSelectorsFaces();
+		}
 
 	}
 
 	void updatemesh() {
 
-		for (int j = 0; j < mesh.getVerticesAsList().size(); j++) {
+		for (int j = 0; j < this.getVerticesAsList().size(); j++) {
 			for (int i = 0; i < p5.surface.particles.size(); i++) {
-				HE_Vertex vv = (HE_Vertex) mesh.getVerticesAsList().get(j);
+				HE_Vertex vv = (HE_Vertex) getVerticesAsList().get(j);
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (vv.key() == p.key) {
 					vv.set(p.x, p.y, p.z);
@@ -71,252 +70,116 @@ class MeshClass {
 	void rendermesh() {
 		p5.noStroke();
 		p5.fill(200);
-		p5.render.drawFaces(mesh);
+		p5.render.drawFaces(this);
 		p5.fill(255, 0, 255, 200);
 		p5.render.drawFaces(selection);
 		p5.strokeWeight(1);
 		p5.stroke(50);
-		p5.render.drawEdges(mesh);
-		renderKeys();
+		p5.render.drawEdges(this);
+		if (p5.displayVertexKey)
+			renderKeys();
 	}
 
 	void renderKeys() {
 		p5.fill(255, 0, 255);
-		if (p5.displayVertexKey) {
-			if (p5.selectionMode == 0) {
-				for (int h = 0; h < mesh.getVerticesAsList().size(); h++) {
-					HE_Vertex vv = (HE_Vertex) mesh.getVerticesAsList().get(h);
-					p5.pushMatrix();
-					p5.translate((float) vv.x - 5, (float) vv.y, (float) vv.z + 5);
-					p5.rotateX(p5.radians(-90));
-					p5.text("" + (vv.key() - 0), 0, 0, 0);
-					p5.popMatrix();
-				}
-			}
-			if (p5.selectionMode == 1) {
-				for (int h = 0; h < mesh.getEdgesAsList().size(); h++) {
-					HE_Edge ee = (HE_Edge) mesh.getEdgesAsList().get(h);
-					p5.pushMatrix();
-					p5.translate((float) ee.getEdgeCenter().x, (float) ee.getEdgeCenter().y, (float) ee.getEdgeCenter().z + 5);
-					p5.rotateX(p5.radians(-90));
-					p5.text("" + (ee.key() - 0), 0, 0, 0);
-					p5.popMatrix();
-				}
-			}
-			if (p5.selectionMode == 2) {
-				for (int h = 0; h < mesh.getFacesAsList().size(); h++) {
-					HE_Face ff = (HE_Face) mesh.getFacesAsList().get(h);
-					p5.pushMatrix();
-					p5.translate((float) ff.getFaceCenter().x - 5, (float) ff.getFaceCenter().y, (float) ff.getFaceCenter().z + 5);
-					p5.rotateX(p5.radians(-90));
-					p5.text("" + (ff.key() - 0), 0, 0, 0);
-					p5.popMatrix();
-				}
+
+		if (p5.selectionMode == 0) {
+			for (int h = 0; h < this.getVerticesAsList().size(); h++) {
+				HE_Vertex vv = (HE_Vertex) this.getVerticesAsList().get(h);
+				p5.pushMatrix();
+				p5.translate((float) vv.x - 5, (float) vv.y, (float) vv.z + 5);
+				p5.rotateX(PApplet.radians(-90));
+				p5.text("" + (vv.key() - 0), 0, 0, 0);
+				p5.popMatrix();
 			}
 		}
-	}
-
-	void initmesh() {
-		float totalLength = 700;
-		int initCols = 4;
-		int initRows = 4;
-		int initRowsXCols = initCols * initRows;
-		float edgelength = totalLength / (initCols - 1);
-
-		// Array of all vertices
-		float[][] vertices = new float[initRowsXCols][3];
-		int index = 0;
-		for (int j = 0; j < initRows; j++) {
-			for (int i = 0; i < initCols; i++) {
-				vertices[index][0] = -totalLength / 4 + i * edgelength / 2;
-				vertices[index][1] = -totalLength / 4 + j * edgelength / 2;
-				vertices[index][2] = 0 + 0;
-				index++;
+		if (p5.selectionMode == 1) {
+			for (int h = 0; h < this.getEdgesAsList().size(); h++) {
+				HE_Edge ee = (HE_Edge) this.getEdgesAsList().get(h);
+				p5.pushMatrix();
+				p5.translate((float) ee.getEdgeCenter().x,
+						(float) ee.getEdgeCenter().y,
+						(float) ee.getEdgeCenter().z + 5);
+				p5.rotateX(PApplet.radians(-90));
+				p5.text("" + (ee.key() - 0), 0, 0, 0);
+				p5.popMatrix();
 			}
 		}
-		// Array of faces. Each face is an arry of vertex indices;
-		index = 0;
-		int[][] faces = new int[(initCols - 1) * (initRows - 1)][];
-
-		for (int j = 0; j < initRows - 1; j++) {
-			for (int i = 0; i < initCols - 1; i++) {
-				faces[index] = new int[4];
-				faces[index][0] = i + initCols * j;
-				faces[index][1] = i + 1 + initCols * j;
-				faces[index][2] = i + 1 + initCols * (j + 1);
-				faces[index][3] = i + initCols * (j + 1);
-				index++;
+		if (p5.selectionMode == 2) {
+			for (int h = 0; h < this.getFacesAsList().size(); h++) {
+				HE_Face ff = (HE_Face) this.getFacesAsList().get(h);
+				p5.pushMatrix();
+				p5.translate((float) ff.getFaceCenter().x - 5,
+						(float) ff.getFaceCenter().y,
+						(float) ff.getFaceCenter().z + 5);
+				p5.rotateX(PApplet.radians(-90));
+				p5.text("" + (ff.key() - 0), 0, 0, 0);
+				p5.popMatrix();
 			}
 		}
 
-		HEC_FromFacelist facelistCreator = new HEC_FromFacelist().setVertices(vertices).setFaces(faces).setDuplicate(false);
-		mesh = new HE_Mesh(facelistCreator);
-		mesh.validate(true, true);
-		mesh.collapseDegenerateEdges();
-		selection = new HE_Selection(mesh);
 	}
-	void createVerticesBoxes() {
-		boxArrayVertices.clear();
-		for (int i = 0; i < mesh.getVerticesAsList().size(); i++) {
-			HE_Vertex vv = (HE_Vertex) mesh.getVerticesAsList().get(i);
-			// BoxClass b = new BoxClass(p5, p5.boxSize, p5.boxSize, p5.boxSize,
-			// 0, (vv.key()));
-			BoxClass b = new BoxClass(p5, (float) vv.x, (float) vv.y, (float) vv.z, 0, (vv.key()));
 
-			// b.fill(255);
-			this.boxArrayVertices.add(b);
-			// p5.println("new box " + vv.key());
-		}
-	}
-	void createEdgesBoxes() {
-		boxArrayEdges.clear();
-		for (int i = 0; i < mesh.getEdgesAsList().size(); i++) {
-			HE_Edge ee = (HE_Edge) mesh.getEdgesAsList().get(i);
-			WB_Point3d wbp = ee.getEdgeCenter();
-			BoxClass b = new BoxClass(p5, (float) wbp.x, (float) wbp.y, (float) wbp.z, 1, (ee.key()));
-			// b.fill(255);
-			// b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
+	void renderSelectorsEdges() {
+		for (int i = 0; i < this.getEdgesAsList().size(); i++) {
+			HE_Edge e = (HE_Edge) getEdgesAsList().get(i);
+			WB_Point3d fc = (WB_Point3d) e.getEdgeCenter();
+			p5.strokeWeight(15);
+			if (!selection.contains(e)) {
+				p5.stroke(100, 255);
 
-			this.boxArrayEdges.add(b);
-			// p5.println("new box " + ee.key());
-		}
-	}
-	void createFacesBoxes() {
-		this.boxArrayFaces.clear();
-		for (int i = 0; i < mesh.getFacesAsList().size(); i++) {
-			HE_Face ff = (HE_Face) mesh.getFacesAsList().get(i);
-			WB_Point3d wbp = ff.getFaceCenter();
-			BoxClass b = new BoxClass(p5, (float) wbp.x, (float) wbp.y, (float) wbp.z, 2, (ff.key()));
-
-			this.boxArrayFaces.add(b);
-			// p5.println("new box " + ff.key());
-		}
-	}
-	void updateBoxes(boolean v, boolean e, boolean f) {
-		if (v) {
-			for (int i = 0; i < this.boxArrayVertices.size(); i++) {
-				BoxClass b = (BoxClass) boxArrayVertices.get(i);
-				HE_Vertex vv = (HE_Vertex) mesh.getVertexByKey(b.key);
-				b.set((float) vv.x, (float) vv.y, (float) vv.z);
-				// b.moveTo((float) vv.x, (float) vv.y, (float) vv.z);
-				b.x = (float) vv.x;
-				b.y = (float) vv.y;
-				b.z = (float) vv.z;
-				b.run();
+			} else {
+				p5.stroke(255, 0, 0, 255);
 			}
-		}
-		if (e) {
-			for (int i = 0; i < this.boxArrayEdges.size(); i++) {
-				BoxClass b = (BoxClass) boxArrayEdges.get(i);
-				// HE_Edge ee = (HE_Edge) mesh.getEdgesAsList().get(i);
-				HE_Edge ee = (HE_Edge) mesh.getEdgeByKey(b.key);
-				
-				WB_Point3d wbp = ee.getEdgeCenter();
-				b.set((float) wbp.x, (float) wbp.y, (float) wbp.z);
-				// b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
-				b.x = (float) wbp.x;
-				b.y = (float) wbp.y;
-				b.z = (float) wbp.z;
-				b.run();
+			p5.point(fc.xf(), fc.yf(), fc.zf());
+
+			p5.strokeWeight(10);
+			if (!selection.contains(e)) {
+				p5.stroke(255, 255);
+
+			} else {
+				p5.stroke(255, 0, 0, 255);
 			}
+			p5.point(fc.xf(), fc.yf(), fc.zf());
+
 		}
-		if (f) {
-			for (int i = 0; i < boxArrayFaces.size(); i++) {
-				BoxClass b = (BoxClass) boxArrayFaces.get(i);
-				HE_Face ff = (HE_Face) mesh.getFaceByKey(b.key);
-				WB_Point3d wbp = ff.getFaceCenter();
-				b.set((float) wbp.x, (float) wbp.y, (float) wbp.z);
-				// b.moveTo((float) wbp.x, (float) wbp.y, (float) wbp.z);
-				b.x = (float) wbp.x;
-				b.y = (float) wbp.y;
-				b.z = (float) wbp.z;
-				b.run();
+
+	}
+
+	void renderSelectorsFaces() {
+		for (int i = 0; i < this.getFacesAsList().size(); i++) {
+			HE_Face f = (HE_Face) getFacesAsList().get(i);
+			WB_Point3d fc = (WB_Point3d) f.getFaceCenter();
+			p5.strokeWeight(15);
+			if (!selection.contains(f)) {
+				p5.stroke(100, 255);
+
+			} else {
+				p5.stroke(255, 0, 0, 255);
 			}
-		}
-	}
+			p5.point(fc.xf(), fc.yf(), fc.zf());
 
-	BoxClass getBoxeswithKey(List<BoxClass> boxlist, int key) {
-		int index = 0;
-		for (int i = 0; i < boxlist.size(); i++) {
-			BoxClass b = (BoxClass) boxlist.get(i);
-			if (b.key == key) {
-				index = i;
+			p5.strokeWeight(10);
+			if (!selection.contains(f)) {
+				p5.stroke(255, 255);
+
+			} else {
+				p5.stroke(255, 0, 0, 255);
 			}
+			p5.point(fc.xf(), fc.yf(), fc.zf());
+
 		}
-		BoxClass b2 = (BoxClass) boxlist.get(index);
-		return b2;
+
 	}
 
-	void selectPickedEdges(BoxClass b) {
-
-		HE_Edge e = mesh.getEdgeByKey(b.key);
-		selection.add(e);
-		p5.println("edge " + e.key() + " selected");
-		// ////--- select Edges Particles----////
-		HE_Vertex v1 = e.getStartVertex();
-		HE_Vertex v2 = e.getEndVertex();
-		HE_Vertex[] vertices = {v1, v2};
-		// --selectParticles
-		for (int j = 0; j < vertices.length; j++) {
-			HE_Vertex v = (HE_Vertex) vertices[j];
-			Particle p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, v.key());
-			p.isSelected = true;
-			BoxClass bv = (BoxClass) getBoxeswithKey(boxArrayVertices, v.key());
-			bv.isSelected = true;
-		}
-	}
-
-	void selectPickedFaces(BoxClass b) {
-
-		HE_Face f = mesh.getFaceByKey(b.key);
-		// --selectParticles
-		if (f != null) {
-			if ((b.isSelected) && (!selection.contains(f))) {
-
-				selection.add(f);
-				p5.println("face " + f.key() + " selected");
-				// ////--- select Faces Particles----////
-				List edges = f.getFaceEdges();
-				for (int i = 0; i < edges.size(); i++) {
-					HE_Edge e = (HE_Edge) edges.get(i);
-					Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, e.key());
-					s.isSelected = true;
-					BoxClass be = (BoxClass) getBoxeswithKey(boxArrayEdges, e.key());
-					be.isSelected = true;
-				}
-				List vertices = f.getFaceVertices();
-				for (int j = 0; j < vertices.size(); j++) {
-					HE_Vertex v = (HE_Vertex) vertices.get(j);
-					Particle p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, v.key());
-					p.isSelected = true;
-					BoxClass bv = (BoxClass) getBoxeswithKey(boxArrayVertices, v.key());
-					bv.isSelected = true;
-				}
-				selection = selection.cleanSelection();
-			}
-		}
-	}
-	void deselectBoxes() {
-		for (int i = 0; i < this.boxArrayFaces.size(); i++) {
-			BoxClass b = (BoxClass) boxArrayFaces.get(i);
-			b.isSelected = false;
-		}
-		for (int i = 0; i < this.boxArrayEdges.size(); i++) {
-			BoxClass b = (BoxClass) boxArrayEdges.get(i);
-			b.isSelected = false;
-		}
-		for (int i = 0; i < this.boxArrayVertices.size(); i++) {
-			BoxClass b = (BoxClass) boxArrayVertices.get(i);
-			b.isSelected = false;
-		}
-	}
 	void lockSelectedFaces(boolean negativelocking) {
 
 		selection.collectVertices();
 		for (int i = 0; i < this.selection.getVerticesAsList().size(); i++) {
 			HE_Vertex sv = (HE_Vertex) selection.getVerticesAsList().get(i);
-			HE_Vertex v = (HE_Vertex) mesh.getVertexByKey(sv.key());
-			Particle p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, v.key());
+			HE_Vertex v = (HE_Vertex) this.getVertexByKey(sv.key());
+			Particle p = (Particle) p5.surface.getParticleswithKey(
+					p5.surface.particles, v.key());
 			if (negativelocking) {
 				p.unlock();
 				p.keepLocked = false;
@@ -331,15 +194,17 @@ class MeshClass {
 
 	void lockSelectedEdges(boolean negativelocking) {
 
-		for (int i = 0; i < this.boxArrayEdges.size(); i++) {
-			BoxClass b = (BoxClass) boxArrayEdges.get(i);
-			if (b.isSelected) {
-				HE_Edge e = (HE_Edge) mesh.getEdgeByKey(b.key);
+		for (int i = 0; i < p5.surface.springs.size(); i++) {
+			Spring s = (Spring) p5.surface.springs.get(i);
+			if (s.isSelected) {
+				HE_Edge e = (HE_Edge) this.getEdgeByKey(s.key);
 				HE_Vertex v1 = (HE_Vertex) e.getStartVertex();
 				HE_Vertex v2 = (HE_Vertex) e.getEndVertex();
 
-				Particle p1 = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, v1.key());
-				Particle p2 = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, v2.key());
+				Particle p1 = (Particle) p5.surface.getParticleswithKey(
+						p5.surface.particles, v1.key());
+				Particle p2 = (Particle) p5.surface.getParticleswithKey(
+						p5.surface.particles, v2.key());
 				if (negativelocking) {
 					p1.unlock();
 					p1.keepLocked = false;
@@ -360,94 +225,55 @@ class MeshClass {
 	}
 
 	void growMeshSelection() {
-		updateBoxes(true, true, true);
 		selection.grow();
-		selectBoxesWithFaces();
-
-		selection.collectVertices();
-		selectParticlesInSelection();
-		for (int h = 0; h < selection.getFacesAsList().size(); h++) {
-			HE_Face f = (HE_Face)mesh.getFaceByKey(h);
-			List edges = f.getFaceEdges();
-			for (int i = 0; i < edges.size(); i++) {
-				HE_Edge e = (HE_Edge) edges.get(i);
-				Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, e.key());
-				s.isSelected = true;
-				BoxClass be = (BoxClass) getBoxeswithKey(boxArrayEdges, e.key());
-				be.isSelected = true;
+		List<HE_Vertex> vvs;
+		HE_Face f;
+		Particle p;
+		for (int i = 0; i < selection.getFacesAsList().size(); i++) {
+			f = selection.getFacesAsList().get(i);
+			vvs = f.getFaceVertices();
+			for (int j = 0; j < vvs.size(); j++) {
+				HE_Vertex v = (HE_Vertex) vvs.get(j);
+				p = (Particle) p5.surface.getParticleswithKey(
+						p5.surface.particles, v.key());
+				p.isSelected = true;
+				if (!p5.surface.particlesSelected.contains(p))
+					p5.surface.particlesSelected.add(p);
 			}
 		}
-	}
-
-	void selectBoxesWithFaces() {
-		for (int h = 0; h < selection.getFacesAsList().size(); h++) {
-			HE_Face ff = (HE_Face) selection.getFacesAsList().get(h);
-			BoxClass b = (BoxClass) getBoxeswithKey(this.boxArrayFaces, ff.key());
-			b.isSelected = true;
-		}
-	}
-
-	void selectBoxesWithEdges() {
-		for (int h = 0; h < selection.getEdgesAsList().size(); h++) {
-			HE_Edge ee = (HE_Edge) selection.getEdgesAsList().get(h);
-			BoxClass b = (BoxClass) getBoxeswithKey(this.boxArrayEdges, ee.key());
-			b.isSelected = true;
-		}
-	}
-
-	void selectParticlesInSelection() {
-		for (int i = 0; i < selection.getVerticesAsList().size(); i++) {
-			HE_Vertex v = (HE_Vertex) selection.getVerticesAsList().get(i);
-			Particle p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, v.key());
-			p.isSelected = true;
-			BoxClass bv = (BoxClass) getBoxeswithKey(boxArrayVertices, v.key());
-			bv.isSelected = true;
-		}
+		selection.collectHalfedges();
+		selection.collectVertices();
 	}
 
 	void shrinkMeshSelection() {
-		deselectBoxes();
-		p5.surface.deselectParticles();
-		selection.shrink();
-		// ////--- deselect Faces Particles----////
-		selection.collectVertices();
-		for (int i = 0; i < selection.getFacesAsList().size(); i++) {
-			HE_Face f = (HE_Face) selection.getFacesAsList().get(i);
-			for (int j = 0; j < f.getFaceVertices().size(); j++) {
-				HE_Vertex v = (HE_Vertex) f.getFaceVertices().get(j);
-				Particle p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, v.key());
-				p.isSelected = true;
-				BoxClass bv = (BoxClass) getBoxeswithKey(boxArrayVertices, v.key());
-				bv.isSelected = true;
-			}
-		}
-	}
 
-	void selectAllFaces() {
-		selection.addFaces(mesh.getFacesAsList());
-		for (int i = 0; i < boxArrayFaces.size(); i++) {
-			BoxClass b = (BoxClass) boxArrayFaces.get(i);
-			b.isSelected = true;
-		}
-		p5.surface.selectAllParticles();
-	}
+		final List<HE_Halfedge> outerEdges = selection.getOuterHalfedges();
 
-	void selectAllEdges() {
-		selection.addEdges(mesh.getEdgesAsList());
-		for (int i = 0; i < boxArrayEdges.size(); i++) {
-			BoxClass b = (BoxClass) boxArrayEdges.get(i);
-			b.isSelected = true;
+		for (int i = 0; i < outerEdges.size(); i++) {
+			Particle p;
+			final HE_Halfedge e = outerEdges.get(i);
+			p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles,
+					e.getVertex().key());
+			p.isSelected = false;
+			if (p5.surface.particlesSelected.contains(p))
+				p5.surface.particlesSelected.remove(p);
+			p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles,
+					e.getEndVertex().key());
+			p.isSelected = false;
+			if (p5.surface.particlesSelected.contains(p))
+				p5.surface.particlesSelected.remove(p);
 		}
-		p5.surface.selectAllParticles();
+		this.selection.shrink();
+
 	}
 
 	void subdivideMesh() {
 
 		printCheck();
 
-		List prevmeshvertices = (List) mesh.getVerticesAsList();
-		List prevmeshedges = (List) mesh.getEdgesAsList();
-		List prevmeshfaces = (List) mesh.getFacesAsList();
+		List <HE_Vertex>prevmeshvertices = (List<HE_Vertex>) this.getVerticesAsList();
+		List <HE_Edge>prevmeshedges = (List<HE_Edge>) this.getEdgesAsList();
+		List <HE_Face>prevmeshfaces = (List<HE_Face>) this.getFacesAsList();
 
 		removeUnusedSprings();
 
@@ -460,63 +286,63 @@ class MeshClass {
 
 		if (selection.getFacesAsList().size() > 0) {
 			switch (p5.subdivType) {
-				case (0) :
-					mesh.subdivideSelected(subdiv0.setKeepBoundary(p5.keepBoundBool).setKeepEdges(p5.keepEdgesBool), selection, p5.subdivLevel);
-					break;
-				case (1) :
-					mesh.subdivideSelected(subdiv1, selection, p5.subdivLevel);
-					break;
-				case (2) :
-					mesh.subdivideSelected(subdiv2, selection, p5.subdivLevel);
-					break;
-				case (3) :
-					mesh.subdivideSelected(subdiv3, selection, p5.subdivLevel);
-					break;
-				case (4) :
-					mesh.subdivideSelected(subdiv4.setKeepBoundary(p5.keepBoundBool).setKeepEdges(p5.keepEdgesBool), selection, p5.subdivLevel);
-					break;
-				case (5) :
-					mesh.simplify(subdiv5);
-					break;
+			case (0):
+				this.subdivideSelected(
+						subdiv0.setKeepBoundary(p5.keepBoundBool).setKeepEdges(
+								p5.keepEdgesBool), selection, p5.subdivLevel);
+				break;
+			case (1):
+				this.subdivideSelected(subdiv1, selection, p5.subdivLevel);
+				break;
+			case (2):
+				this.subdivideSelected(subdiv2, selection, p5.subdivLevel);
+				break;
+			case (3):
+				this.subdivideSelected(subdiv3, selection, p5.subdivLevel);
+				break;
+			case (4):
+				this.subdivideSelected(
+						subdiv4.setKeepBoundary(p5.keepBoundBool).setKeepEdges(
+								p5.keepEdgesBool), selection, p5.subdivLevel);
+				break;
+			case (5):
+				this.simplify(subdiv5);
+				break;
 			}
 		} else {
 			switch (p5.subdivType) {
-				case (0) :
-					mesh.subdivide(subdiv0, p5.subdivLevel);
-					break;
-				case (1) :
-					mesh.subdivide(subdiv1, p5.subdivLevel);
-					break;
-				case (2) :
-					mesh.subdivide(subdiv2, p5.subdivLevel);
-					break;
-				case (3) :
-					mesh.subdivide(subdiv3, p5.subdivLevel);
-					break;
-				case (4) :
-					mesh.subdivide(subdiv4, p5.subdivLevel);
-					break;
-				case (5) :
-					mesh.simplify(subdiv5);
-					break;
+			case (0):
+				this.subdivide(subdiv0, p5.subdivLevel);
+				break;
+			case (1):
+				this.subdivide(subdiv1, p5.subdivLevel);
+				break;
+			case (2):
+				this.subdivide(subdiv2, p5.subdivLevel);
+				break;
+			case (3):
+				this.subdivide(subdiv3, p5.subdivLevel);
+				break;
+			case (4):
+				this.subdivide(subdiv4, p5.subdivLevel);
+				break;
+			case (5):
+				this.simplify(subdiv5);
+				break;
 			}
 		}
 
-		p5.surface.createNewParticlesFromMesh(prevmeshvertices.size());
-		p5.surface.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
-		boxArrayVertices.clear();
-		boxArrayEdges.clear();
-		boxArrayFaces.clear();
-		createVerticesBoxes();
-		createEdgesBoxes();
-		createFacesBoxes();
-		updateBoxes(true, true, true);
-		updatemesh();
-		selectBoxesWithFaces();
-		p5.surface.recomputeAllSpringsToPhysics();
-		p5.surface.recomputeAllSpringsToPhysics();
-		p5.surface.removeSpringsWithoutBoxes();
-
+		if (selection.getFacesAsList().size() > 0) {
+			selection.collectHalfedges();
+			selection.collectVertices();
+			p5.surface.createNewParticlesFromMesh(this.selection
+					.getVerticesAsList(), prevmeshvertices);
+			p5.surface.createSpringsFromMesh(this.selection.getInnerEdges());
+			p5.surface.createSpringsFromMesh(this.selection.getOuterEdges());
+		} else {
+			p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(), prevmeshvertices);
+			p5.surface.createSpringsFromMesh(this.getEdgesAsList());
+		}
 		printCheck();
 	}
 
@@ -532,12 +358,11 @@ class MeshClass {
 			List<HE_Edge> edgesSel = selection.getOuterEdges();
 			for (int i = 0; i < edgesSel.size(); i++) {
 				HE_Edge ee = (HE_Edge) edgesSel.get(i);
-				HE_Edge e = (HE_Edge) mesh.getEdgeByKey(ee.key());
-				Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, e.key());
-				BoxClass b = (BoxClass) getBoxeswithKey(boxArrayEdges, e.key());
+				HE_Edge e = (HE_Edge) this.getEdgeByKey(ee.key());
+				Spring s = (Spring) p5.surface.getSpringswithKey(
+						p5.surface.springs, e.key());
 				p5.physics.removeSpring(s);
 				p5.surface.springs.remove(s);
-				boxArrayEdges.remove(b);
 			}
 		}
 	}
@@ -547,16 +372,18 @@ class MeshClass {
 		List listToCheck = new ArrayList<HE_Edge>();
 
 		if (selection.getFacesAsList().size() == 0) {
-			listToCheck = mesh.getEdgesAsList();
+			listToCheck = this.getEdgesAsList();
 		} else {
 			listToCheck.clear();
 			List faces = new ArrayList<HE_Face>();
 
-			for (int i = 0; i < mesh.getFacesAsList().size(); i++) {
-				HE_Face ff = (HE_Face) mesh.getFacesAsList().get(i);
+			for (int i = 0; i < this.getFacesAsList().size(); i++) {
+				HE_Face ff = (HE_Face) this.getFacesAsList().get(i);
 				if (!prevmeshfaces.contains(ff)) {
-					if (!faces.contains(ff)) faces.add(ff);
-					if (p5.extrSelectNeighbour) selection.add(ff);
+					if (!faces.contains(ff))
+						faces.add(ff);
+					if (p5.extrSelectNeighbour)
+						selection.add(ff);
 				}
 			}
 
@@ -578,7 +405,8 @@ class MeshClass {
 					}
 				}
 			}
-			p5.println(".....................listToCheck.size() = " + listToCheck.size());
+			p5.println(".....................listToCheck.size() = "
+					+ listToCheck.size());
 		}
 
 		return listToCheck;
@@ -587,30 +415,26 @@ class MeshClass {
 	void extrudeFaces() {
 		printCheck();
 
-		List prevmeshvertices = (List) mesh.getVerticesAsList();
-		List prevmeshedges = (List) mesh.getEdgesAsList();
-		List prevmeshfaces = (List) mesh.getFacesAsList();
+		List<HE_Vertex> prevmeshvertices = this.getVerticesAsList();
+		List<HE_Edge> prevmeshedges = this.getEdgesAsList();
+		List<HE_Face> prevmeshfaces = this.getFacesAsList();
 		p5.surface.deselectParticles();
 		removeUnusedSprings();
-		mesh.modifySelected(new HEM_Extrude().setRelative(true).setFuse(true).setDistance(p5.extrDistance).setChamfer(p5.extrChanfer).setPeak(false), selection);
-		p5.surface.createNewParticlesFromMesh(prevmeshvertices.size());
+		this.modifySelected(new HEM_Extrude().setRelative(true).setFuse(true)
+				.setDistance(p5.extrDistance).setChamfer(p5.extrChanfer)
+				.setPeak(false), selection);
+		p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(), prevmeshvertices);
 		selection.clearEdges();
 		selection.collectEdges();
 		// p5.surface.removeSpringsWithoutBoxes();
 
-		p5.surface.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
-		boxArrayVertices.clear();
-		boxArrayEdges.clear();
-		boxArrayFaces.clear();
-		createVerticesBoxes();
-		createEdgesBoxes();
-		createFacesBoxes();
+		p5.surface
+				.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
+
 		updatemesh();
-		selectBoxesWithFaces();
 		// surface.deselectParticles();
 		selection.clearVertices();
 		selection.collectVertices();
-		selectParticlesInSelection();
 		if (p5.extrLockExtrudeParticles) {
 			lockSelectedFaces(false);
 		}
@@ -623,26 +447,29 @@ class MeshClass {
 		printCheck();
 
 	}
+
 	void printCheck() {
-		p5.println("MESH EXTRUDED!!");
-		p5.println("mesh.getVerticesAsList().size() = " + mesh.getVerticesAsList().size());
-		p5.println("boxArrayVertices.size() = " + boxArrayVertices.size());
-		p5.println("surface.particles.size() = " + p5.surface.particles.size());
-		p5.println("physics.particles.size() = " + p5.physics.particles.size());
-		p5.println("mesh.getEdgesAsList().size() = " + mesh.getEdgesAsList().size());
-		p5.println("boxArrayEdges.size() = " + boxArrayEdges.size());
-		p5.println("springs.size() = " + p5.surface.springs.size());
-		p5.println("physics.springs.size() = " + p5.physics.springs.size());
-		p5.println("mesh.getFacesAsList().size() = " + mesh.getFacesAsList().size());
-		p5.println("boxArrayFaces.size() = " + boxArrayFaces.size());
+		PApplet.println("MESH EXTRUDED!!");
+		PApplet.println("this.getVerticesAsList().size() = "
+				+ this.getVerticesAsList().size());
+		PApplet.println("surface.particles.size() = "
+				+ p5.surface.particles.size());
+		PApplet.println("physics.particles.size() = "
+				+ p5.physics.particles.size());
+		PApplet.println("this.getEdgesAsList().size() = "
+				+ this.getEdgesAsList().size());
+		PApplet.println("springs.size() = " + p5.surface.springs.size());
+		PApplet.println("physics.springs.size() = " + p5.physics.springs.size());
+		PApplet.println("this.getFacesAsList().size() = "
+				+ this.getFacesAsList().size());
 	}
 
 	void lattice() {
-		List prevmeshvertices = (List) mesh.getVerticesAsList();
-		List prevmeshedges = (List) mesh.getEdgesAsList();
-		List prevmeshfaces = (List) mesh.getFacesAsList();
+		List prevmeshvertices = (List) this.getVerticesAsList();
+		List prevmeshedges = (List) this.getEdgesAsList();
+		List prevmeshfaces = (List) this.getFacesAsList();
 
-		// mesh.fuse(mesh);
+		// this.fuse(this);
 		HEM_Lattice modifier = new HEM_Lattice();
 		modifier.setWidth(p5.latticeWidth);
 		modifier.setDepth(p5.latticeDepth);
@@ -650,8 +477,10 @@ class MeshClass {
 		modifier.setFuse(true);
 		modifier.setFuseAngle(0.05f * p5.HALF_PI);
 
-		if (selection.getFacesAsList().size() > 0) mesh.modifySelected(modifier, selection);
-		else mesh.modify(modifier);
+		if (selection.getFacesAsList().size() > 0)
+			this.modifySelected(modifier, selection);
+		else
+			this.modify(modifier);
 		recomputeMesh(prevmeshvertices, prevmeshedges, prevmeshfaces);
 
 		if (p5.lattSelOldFaces) {
@@ -661,8 +490,8 @@ class MeshClass {
 			}
 		}
 		if (p5.lattSelNewFaces) {
-			for (int i = 0; i < mesh.getFacesAsList().size(); i++) {
-				HE_Face ff = (HE_Face) mesh.getFacesAsList().get(i);
+			for (int i = 0; i < this.getFacesAsList().size(); i++) {
+				HE_Face ff = (HE_Face) this.getFacesAsList().get(i);
 				if (!prevmeshfaces.contains(ff)) {
 					selection.add(ff);
 				}
@@ -672,13 +501,8 @@ class MeshClass {
 		selection.clearEdges();
 		selection.collectEdges();
 		// p5.surface.removeSpringsWithoutBoxes();
-		p5.surface.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
-		boxArrayVertices.clear();
-		boxArrayEdges.clear();
-		boxArrayFaces.clear();
-		createVerticesBoxes();
-		createEdgesBoxes();
-		createFacesBoxes();
+		p5.surface
+				.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
 		updatemesh();
 
 		// surface.deselectParticles();
@@ -692,22 +516,26 @@ class MeshClass {
 		p5.surface.removeSpringsifNotInPhysics();
 		p5.surface.removeDuplicatesSprings();
 
-		selectBoxesWithFaces();
-
 		printCheck();
 
-		if (p5.lattLockExtrudeParticles) lockSelectedFaces(false);
+		if (p5.lattLockExtrudeParticles)
+			lockSelectedFaces(false);
 	}
 
-	void recomputeMesh(List prevmeshvertices, List prevmeshedges, List prevmeshfaces) {
-		p5.surface.createNewParticlesFromMesh(prevmeshvertices.size());
-		p5.surface.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
-		boxArrayVertices.clear();
-		boxArrayEdges.clear();
-		boxArrayFaces.clear();
-		createVerticesBoxes();
-		createEdgesBoxes();
-		createFacesBoxes();
+	void selectParticlesInSelection() {
+		for (int i = 0; i < this.selection.getVerticesAsList().size(); i++) {
+			HE_Vertex v = (HE_Vertex) this.selection.getVerticesAsList().get(i);
+			Particle p = (Particle) p5.surface.getParticleswithKey(
+					p5.surface.particles, v.key());
+			p.isSelected = true;
+		}
+	}
+
+	void recomputeMesh(List prevmeshvertices, List prevmeshedges,
+			List prevmeshfaces) {
+		p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(), prevmeshvertices);
+		p5.surface
+				.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
 		p5.surface.recomputeSpringsKeys();
 	}
 
@@ -721,11 +549,10 @@ class MeshClass {
 			List innerEdges = selection.getInnerEdges();
 			for (int i = 0; i < innerEdges.size(); i++) {
 				HE_Edge e = (HE_Edge) innerEdges.get(i);
-				HE_Edge ee = (HE_Edge) mesh.getEdgeByKey(e.key());
-				BoxClass b = (BoxClass) getBoxeswithKey(this.boxArrayEdges, ee.key());
-				mesh.remove(ee);
-				boxArrayEdges.remove(b);
-				Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, ee.key());
+				HE_Edge ee = (HE_Edge) this.getEdgeByKey(e.key());
+				this.remove(ee);
+				Spring s = (Spring) p5.surface.getSpringswithKey(
+						p5.surface.springs, ee.key());
 				p5.physics.removeSpring(s);
 				p5.surface.springs.remove(s);
 				selection.remove(ee);
@@ -734,9 +561,8 @@ class MeshClass {
 			List innerVertices = selection.getInnerVertices();
 			for (int i = 0; i < innerVertices.size(); i++) {
 				HE_Vertex vv = (HE_Vertex) innerVertices.get(i);
-				BoxClass b = (BoxClass) getBoxeswithKey(boxArrayVertices, vv.key());
-				boxArrayVertices.remove(b);
-				Particle p = (Particle) p5.surface.getParticleswithKey(p5.surface.particles, vv.key());
+				Particle p = (Particle) p5.surface.getParticleswithKey(
+						p5.surface.particles, vv.key());
 				p5.physics.removeParticle(p);
 				p5.surface.particles.remove(p);
 			}
@@ -745,10 +571,9 @@ class MeshClass {
 			for (int i = 0; i < outerEdges.size(); i++) {
 				HE_Edge ee = (HE_Edge) outerEdges.get(i);
 				if (ee.isBoundary()) {
-					mesh.remove(ee);
-					BoxClass b = (BoxClass) getBoxeswithKey(this.boxArrayEdges, ee.key());
-					boxArrayEdges.remove(b);
-					Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, ee.key());
+					this.remove(ee);
+					Spring s = (Spring) p5.surface.getSpringswithKey(
+							p5.surface.springs, ee.key());
 					p5.physics.removeSpring(s);
 					p5.surface.springs.remove(s);
 					selection.remove(ee);
@@ -758,24 +583,17 @@ class MeshClass {
 
 		for (int h = 0; h < selection.getFacesAsList().size(); h++) {
 			HE_Face ff = (HE_Face) selection.getFacesAsList().get(h);
-			mesh.getFacesAsList().remove(ff);
-			BoxClass b = (BoxClass) getBoxeswithKey(this.boxArrayFaces, ff.key());
-			boxArrayFaces.remove(b);
+			this.getFacesAsList().remove(ff);
+
 		}
 		if (p5.killspringsActive) {
-			mesh.delete(selection);
+			this.delete(selection);
 			p5.surface.recomputeSpringsKeys();
-		} else mesh.removeFaces(selection.getFacesAsList());
+		} else
+			this.removeFaces(selection.getFacesAsList());
 		selection.clear();
 
-		boxArrayVertices.clear();
-		boxArrayEdges.clear();
-		boxArrayFaces.clear();
-		createVerticesBoxes();
-		createEdgesBoxes();
-		createFacesBoxes();
 		updatemesh();
-		selectBoxesWithFaces();
 		// surface.deselectParticles();
 		// selection.clearVertices();
 		// selection.collectVertices();
@@ -792,30 +610,29 @@ class MeshClass {
 
 	void killSelectedEdges() {
 
-		List prevmeshvertices = (List) mesh.getVerticesAsList();
-		List prevmeshedges = (List) mesh.getEdgesAsList();
-		List prevmeshfaces = (List) mesh.getFacesAsList();
+		List prevmeshvertices = (List) this.getVerticesAsList();
+		List prevmeshedges = (List) this.getEdgesAsList();
+		List prevmeshfaces = (List) this.getFacesAsList();
 
 		for (int h = 0; h < selection.getEdgesAsList().size(); h++) {
 			HE_Edge ee = (HE_Edge) selection.getEdgesAsList().get(h);
 			// if (ee.isBoundary()) {
-			BoxClass b = (BoxClass) getBoxeswithKey(this.boxArrayEdges, ee.key());
-			Spring s = (Spring) p5.surface.getSpringswithKey(p5.surface.springs, ee.key());
+			Spring s = (Spring) p5.surface.getSpringswithKey(
+					p5.surface.springs, ee.key());
 			p5.physics.removeSpring(s);
 			p5.surface.springs.remove(s);
-			boxArrayEdges.remove(b);
-			mesh.deleteEdge(ee);
+			this.deleteEdge(ee);
 			// }
 		}
 
-		if (mesh.getFacesAsList().size() > prevmeshfaces.size()) {
+		if (this.getFacesAsList().size() > prevmeshfaces.size()) {
 			// p5.println(".prevmeshfaces.size() = " + prevmeshfaces.size());
 			// p5.println(".meshfaces.size() = " +
-			// mesh.getFacesAsList().size());
-			for (int i = 0; i < mesh.getFacesAsList().size(); i++) {
-				HE_Face ff = (HE_Face) mesh.getFacesAsList().get(i);
+			// this.getFacesAsList().size());
+			for (int i = 0; i < this.getFacesAsList().size(); i++) {
+				HE_Face ff = (HE_Face) this.getFacesAsList().get(i);
 				if (!prevmeshfaces.contains(ff)) {
-					mesh.deleteFace(ff);
+					this.deleteFace(ff);
 				}
 			}
 		}
@@ -825,28 +642,22 @@ class MeshClass {
 
 			HE_Face ff = (HE_Face) prevmeshfaces.get(h);
 
-			if ((prevmeshfaces.contains(ff)) && (!mesh.getFacesAsList().contains(ff))) {
-				BoxClass b = (BoxClass) getBoxeswithKey(boxArrayFaces, ff.key());
-				boxArrayFaces.remove(b);
+			if ((prevmeshfaces.contains(ff))
+					&& (!this.getFacesAsList().contains(ff))) {
+
 			}
 
 		}
 
 		selection.clear();
-		boxArrayVertices.clear();
-		boxArrayEdges.clear();
-		boxArrayFaces.clear();
-		createVerticesBoxes();
-		createEdgesBoxes();
-		createFacesBoxes();
 		p5.println("MESH SUBDIVIDED ACTIVE!!");
 		updatemesh();
 	}
+
 	// -----------------------------------------------------------------------tut014//
 
 	void deselectAll() {
 		p5.surface.deselectParticles();
-		deselectBoxes();
 		selection.clearEdges();
 		selection.clearFaces();
 		selection.clearVertices();

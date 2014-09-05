@@ -34,22 +34,20 @@ public class Gizmo {
 	}
 
 	void calculateCentroidSelection() {
-		ArrayList boxes = new ArrayList<BoxClass>();
 		// if (p5.selectionMode == 0) boxes = p5.mesh.boxArrayVertices;
 		// if (p5.selectionMode == 1) boxes = p5.mesh.boxArrayEdges;
 		// if (p5.selectionMode == 2) boxes = p5.mesh.boxArrayFaces;
 
-		boxes = p5.boxesSelected;
 		Vec3D sum = new Vec3D();
 		int numbBoxed = 0;
 
-		for (int i = 0; i < boxes.size(); i++) {
-			BoxClass bb = (BoxClass) boxes.get(i);
-			// if (bb.isSelected) {
-			sum.addSelf(bb.pos);
-			numbBoxed++;
-			// }
-		}
+//		for (int i = 0; i < boxes.size(); i++) {
+//			BoxClass bb = (BoxClass) boxes.get(i);
+//			// if (bb.isSelected) {
+//			sum.addSelf(bb.pos);
+//			numbBoxed++;
+//			// }
+//		}
 		pos = new Vec3D(sum.x / numbBoxed, sum.y / numbBoxed, sum.z / numbBoxed);
 
 	}

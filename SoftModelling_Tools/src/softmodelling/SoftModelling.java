@@ -12,27 +12,33 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PVector;
 import peasy.PeasyCam;
-import toxi.geom.Rect;
 import toxi.geom.Vec3D;
 import toxi.physics.VerletPhysics;
 import toxi.physics.behaviors.GravityBehavior;
-import toxi.physics.behaviors.ParticleBehavior;
-import toxi.physics.VerletParticle;
-import toxi.geom.mesh.Face;
-import toxi.geom.mesh.TriangleMesh;
-import toxi.geom.mesh.WETriangleMesh;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import controlP5.*;
 import toxi.processing.*;
+import wblut.geom.WB_Point3d;
+import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HET_Export;
 import wblut.hemesh.HET_Selector;
+import wblut.hemesh.HE_Edge;
+import wblut.hemesh.HE_Face;
+import wblut.hemesh.HE_Halfedge;
+import wblut.hemesh.HE_Mesh;
+import wblut.hemesh.HE_Selection;
+import wblut.hemesh.HE_Vertex;
 import wblut.processing.WB_Render;
 
 public class SoftModelling extends PApplet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	PFont f;
 	PeasyCam cam;
 	float gravityValue = 9.8f;
@@ -43,6 +49,7 @@ public class SoftModelling extends PApplet {
 	boolean displayVertexKey = false;
 	boolean mouseClicked = false;
 	public boolean displayMesh = true;
+	public boolean displayPhysics = true;
 	boolean updatePhysics = false;
 	boolean unlockParticle = false;
 
@@ -88,7 +95,6 @@ public class SoftModelling extends PApplet {
 	VerletPhysics physics;
 	ToxiclibsSupport gfx;
 	Surface surface;
-	ArrayList boxesSelected;
 	Gizmo gizmo;
 	HET_Selector selector;
 	float moveUpValue = 0;
@@ -96,8 +102,12 @@ public class SoftModelling extends PApplet {
 	public void setup() {
 
 		// size(1900, 980, P3D);
-//		size(1920, 1200, P3D);
-		size(2560, 1440, P3D);
+		 size(1920, 1200, P3D);
+		// size(1920, 1080, P3D);
+
+		//size(1920, 1100, P3D);
+		// size(2560, 1440, P3D);
+		// size(1040, 900, P3D);
 
 		smooth();
 		cursor(CROSS);
@@ -111,17 +121,55 @@ public class SoftModelling extends PApplet {
 		initAll();
 
 	}
+	
+	void initmesh() {
+		float totalLength = 700;
+		int initCols = 4;
+		int initRows = 4;
+		int initRowsXCols = initCols * initRows;
+		float edgelength = totalLength / (initCols - 1);
+
+		// Array of all vertices
+		float[][] vertices = new float[initRowsXCols][3];
+		int index = 0;
+		for (int j = 0; j < initRows; j++) {
+			for (int i = 0; i < initCols; i++) {
+				vertices[index][0] = -totalLength / 4 + i * edgelength / 2;
+				vertices[index][1] = -totalLength / 4 + j * edgelength / 2;
+				vertices[index][2] = 0 + 0;
+				index++;
+			}
+		}
+		// Array of faces. Each face is an arry of vertex indices;
+		index = 0;
+		int[][] faces = new int[(initCols - 1) * (initRows - 1)][];
+
+		for (int j = 0; j < initRows - 1; j++) {
+			for (int i = 0; i < initCols - 1; i++) {
+				faces[index] = new int[4];
+				faces[index][0] = i + initCols * j;
+				faces[index][1] = i + 1 + initCols * j;
+				faces[index][2] = i + 1 + initCols * (j + 1);
+				faces[index][3] = i + initCols * (j + 1);
+				index++;
+			}
+		}
+
+		HEC_FromFacelist facelistCreator = new HEC_FromFacelist().setVertices(vertices).setFaces(faces).setDuplicate(false);
+		mesh = new MeshClass(this,facelistCreator);
+		mesh.validate(true, true);
+		mesh.collapseDegenerateEdges();
+		mesh.selection = new HE_Selection(mesh);
+	}
 
 	void initAll() {
 
 		pickedPos = new PVector();
 		pickedPos3D = new Vec3D();
 
-		mesh = new MeshClass(this);
+		initmesh();
 		render = new WB_Render(this);
 		surface = new Surface(this);
-		boxesSelected = new ArrayList<BoxClass>();
-		boxesSelected.clear();
 		gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
 		// selector = new HET_Selector(this); // initialize the selector
 		this.mesh.printCheck();
@@ -143,32 +191,101 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
-		gizmo.run();
+		//gizmo.run();
 
 	}
 
 	void hitDetect() {
 
-		ArrayList locators = new ArrayList<BoxClass>();
-		if (this.selectionMode == 0) locators = mesh.boxArrayVertices;
-		if (this.selectionMode == 1) locators = mesh.boxArrayEdges;
-		if (this.selectionMode == 2) locators = mesh.boxArrayFaces;
-		if (locators.size() > 0) {
-			for (int i = 0; i < locators.size(); i++) {
-				BoxClass b = (BoxClass) locators.get(i);
-				int x = (int) (screenX(b.x, b.y, b.z));
-				int y = (int) (screenY(b.x, b.y, b.z));
-
-				int precision = 5;
-				if (x > mouseX - precision && x < mouseX + precision && y > mouseY - precision && y < mouseY + precision) {
-					b.isSelected = true;
-					if (this.selectionMode == 0) surface.getParticleswithKey(surface.particles, b.key).isSelected = true;
-					if (this.selectionMode == 1) mesh.selectPickedEdges(b);
-					if (this.selectionMode == 2) mesh.selectPickedFaces(b);
-					this.println("PSelect");
-				}
+		int precision = 35;
+		WB_Point3d[] locators = new WB_Point3d[0];
+		if (this.selectionMode == 0)
+			locators = mesh.getVerticesAsPoint();
+		if (this.selectionMode == 1) {
+			HE_Edge[] edgesArray = mesh.getEdgesAsArray();
+			locators = new WB_Point3d[edgesArray.length];
+			for (int i = 0; i < edgesArray.length; i++) {
+				WB_Point3d b = (WB_Point3d) edgesArray[i].getEdgeCenter();
+				locators[i] = b;
 			}
 		}
+		if (this.selectionMode == 2)
+			locators = mesh.getFaceCenters();
+
+		if (locators.length > 0) {
+
+			for (int i = 0; i < locators.length; i++) {
+				WB_Point3d b = (WB_Point3d) locators[i];
+				int x = (int) (screenX((float) b.xf(), (float) b.yf(),
+						(float) b.zf()));
+				int y = (int) (screenY((float) b.xf(), (float) b.yf(),
+						(float) b.zf()));
+				if (x > mouseX - precision && x < mouseX + precision
+						&& y > mouseY - precision && y < mouseY + precision) {
+
+					if (this.selectionMode == 0) {
+						HE_Vertex v = mesh.getVerticesAsList().get(i);
+						Particle p = surface.getParticleswithKey(
+								surface.particles, v.key());
+						p.isSelected = true;
+						if (!surface.particlesSelected.contains(p)) {
+							surface.particlesSelected.add(p);
+						}
+						this.println("PSelect");
+
+					}
+
+					if (this.selectionMode == 1) {
+
+						HE_Edge e = mesh.getEdgesAsArray()[i];
+						mesh.selection.add(e);
+						
+						Spring s = surface.getSpringswithKey(surface.springs, e.key());
+						if (!surface.springsSelected.contains(s))
+							surface.springsSelected.add(s);
+						
+						Particle p = surface.getParticleswithKey(
+								surface.particles, e.getEndVertex().key());
+						p.isSelected = true;
+						if (!surface.particlesSelected.contains(p))
+							surface.particlesSelected.add(p);
+
+						Particle p2 = surface.getParticleswithKey(
+								surface.particles, e.getStartVertex().key());
+						p2.isSelected = true;
+						if (!surface.particlesSelected.contains(p2))
+							surface.particlesSelected.add(p2);
+
+					}
+
+					if (this.selectionMode == 2) {
+
+						HE_Face f = mesh.getFacesAsArray()[i];
+						mesh.selection.add(f);
+//						mesh.selection.addHalfedges(f.getFaceEdges());
+//						for (int k = 0; k < f.getFaceEdges().size(); k++) {
+//							HE_Halfedge e = mesh.getEdgesAsArray()[i];
+//						}
+						List<HE_Vertex> vertices = f.getFaceVertices();
+						for (int j = 0; j < vertices.size(); j++) {
+							HE_Vertex vv = (HE_Vertex) vertices.get(j);
+							// Particle p = (Particle) surface.particles.get(j);
+							Particle p = surface.getParticleswithKey(
+									surface.particles, vv.key());
+							p.isSelected = true;
+							if (!surface.particlesSelected.contains(p)) {
+								surface.particlesSelected.add(p);
+							}
+
+						}
+
+					}
+
+				}
+			}
+		}//
+
+		// mesh.renderSelectorsFaces();
 	}
 
 	public boolean sketchFullScreen() {
@@ -343,22 +460,15 @@ public class SoftModelling extends PApplet {
 		mesh.lattice();
 	}
 	void EXPORT_STL() {
-		HET_Export.saveToSTL(mesh.mesh, dataPath("mesh" + exportIndex + ".stl"), 1.0);
+		HET_Export.saveToSTL(mesh, dataPath("mesh" + exportIndex + ".stl"), 1.0);
 		exportIndex++;
 	}
 
 	void EXPORT_OBJ() {
-		// Sting meshName =
-		//
-		// String meshName = ("Meshes/mesh_" + this.year() + "-" + this.month()
-		// + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" +
-		// this.second() + "_" + frameCount);
-		// HET_Export.saveToOBJ(mesh.mesh, dataPath(meshName + ".obj"));
 
-		HET_Export.saveToOBJ(mesh.mesh, dataPath("Meshes/SoftModelling_mesh_" + this.year() + "-" + this.month() + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" + this.second()
+
+		HET_Export.saveToOBJ(mesh, dataPath("Meshes/SoftModelling_mesh_" + this.year() + "-" + this.month() + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" + this.second()
 				+ "_" + frameCount + ".obj"));
-		// HET_Export.saveToOBJ(mesh.mesh, dataPath("mesh" + exportIndex +
-		// ".obj"));
 
 		exportIndex++;
 	}
@@ -432,25 +542,25 @@ public class SoftModelling extends PApplet {
 
 	void RESET_SURFACE() {
 		mesh.deselectAll();
-		mesh.mesh.clean();
-		mesh.mesh.clearEdges();
-		mesh.mesh.clearFaces();
-		mesh.mesh.clearHalfedges();
-		mesh.mesh.clearVertices();
-		mesh.mesh.clear();
-		mesh.boxArrayEdges.clear();
-		mesh.boxArrayFaces.clear();
-		mesh.boxArrayVertices.clear();
+		mesh.clean();
+		mesh.clearHalfedges();
+		mesh.clearFaces();
+		mesh.clearHalfedges();
+		mesh.clearVertices();
+		mesh.clear();
+		// mesh.boxArrayEdges.clear();
+		// mesh.boxArrayFaces.clear();
+		// mesh.boxArrayVertices.clear();
 		surface.springs.clear();
 		surface.particles.clear();
 		physics.springs.clear();
 		physics.particles.clear();
 		render = new WB_Render(this);
 		surface = new Surface(this);
-		boxesSelected.clear();
-		boxesSelected = new ArrayList<BoxClass>();
-
-		gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
+		// boxesSelected.clear();
+		// boxesSelected = new ArrayList<BoxClass>();
+		//
+		// gizmo = new Gizmo(this, new Vec3D(0, 0, 0));
 
 		initAll();
 	}
