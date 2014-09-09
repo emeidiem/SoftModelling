@@ -663,5 +663,6 @@ class MeshClass extends HE_Mesh {
 		selection.clearVertices();
 		selection.clear();
 		selection.cleanSelection();
+		p5.surface.deselectParticles();
 	}
 }// end-class
