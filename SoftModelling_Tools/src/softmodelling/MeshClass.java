@@ -528,6 +528,7 @@ class MeshClass extends HE_Mesh {
 			Particle p = (Particle) p5.surface.getParticleswithKey(
 					p5.surface.particles, v.key());
 			p.isSelected = true;
+			if (!p5.surface.particlesSelected.contains(p))p5.surface.particlesSelected.add(p);
 		}
 	}
 

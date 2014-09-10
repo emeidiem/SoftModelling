@@ -102,10 +102,10 @@ public class SoftModelling extends PApplet {
 	public void setup() {
 
 		// size(1900, 980, P3D);
-		 size(1920, 1200, P3D);
+		size(1920, 1200, P3D);
 		// size(1920, 1080, P3D);
 
-		//size(1920, 1100, P3D);
+		// size(1920, 1100, P3D);
 		// size(2560, 1440, P3D);
 		// size(1040, 900, P3D);
 
@@ -121,7 +121,7 @@ public class SoftModelling extends PApplet {
 		initAll();
 
 	}
-	
+
 	void initmesh() {
 		float totalLength = 700;
 		int initCols = 4;
@@ -155,8 +155,9 @@ public class SoftModelling extends PApplet {
 			}
 		}
 
-		HEC_FromFacelist facelistCreator = new HEC_FromFacelist().setVertices(vertices).setFaces(faces).setDuplicate(false);
-		mesh = new MeshClass(this,facelistCreator);
+		HEC_FromFacelist facelistCreator = new HEC_FromFacelist()
+				.setVertices(vertices).setFaces(faces).setDuplicate(false);
+		mesh = new MeshClass(this, facelistCreator);
 		mesh.validate(true, true);
 		mesh.collapseDegenerateEdges();
 		mesh.selection = new HE_Selection(mesh);
@@ -191,13 +192,13 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
-		//gizmo.run();
+		// gizmo.run();
 
 	}
 
 	void hitDetect() {
 
-		int precision = 35;
+		int precision = 15;
 		WB_Point3d[] locators = new WB_Point3d[0];
 		if (this.selectionMode == 0)
 			locators = mesh.getVerticesAsPoint();
@@ -239,11 +240,12 @@ public class SoftModelling extends PApplet {
 
 						HE_Edge e = mesh.getEdgesAsArray()[i];
 						mesh.selection.add(e);
-						
-						Spring s = surface.getSpringswithKey(surface.springs, e.key());
+
+						Spring s = surface.getSpringswithKey(surface.springs,
+								e.key());
 						if (!surface.springsSelected.contains(s))
 							surface.springsSelected.add(s);
-						
+
 						Particle p = surface.getParticleswithKey(
 								surface.particles, e.getEndVertex().key());
 						p.isSelected = true;
@@ -262,10 +264,10 @@ public class SoftModelling extends PApplet {
 
 						HE_Face f = mesh.getFacesAsArray()[i];
 						mesh.selection.add(f);
-//						mesh.selection.addHalfedges(f.getFaceEdges());
-//						for (int k = 0; k < f.getFaceEdges().size(); k++) {
-//							HE_Halfedge e = mesh.getEdgesAsArray()[i];
-//						}
+						// mesh.selection.addHalfedges(f.getFaceEdges());
+						// for (int k = 0; k < f.getFaceEdges().size(); k++) {
+						// HE_Halfedge e = mesh.getEdgesAsArray()[i];
+						// }
 						List<HE_Vertex> vertices = f.getFaceVertices();
 						for (int j = 0; j < vertices.size(); j++) {
 							HE_Vertex vv = (HE_Vertex) vertices.get(j);
@@ -326,9 +328,12 @@ public class SoftModelling extends PApplet {
 
 		}
 		if ((!theEvent.isFrom(gui.bMove))) {
-			if ((!theEvent.isFrom(gui.bMoveLeft)) && (!theEvent.isFrom(gui.bMoveRight))) {
-				if ((!theEvent.isFrom(gui.bMoveUp)) && (!theEvent.isFrom(gui.bMoveDown))) {
-					if ((!theEvent.isFrom(gui.bMoveZDown)) && (!theEvent.isFrom(gui.bMoveZUp))) {
+			if ((!theEvent.isFrom(gui.bMoveLeft))
+					&& (!theEvent.isFrom(gui.bMoveRight))) {
+				if ((!theEvent.isFrom(gui.bMoveUp))
+						&& (!theEvent.isFrom(gui.bMoveDown))) {
+					if ((!theEvent.isFrom(gui.bMoveZDown))
+							&& (!theEvent.isFrom(gui.bMoveZUp))) {
 						this.activeMover = false;
 					}
 				}
@@ -336,7 +341,7 @@ public class SoftModelling extends PApplet {
 		}
 		if ((!theEvent.isFrom(gui.bSPLen))) {
 			if ((!theEvent.isFrom(gui.spl))) {
-			this.activeSPLen = false;
+				this.activeSPLen = false;
 			}
 		}
 		// if ((!theEvent.isFrom(gui.bMoveUp))) {
@@ -355,34 +360,47 @@ public class SoftModelling extends PApplet {
 		if (frameCount > 0) {
 			gravityValue = gravitySlider;
 			physics.behaviors.clear();
-			physics.addBehavior(new GravityBehavior(new Vec3D(0, 0, gravityValue)));
+			physics.addBehavior(new GravityBehavior(new Vec3D(0, 0,
+					gravityValue)));
 			println("a slider event. setting GRAVITY to " + gravityValue);
 		}
 	}
+
 	// -----------------------------------------------------------------------tut014
 	void REMOVE_ELEMENT(float theValue) {
-		if (selectionMode == 0) surface.killSelectParticles();
-		if (selectionMode == 2) mesh.killSelectedFaces();
-		if (selectionMode == 1) mesh.killSelectedEdges();
+		if (selectionMode == 0)
+			surface.killSelectParticles();
+		if (selectionMode == 2)
+			mesh.killSelectedFaces();
+		if (selectionMode == 1)
+			mesh.killSelectedEdges();
 	}
 
 	void KILL_SPRINGS(boolean theFlag) {
 		killspringsActive = theFlag;
 	}
+
 	// -----------------------------------------------------------------------tut014//
 
 	void LOCK_ELEMENT(float theValue) {
-		if (selectionMode == 0) surface.lockSelectParticles();
-		if (selectionMode == 1) mesh.lockSelectedEdges(false);
-		if (selectionMode == 2) mesh.lockSelectedFaces(false);
+		if (selectionMode == 0)
+			surface.lockSelectParticles();
+		if (selectionMode == 1)
+			mesh.lockSelectedEdges(false);
+		if (selectionMode == 2)
+			mesh.lockSelectedFaces(false);
 	}
 
 	void UNLOCK_ELEMENT(float theValue) {
 		// unlockParticle = true;
-		if (selectionMode == 0) surface.unlockSelectParticles();
-		if (selectionMode == 1) mesh.lockSelectedEdges(true);
-		if (selectionMode == 2) mesh.lockSelectedFaces(true);
+		if (selectionMode == 0)
+			surface.unlockSelectParticles();
+		if (selectionMode == 1)
+			mesh.lockSelectedEdges(true);
+		if (selectionMode == 2)
+			mesh.lockSelectedFaces(true);
 	}
+
 	void GROW() {
 		mesh.growMeshSelection();
 	}
@@ -392,15 +410,19 @@ public class SoftModelling extends PApplet {
 	}
 
 	void SELECT_ALL() {
-		if (selectionMode == 0) surface.selectAllParticles();
-		if (selectionMode == 1) mesh.selectAllEdges();
-		if (selectionMode == 2) mesh.selectAllFaces();
+		if (selectionMode == 0)
+			surface.selectAllParticles();
+		if (selectionMode == 1)
+			mesh.selectAllEdges();
+		if (selectionMode == 2)
+			mesh.selectAllFaces();
 	}
 
 	void DESELECT(float theValue) {
 		mesh.deselectAll();
 		gui.spl.setValue(100f);
 	}
+
 	void SUBDIVIDE_LEVEL(int theValue) {
 		subdivLevel = theValue;
 	}
@@ -416,6 +438,7 @@ public class SoftModelling extends PApplet {
 	void SUBDIVIDE_RUN(float theValue) {
 		mesh.subdivideMesh();
 	}
+
 	void EXTRUSION_CHANFER(float theValue) {
 		extrChanfer = theValue;
 	}
@@ -435,6 +458,7 @@ public class SoftModelling extends PApplet {
 	void EXTRUDE_RUN(float theValue) {
 		mesh.extrudeFaces();
 	}
+
 	// -----------------------------------------------------------------------tut013
 	void LATTICE_DEPTH(float theValue) {
 		latticeDepth = theValue;
@@ -459,16 +483,20 @@ public class SoftModelling extends PApplet {
 	void LATTICE_RUN() {
 		mesh.lattice();
 	}
+
 	void EXPORT_STL() {
-		HET_Export.saveToSTL(mesh, dataPath("mesh" + exportIndex + ".stl"), 1.0);
+		HET_Export
+				.saveToSTL(mesh, dataPath("mesh" + exportIndex + ".stl"), 1.0);
 		exportIndex++;
 	}
 
 	void EXPORT_OBJ() {
 
-
-		HET_Export.saveToOBJ(mesh, dataPath("Meshes/SoftModelling_mesh_" + this.year() + "-" + this.month() + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" + this.second()
-				+ "_" + frameCount + ".obj"));
+		HET_Export.saveToOBJ(mesh,
+				dataPath("Meshes/SoftModelling_mesh_" + this.year() + "-"
+						+ this.month() + "-" + this.day() + "_" + this.hour()
+						+ "-" + this.minute() + "-" + this.second() + "_"
+						+ frameCount + ".obj"));
 
 		exportIndex++;
 	}
@@ -482,7 +510,8 @@ public class SoftModelling extends PApplet {
 		println("a toggle event.");
 	}
 
-	void RESET(float theValue) {}
+	void RESET(float theValue) {
+	}
 
 	void DISPLAY_SELECTORS(boolean theFlag) {
 		displaySelectors = theFlag;
@@ -501,24 +530,32 @@ public class SoftModelling extends PApplet {
 		if (theFlag) {
 			modeSelected = true;
 			this.selectionMode = 2;
-			if (gui.bEdges.getState()) gui.bEdges.setState(false);
-			if (gui.bVertex.getState()) gui.bVertex.setState(false);
+			if (gui.bEdges.getState())
+				gui.bEdges.setState(false);
+			if (gui.bVertex.getState())
+				gui.bVertex.setState(false);
 		}
 	}
+
 	void EDGEMODE(boolean theFlag) {
 		if (theFlag) {
 			modeSelected = true;
 			this.selectionMode = 1;
-			if (gui.bVertex.getState()) gui.bVertex.setState(false);
-			if (gui.bFaces.getState()) gui.bFaces.setState(false);
+			if (gui.bVertex.getState())
+				gui.bVertex.setState(false);
+			if (gui.bFaces.getState())
+				gui.bFaces.setState(false);
 		}
 	}
+
 	void VERTEXMODE(boolean theFlag) {
 		if (theFlag) {
 			modeSelected = true;
 			this.selectionMode = 0;
-			if (gui.bFaces.getState()) gui.bFaces.setState(false);
-			if (gui.bEdges.getState()) gui.bEdges.setState(false);
+			if (gui.bFaces.getState())
+				gui.bFaces.setState(false);
+			if (gui.bEdges.getState())
+				gui.bEdges.setState(false);
 		}
 	}
 
@@ -567,7 +604,8 @@ public class SoftModelling extends PApplet {
 
 	// public void mousePressed() {}
 
-	public void mouseDragged() {}
+	public void mouseDragged() {
+	}
 
 	public void mouseReleased() {
 		// gui.prevMoveX += (gui.slider2d.arrayValue()[0] - (gui.size2dSlider /
@@ -591,13 +629,33 @@ public class SoftModelling extends PApplet {
 	public void keyPressed() {
 		// -----------------------------------------------------------------------tut014
 		if ((keyCode == DELETE) || (keyCode == BACKSPACE)) {
-			if (selectionMode == 0) surface.killSelectParticles();
-			if (selectionMode == 1) mesh.killSelectedEdges();
-			if (selectionMode == 2) mesh.killSelectedFaces();
+			if (selectionMode == 0)
+				surface.killSelectParticles();
+			if (selectionMode == 1)
+				mesh.killSelectedEdges();
+			if (selectionMode == 2)
+				mesh.killSelectedFaces();
 		}
 		if (key == 's' || key == 'S') {
 			saveFrames();
 		}
+		if (key == 'e' || key == 'E') {
+
+			HET_Export.saveToOBJ(
+					mesh,
+					this.sketchPath("data/Meshes/SoftModelling_mesh_"
+							+ this.year() + "-" + this.month() + "-"
+							+ this.day() + "_" + this.hour() + "-"
+							+ this.minute() + "-" + this.second() + "_"
+							+ frameCount + ".obj"));
+
+			exportIndex++;
+		}
+		
+		if (key == 'f' || key == 'F') {
+
+		}
+
 		// -----------------------------------------------------------------------tut014//
 		if (gui.cp5.controller("level23") != null) {
 			println("removing multilist button level23.");
@@ -622,7 +680,8 @@ public class SoftModelling extends PApplet {
 				if (!mouseStillPressed) {
 					scrX = screenX(gizmo.pos.x, gizmo.pos.y, gizmo.pos.z);
 					scrY = screenY(gizmo.pos.x, gizmo.pos.y, gizmo.pos.z);
-					mouseDisShortest = sqrt(sq(mouseX - scrX) + sq(mouseY - scrY));
+					mouseDisShortest = sqrt(sq(mouseX - scrX)
+							+ sq(mouseY - scrY));
 				}
 				gizmo.isSelected = true;
 
@@ -660,11 +719,13 @@ public class SoftModelling extends PApplet {
 	void saveFrames() {
 		String PicName;
 		// PicName = ("Images/frame_" + frameCount + ".png");
-		PicName = ("Images/frame_" + this.year() + "-" + this.month() + "-" + this.day() + "_" + this.hour() + "-" + this.minute() + "-" + this.second() + "_" + frameCount + ".png");
+		PicName = ("Images/frame_" + this.year() + "-" + this.month() + "-"
+				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
+				+ this.second() + "_" + frameCount + ".png");
 		saveFrame(PicName);
 	}
 
 	public static void main(String _args[]) {
-		PApplet.main(new String[]{softmodelling.SoftModelling.class.getName()});
+		PApplet.main(new String[] { softmodelling.SoftModelling.class.getName() });
 	}
 }
