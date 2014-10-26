@@ -27,6 +27,7 @@ public class Spring extends VerletSpring {
 
 	void run() {
 		render();
+		calculateCentroid();
 	}
 	void calculateCentroid() {
 		Vec3D midpt = (b.sub(a)).scaleSelf(.5f);
@@ -37,7 +38,7 @@ public class Spring extends VerletSpring {
 		if (p5.displayMesh) p5.stroke(0);
 		else p5.stroke(255);
 		p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
-		if (p5.displayVertexKey) {
+		if (p5.showIndex) {
 			if (p5.selectionMode == 1) {
 				p5.fill(255);
 				p5.pushMatrix();

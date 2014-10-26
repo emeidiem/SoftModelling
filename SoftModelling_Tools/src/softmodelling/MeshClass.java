@@ -6,6 +6,7 @@ import java.util.List;
 import processing.core.PApplet;
 import wblut.geom.WB_Point3d;
 import wblut.hemesh.HEC_FromFacelist;
+import wblut.hemesh.HEC_FromObjFile;
 import wblut.hemesh.HEM_Extrude;
 import wblut.hemesh.HEM_Lattice;
 import wblut.hemesh.HES_CatmullClark;
@@ -26,6 +27,7 @@ class MeshClass extends HE_Mesh {
 	// HE_Mesh mesh;
 	SoftModelling p5;
 	HE_Selection selection;
+
 
 	// ////////////////CONSTRUCTOR
 	MeshClass(SoftModelling _p5, HEC_FromFacelist facelistCreator) {
@@ -51,8 +53,11 @@ class MeshClass extends HE_Mesh {
 			if (p5.selectionMode == 2)
 				renderSelectorsFaces();
 		}
-
+		if (p5.showIndex){
+			renderKeys();
+		}
 	}
+	
 
 	void updatemesh() {
 
@@ -76,9 +81,11 @@ class MeshClass extends HE_Mesh {
 		p5.strokeWeight(1);
 		p5.stroke(50);
 		p5.render.drawEdges(this);
-		if (p5.displayVertexKey)
-			renderKeys();
+		//if (p5.showIndex)
+			//renderKeys();
 	}
+	
+
 
 	void renderKeys() {
 		p5.fill(255, 0, 255);
@@ -227,6 +234,7 @@ class MeshClass extends HE_Mesh {
 	void growMeshSelection() {
 		selection.grow();
 		List<HE_Vertex> vvs;
+		List<HE_Edge> edges;
 		HE_Face f;
 		Particle p;
 		for (int i = 0; i < selection.getFacesAsList().size(); i++) {
@@ -239,6 +247,19 @@ class MeshClass extends HE_Mesh {
 				p.isSelected = true;
 				if (!p5.surface.particlesSelected.contains(p))
 					p5.surface.particlesSelected.add(p);
+			}
+			edges = f.getFaceEdges();
+			for (int j = 0; j < edges.size(); j++) {
+				HE_Edge ee = (HE_Edge) edges.get(j);
+				this.selection.addEdges(edges);
+				// Particle p = (Particle) surface.particles.get(j);
+				Spring s = p5.surface.getSpringswithKey(
+						p5.surface.springs, ee.key());
+				s.isSelected = true;
+				if (!p5.surface.springsSelected.contains(s)) {
+					p5.surface.springsSelected.add(s);
+				}
+
 			}
 		}
 		selection.collectHalfedges();
@@ -346,6 +367,23 @@ class MeshClass extends HE_Mesh {
 		printCheck();
 	}
 
+	void cleanUnusedSprings() {
+
+		for (int i = 0; i < p5.surface.springs.size(); i++) {
+			Spring s = (Spring) p5.surface.springs.get(i);
+			HE_Edge e = (HE_Edge) this.getEdgeByKey(s.key);
+			if ((  (s.a.key==e.getEndVertex().key())&&(s.b.key==e.getStartVertex().key())  )   ||    (  (s.b.key==e.getEndVertex().key())&&(s.a.key==e.getStartVertex().key())  )  ){
+				
+			}
+			else{
+				p5.physics.removeSpring(s);
+				p5.surface.springs.remove(s);
+			}
+			
+		}
+
+	}
+	
 	void removeUnusedSprings() {
 
 		if (selection.getFacesAsList().size() == 0) {
@@ -665,5 +703,6 @@ class MeshClass extends HE_Mesh {
 		selection.clear();
 		selection.cleanSelection();
 		p5.surface.deselectParticles();
+		p5.surface.deselectSprings();
 	}
 }// end-class

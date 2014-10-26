@@ -30,6 +30,7 @@ public class Gui {
 	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect, bSPLen, bLock, bUnlock, bShell, bLattice, bc1, bc2, bc3, bc4, bc5, bc6, bc7, bSaveFile, bReset;
 	Toggle bVertex, bEdges, bFaces, gravityOn;
 	Toggle t1;
+	Toggle bShowindex;
 	Button bMove;
 	Button bMoveDown, bMoveUp, bMoveLeft, bMoveRight, bMoveZUp, bMoveZDown;
 	Slider2D slider2d;
@@ -99,6 +100,10 @@ public class Gui {
 		bSaveFile = cp5.addButton("EXPORT_OBJ").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 2 - space)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_SaveFile_A.png"), p5.loadImage("icons/SoftModelling_Icon_SaveFile_B.png"), p5.loadImage("icons/SoftModelling_Icon_SaveFile_B.png"))
 				.updateSize();
+		// ////////////////////////////////////
+		bShowindex = cp5.addToggle("SHOW_INDEX").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 3 - space*2)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"))
+				.updateSize().setValue(false);
 		// ////////////////////////////////////
 		bReset = cp5.addButton("RESET_SURFACE").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Reset_A.png"), p5.loadImage("icons/SoftModelling_Icon_Reset_C.png"), p5.loadImage("icons/SoftModelling_Icon_Reset_C.png"))
@@ -594,7 +599,6 @@ public class Gui {
 		cp5.addButton("RESET", 10, 50, p5.height - 50, buttonDefWidth, 20).setId(3);
 
 		cp5.addToggle("DISPLAY_SELECTORS").setPosition(p5.width - 120, p5.height - 150 - 20).setSize(80, 20).setValue(true).setMode(ControlP5.SWITCH);
-		cp5.addToggle("DISPLAY_KEY").setPosition(p5.width - 120, p5.height - 100 - 20).setSize(80, 20).setValue(false).setMode(ControlP5.SWITCH);
 		cp5.addToggle("DISPLAY_MESH").setPosition(p5.width - 120, p5.height - 50 - 20).setSize(80, 20).setValue(true).setMode(ControlP5.SWITCH);
 
 		cp5.setAutoDraw(false);

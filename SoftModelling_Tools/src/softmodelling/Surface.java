@@ -131,7 +131,7 @@ public class Surface {
 	void resizeSprings() {
 		for (int i = 0; i < springs.size(); i++) {
 			Spring s = (Spring) springs.get(i);
-			if (s.isSelected) {
+			if ((s.isSelected) || (p5.mesh.selection.getEdgesAsList().size()==0)){
 				float initlength = s.initlen;
 				// float initlength = s.getRestLength();
 				p5.println("initlength = " + initlength);
@@ -166,6 +166,14 @@ public class Surface {
 			// p.hasBeenDragged = false;
 			p.isSelected = false;
 			// particlesSelected.remove(p);
+		}
+		particlesSelected.clear();
+	}
+	
+	void deselectSprings() {
+		for (int i = 0; i < this.springsSelected.size(); i++) {
+			Spring s = (Spring) springsSelected.get(i);
+			s.isSelected = false;
 		}
 		particlesSelected.clear();
 	}

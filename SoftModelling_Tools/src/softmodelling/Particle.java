@@ -76,7 +76,7 @@ public class Particle extends VerletParticle {
 		}
 		p5.point(this.x, this.y, this.z);
 
-		if (p5.displayVertexKey) {
+		if (p5.showIndex) {
 			if (p5.selectionMode == 0) {
 				p5.fill(255);
 				p5.pushMatrix();
