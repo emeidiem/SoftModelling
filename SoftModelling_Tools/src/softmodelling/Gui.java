@@ -91,10 +91,10 @@ public class Gui {
 		gravityOn = cp5.addToggle("UPDATE_PHYSICS").setPosition(margin, p5.height - margin - sizeIcons)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"))
 				.updateSize().setValue(false);
-		bc1 = cp5.addButton("circle1").setPosition(margin + sizeIcons + space, p5.height - margin - sizeIcons)
+		bc1 = cp5.addButton("circle1").setPosition(margin, p5.height - margin - sizeIcons*2 - space)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_B.png"))
 				.updateSize();
-		gravityKnob = cp5.addKnob("GRAVITY").setValue(9.80f).setRange(-100f, 100f).setPosition(margin + sizeIcons + space + 3, p5.height - margin - sizeIcons + 3).setRadius(sizeIcons / 2 - 3)
+		gravityKnob = cp5.addKnob("GRAVITY").setValue(9.80f).setRange(-100f, 100f).setPosition(margin + 3, p5.height - margin - sizeIcons*2 + 3 - space).setRadius(sizeIcons / 2 - 3)
 				.setResolution(100f).setColorBackground(-16777216).setColorForeground(-1).setColorActive(-65281);
 		// ////////////////////////////////////
 		bSaveFile = cp5.addButton("EXPORT_OBJ").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 2 - space)
@@ -526,7 +526,7 @@ public class Gui {
 			}			
 			}
 		if (p5.showIndex) {
-			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"));
+			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_.png"));
 		} else {
 			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_A.png"));
 		}

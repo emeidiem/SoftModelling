@@ -19,6 +19,13 @@ import toxi.physics.behaviors.GravityBehavior;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
+
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import controlP5.*;
 import toxi.processing.*;
 import wblut.geom.WB_Point3d;
@@ -28,9 +35,7 @@ import wblut.hemesh.HET_Export;
 import wblut.hemesh.HET_Selector;
 import wblut.hemesh.HE_Edge;
 import wblut.hemesh.HE_Face;
-import wblut.hemesh.HE_Halfedge;
 import wblut.hemesh.HE_Mesh;
-import wblut.hemesh.HE_MeshStructure;
 import wblut.hemesh.HE_Selection;
 import wblut.hemesh.HE_Vertex;
 import wblut.processing.WB_Render;
@@ -101,6 +106,8 @@ public class SoftModelling extends PApplet {
 	HET_Selector selector;
 	float moveUpValue = 0;
 	HEC_FromObjFile meshimport;
+	//Create a file chooser
+//	final JFileChooser fc = new JFileChooser();
 
 
 	public void setup() {
@@ -173,7 +180,19 @@ public class SoftModelling extends PApplet {
 	}
 	
 	void importMesh() {
-		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
+	    JFileChooser chooser = new JFileChooser();
+	    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+	            "OBJ mesh", "obj");
+	    chooser.setFileFilter(filter);
+	    int returnVal = chooser.showOpenDialog(this);
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	       System.out.println("You chose to open this file: " +
+	            chooser.getSelectedFile().getName());
+	    }
+	    
+//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
+		meshimport = new HEC_FromObjFile(chooser.getSelectedFile().getPath());
+
 		meshimport.create();
 		HE_Mesh mesh2=new HE_Mesh(meshimport); 
 		mesh.clean();
