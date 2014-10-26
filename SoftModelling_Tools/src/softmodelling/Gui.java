@@ -102,7 +102,7 @@ public class Gui {
 				.updateSize();
 		// ////////////////////////////////////
 		bShowindex = cp5.addToggle("SHOW_INDEX").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 3 - space*2)
-				.setImages(p5.loadImage("icons/SoftModelling_Icon_Gravity_A.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"), p5.loadImage("icons/SoftModelling_Icon_Gravity_C.png"))
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_A.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"))
 				.updateSize().setValue(false);
 		// ////////////////////////////////////
 		bReset = cp5.addButton("RESET_SURFACE").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons)

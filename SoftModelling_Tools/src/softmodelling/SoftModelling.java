@@ -106,7 +106,9 @@ public class SoftModelling extends PApplet {
 	public void setup() {
 
 		// size(1900, 980, P3D);
-		size(1920, 1200, P3D);
+		//size(1920, 1200, P3D);
+		size(1920, 1080, P3D);  //////
+
 		// size(1920, 1080, P3D);
 
 		// size(1920, 1100, P3D);
@@ -123,7 +125,7 @@ public class SoftModelling extends PApplet {
 		physics.particles.clear();
 		gui = new Gui(this);
 		initAll();
-//		importMesh();
+		importMesh();
 
 
 
@@ -171,7 +173,7 @@ public class SoftModelling extends PApplet {
 	}
 	
 	void importMesh() {
-		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_cleaned2.obj"));
+		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
 		meshimport.create();
 		HE_Mesh mesh2=new HE_Mesh(meshimport); 
 		mesh.clean();
@@ -179,7 +181,12 @@ public class SoftModelling extends PApplet {
 		mesh.add(mesh2);
 		mesh.validate(true, true);
 		mesh.collapseDegenerateEdges();
+		this.physics.particles.clear();
+		this.physics.springs.clear();
+		surface.particles.clear();
+		surface.springs.clear();
 		mesh.selection = new HE_Selection(mesh);
+		surface.initSurface();
 	}
 
 	void initAll() {
@@ -510,8 +517,9 @@ public class SoftModelling extends PApplet {
 
 	void EXTRUDE_RUN(float theValue) {
 		mesh.extrudeFaces();
-		while (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
-		mesh.cleanUnusedSprings();}	}
+//		while (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
+//		mesh.cleanUnusedSprings();}	
+	}
 
 	// -----------------------------------------------------------------------tut013
 	void LATTICE_DEPTH(float theValue) {
@@ -688,6 +696,9 @@ public class SoftModelling extends PApplet {
 		if (key == 'c' || key == 'C') {
 			while (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
 			mesh.cleanUnusedSprings();}
+		}
+		if (key == 'p' || key == 'P') {
+			mesh.printCheck();
 		}
 		if (key == 'e' || key == 'E') {
 

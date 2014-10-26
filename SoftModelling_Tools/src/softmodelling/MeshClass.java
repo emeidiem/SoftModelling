@@ -290,7 +290,7 @@ class MeshClass extends HE_Mesh {
 
 	void subdivideMesh() {
 
-		printCheck();
+//		printCheck();
 
 		List <HE_Vertex>prevmeshvertices = (List<HE_Vertex>) this.getVerticesAsList();
 		List <HE_Edge>prevmeshedges = (List<HE_Edge>) this.getEdgesAsList();
@@ -364,7 +364,7 @@ class MeshClass extends HE_Mesh {
 			p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(), prevmeshvertices);
 			p5.surface.createSpringsFromMesh(this.getEdgesAsList());
 		}
-		printCheck();
+//		printCheck();
 	}
 
 	void cleanUnusedSprings() {
@@ -451,7 +451,7 @@ class MeshClass extends HE_Mesh {
 	}
 
 	void extrudeFaces() {
-		printCheck();
+		//printCheck();
 
 		List<HE_Vertex> prevmeshvertices = this.getVerticesAsList();
 		List<HE_Edge> prevmeshedges = this.getEdgesAsList();
@@ -476,13 +476,13 @@ class MeshClass extends HE_Mesh {
 		if (p5.extrLockExtrudeParticles) {
 			lockSelectedFaces(false);
 		}
-		p5.surface.removeSpringsWithoutBoxes();
-		p5.surface.recomputeAllSpringsToPhysics();
-		p5.surface.recomputeAllSpringsToPhysics();
-		p5.surface.removeSpringsWithoutBoxes();
-		p5.surface.removeSpringsifNotInPhysics();
-		p5.surface.removeDuplicatesSprings();
-		printCheck();
+//		p5.surface.removeSpringsWithoutBoxes();
+//		p5.surface.recomputeAllSpringsToPhysics();
+//		p5.surface.recomputeAllSpringsToPhysics();
+//		p5.surface.removeSpringsWithoutBoxes();
+//		p5.surface.removeSpringsifNotInPhysics();
+//		p5.surface.removeDuplicatesSprings();
+////		printCheck();
 
 	}
 
@@ -554,7 +554,7 @@ class MeshClass extends HE_Mesh {
 		p5.surface.removeSpringsifNotInPhysics();
 		p5.surface.removeDuplicatesSprings();
 
-		printCheck();
+//		printCheck();
 
 		if (p5.lattLockExtrudeParticles)
 			lockSelectedFaces(false);
@@ -582,7 +582,7 @@ class MeshClass extends HE_Mesh {
 
 	void killSelectedFaces() {
 
-		printCheck();
+//		printCheck();
 
 		if (p5.killspringsActive) {
 			List innerEdges = selection.getInnerEdges();
@@ -643,7 +643,7 @@ class MeshClass extends HE_Mesh {
 		p5.surface.removeSpringsWithoutBoxes();
 		p5.surface.removeSpringsifNotInPhysics();
 		p5.surface.removeDuplicatesSprings();
-		printCheck();
+//		printCheck();
 
 	}
 
