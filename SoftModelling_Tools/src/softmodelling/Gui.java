@@ -30,7 +30,7 @@ public class Gui {
 	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect, bSPLen, bLock, bUnlock, bShell, bLattice, bc1, bc2, bc3, bc4, bc5, bc6, bc7, bSaveFile, bReset;
 	Toggle bVertex, bEdges, bFaces, gravityOn;
 	Toggle t1;
-	Toggle bShowindex;
+	Button bShowindex;
 	Button bMove;
 	Button bMoveDown, bMoveUp, bMoveLeft, bMoveRight, bMoveZUp, bMoveZDown;
 	Slider2D slider2d;
@@ -101,9 +101,9 @@ public class Gui {
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_SaveFile_A.png"), p5.loadImage("icons/SoftModelling_Icon_SaveFile_B.png"), p5.loadImage("icons/SoftModelling_Icon_SaveFile_B.png"))
 				.updateSize();
 		// ////////////////////////////////////
-		bShowindex = cp5.addToggle("SHOW_INDEX").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 3 - space*2)
+		bShowindex = cp5.addButton("SHOW_INDEX").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 3 - space*2)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_A.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"))
-				.updateSize().setValue(false);
+				.updateSize();
 		// ////////////////////////////////////
 		bReset = cp5.addButton("RESET_SURFACE").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_Reset_A.png"), p5.loadImage("icons/SoftModelling_Icon_Reset_C.png"), p5.loadImage("icons/SoftModelling_Icon_Reset_C.png"))
@@ -525,7 +525,11 @@ public class Gui {
 				spl.hide();
 			}			
 			}
-		
+		if (p5.showIndex) {
+			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"));
+		} else {
+			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_A.png"));
+		}
 
 	}
 

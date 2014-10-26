@@ -125,7 +125,7 @@ public class SoftModelling extends PApplet {
 		physics.particles.clear();
 		gui = new Gui(this);
 		initAll();
-		importMesh();
+		//importMesh();
 
 
 
@@ -187,6 +187,8 @@ public class SoftModelling extends PApplet {
 		surface.springs.clear();
 		mesh.selection = new HE_Selection(mesh);
 		surface.initSurface();
+		this.updatePhysics=false;
+		gui.gravityOn.setValue(false);
 	}
 
 	void initAll() {
@@ -652,8 +654,8 @@ public class SoftModelling extends PApplet {
 		initAll();
 	}
 	
-	void SHOW_INDEX(boolean theValue) {
-		showIndex = theValue;
+	void SHOW_INDEX() {
+		showIndex = !showIndex;
 	}
 
 	// public void mousePressed() {}
@@ -713,8 +715,8 @@ public class SoftModelling extends PApplet {
 			exportIndex++;
 		}
 		
-		if (key == 'f' || key == 'F') {
-
+		if (key == 'i' || key == 'I') {
+this.importMesh();
 		}
 
 		// -----------------------------------------------------------------------tut014//
