@@ -526,7 +526,7 @@ public class Gui {
 			}			
 			}
 		if (p5.showIndex) {
-			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_.png"));
+			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"));
 		} else {
 			this.bShowindex.setImage(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_A.png"));
 		}
