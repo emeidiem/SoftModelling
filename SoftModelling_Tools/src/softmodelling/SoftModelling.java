@@ -6,6 +6,8 @@
  * PeasyCam (c) Jonathan Feinberg
  */
 
+// import OBJ version
+
 package softmodelling;
 
 import processing.core.PApplet;
@@ -19,12 +21,9 @@ import toxi.physics.behaviors.GravityBehavior;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
+//
+//import javax.swing.JFileChooser;
+//import javax.swing.filechooser.FileNameExtensionFilter;
 
 import controlP5.*;
 import toxi.processing.*;
@@ -113,8 +112,8 @@ public class SoftModelling extends PApplet {
 	public void setup() {
 
 		// size(1900, 980, P3D);
-		//size(1920, 1200, P3D);
-		size(1920, 1080, P3D);  //////
+		size(1920, 1200, P3D);
+		//size(1920, 1080, P3D);  //////
 
 		// size(1920, 1080, P3D);
 
@@ -180,18 +179,22 @@ public class SoftModelling extends PApplet {
 	}
 	
 	void importMesh() {
-	    JFileChooser chooser = new JFileChooser();
-	    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-	            "OBJ mesh", "obj");
-	    chooser.setFileFilter(filter);
-	    int returnVal = chooser.showOpenDialog(this);
-	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	       System.out.println("You chose to open this file: " +
-	            chooser.getSelectedFile().getName());
-	    }
-	    
-//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
-		meshimport = new HEC_FromObjFile(chooser.getSelectedFile().getPath());
+//	    JFileChooser chooser = new JFileChooser();
+//	    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+//	            "OBJ mesh", "obj");
+//	    chooser.setFileFilter(filter);
+//	    int returnVal = chooser.showOpenDialog(this);
+//	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+//	       System.out.println("You chose to open this file: " +
+//	            chooser.getSelectedFile().getName());
+//	    }
+//		meshimport = new HEC_FromObjFile(chooser.getSelectedFile().getPath());
+		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
+		
+//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
+
+//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced.obj"));
+//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced_quad.obj"));
 
 		meshimport.create();
 		HE_Mesh mesh2=new HE_Mesh(meshimport); 
@@ -720,6 +723,11 @@ public class SoftModelling extends PApplet {
 		}
 		if (key == 'p' || key == 'P') {
 			mesh.printCheck();
+		}
+		if (key == 'a' || key == 'A') {
+			while(mesh.selection.getFacesAsList().size()<mesh.getFacesAsList().size()){
+			mesh.growMeshSelection();}
+
 		}
 		if (key == 'e' || key == 'E') {
 
