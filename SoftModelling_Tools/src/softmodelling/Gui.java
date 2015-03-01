@@ -30,7 +30,7 @@ public class Gui {
 	Button b1, b2, b3, b4, bExtrude, bGrow, bShrink, bSubdivide, bDeselect, bSPLen, bLock, bUnlock, bShell, bLattice, bc1, bc2, bc3, bc4, bc5, bc6, bc7, bSaveFile, bReset;
 	Toggle bVertex, bEdges, bFaces, gravityOn;
 	Toggle t1;
-	Button bShowindex;
+	Button bShowindex, bAlphaBlending;
 	Button bMove;
 	Button bMoveDown, bMoveUp, bMoveLeft, bMoveRight, bMoveZUp, bMoveZDown;
 	Slider2D slider2d;
@@ -102,6 +102,10 @@ public class Gui {
 				.updateSize();
 		// ////////////////////////////////////
 		bShowindex = cp5.addButton("SHOW_INDEX").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 3 - space*2)
+				.setImages(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_A.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"))
+				.updateSize();
+		// ////////////////////////////////////
+		bAlphaBlending = cp5.addButton("SHOW_ALPHABLENDING").setPosition(p5.width - sizeIcons - margin, p5.height - margin - sizeIcons * 4 - space*3)
 				.setImages(p5.loadImage("icons/SoftModelling_Icon_ShowKeys_A.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"), p5.loadImage("icons/SoftModelling_Icon_ShowKeys_B.png"))
 				.updateSize();
 		// ////////////////////////////////////

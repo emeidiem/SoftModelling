@@ -12,7 +12,9 @@ package softmodelling;
 
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PImage;
 import processing.core.PVector;
+import processing.opengl.PGL;
 import peasy.PeasyCam;
 import toxi.geom.Vec3D;
 import toxi.physics.VerletPhysics;
@@ -45,6 +47,12 @@ public class SoftModelling extends PApplet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	PGL pgl;
+	PImage coronaImg;
+	PImage emitterImg;
+	PImage particleImg;
+	PImage reflectionImg;
+
 	PFont f;
 	PeasyCam cam;
 	float gravityValue = 9.8f;
@@ -92,6 +100,7 @@ public class SoftModelling extends PApplet {
 	boolean activeSPLen = false;
 	boolean modeSelected = false;
 	boolean showIndex = false;
+	boolean showAlphaBlending = false;
 
 	int exportIndex = 106;
 
@@ -105,15 +114,22 @@ public class SoftModelling extends PApplet {
 	HET_Selector selector;
 	float moveUpValue = 0;
 	HEC_FromObjFile meshimport;
-	//Create a file chooser
-//	final JFileChooser fc = new JFileChooser();
 
+	// Create a file chooser
+	// final JFileChooser fc = new JFileChooser();
 
 	public void setup() {
 
 		// size(1900, 980, P3D);
 		size(1920, 1200, P3D);
-		//size(1920, 1080, P3D);  //////
+		smooth(4);
+		pgl = beginPGL();
+		coronaImg = loadImage(this.dataPath("AlphaBlending/corona.png"));
+		emitterImg = loadImage(this.dataPath("AlphaBlending/emitter.png"));
+		particleImg = loadImage(this.dataPath("AlphaBlending/particle.png"));
+		reflectionImg = loadImage(this.dataPath("AlphaBlending/reflection.png"));
+
+		// size(1920, 1080, P3D); //////
 
 		// size(1920, 1080, P3D);
 
@@ -131,9 +147,7 @@ public class SoftModelling extends PApplet {
 		physics.particles.clear();
 		gui = new Gui(this);
 		initAll();
-		//importMesh();
-
-
+		// importMesh();
 
 	}
 
@@ -177,27 +191,32 @@ public class SoftModelling extends PApplet {
 		mesh.collapseDegenerateEdges();
 		mesh.selection = new HE_Selection(mesh);
 	}
-	
-	void importMesh() {
-//	    JFileChooser chooser = new JFileChooser();
-//	    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-//	            "OBJ mesh", "obj");
-//	    chooser.setFileFilter(filter);
-//	    int returnVal = chooser.showOpenDialog(this);
-//	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-//	       System.out.println("You chose to open this file: " +
-//	            chooser.getSelectedFile().getName());
-//	    }
-//		meshimport = new HEC_FromObjFile(chooser.getSelectedFile().getPath());
-		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
-		
-//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
 
-//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced.obj"));
-//		meshimport = new HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced_quad.obj"));
+	void importMesh() {
+		// JFileChooser chooser = new JFileChooser();
+		// FileNameExtensionFilter filter = new FileNameExtensionFilter(
+		// "OBJ mesh", "obj");
+		// chooser.setFileFilter(filter);
+		// int returnVal = chooser.showOpenDialog(this);
+		// if(returnVal == JFileChooser.APPROVE_OPTION) {
+		// System.out.println("You chose to open this file: " +
+		// chooser.getSelectedFile().getName());
+		// }
+		// meshimport = new
+		// HEC_FromObjFile(chooser.getSelectedFile().getPath());
+		meshimport = new HEC_FromObjFile(
+				this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
+
+		// meshimport = new
+		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
+
+		// meshimport = new
+		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced.obj"));
+		// meshimport = new
+		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced_quad.obj"));
 
 		meshimport.create();
-		HE_Mesh mesh2=new HE_Mesh(meshimport); 
+		HE_Mesh mesh2 = new HE_Mesh(meshimport);
 		mesh.clean();
 		mesh.clear();
 		mesh.add(mesh2);
@@ -209,7 +228,7 @@ public class SoftModelling extends PApplet {
 		surface.springs.clear();
 		mesh.selection = new HE_Selection(mesh);
 		surface.initSurface();
-		this.updatePhysics=false;
+		this.updatePhysics = false;
 		gui.gravityOn.setValue(false);
 	}
 
@@ -242,23 +261,42 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
+		if (this.showAlphaBlending)
+			drawAlphaBlending();
 		// gizmo.run();
-//		renderImportmesh();
-
+		// renderImportmesh();
 
 	}
-//	void renderImportmesh() {
-//		noStroke();
-//		fill(200);
-//		this.render.drawFaces(mesh2);
-//		fill(255, 0, 255, 200);
-//		//render.drawFaces(selection);
-//		strokeWeight(1);
-//		stroke(50);
-//		render.drawEdges(mesh2);
-//		//if (p5.showIndex)
-//			//renderKeys();
-//	}
+
+	void drawAlphaBlending() {
+		pgl.depthMask(false);
+		pgl.enable(PGL.BLEND);
+		pgl.blendFunc(PGL.SRC_ALPHA, PGL.ONE);
+	}
+	
+	void renderImageAB(PImage img, Vec3D _loc, float _diam, int _col, float _alpha ) {
+		  pushMatrix();
+		  translate( _loc.x, _loc.y, _loc.z );
+		  tint(red(_col), green(_col), blue(_col), _alpha);
+		  imageMode(CENTER);
+		  image(img,0,0,_diam,_diam);
+		  popMatrix();
+		  tint(1,1,1,1);
+		}
+
+
+	// void renderImportmesh() {
+	// noStroke();
+	// fill(200);
+	// this.render.drawFaces(mesh2);
+	// fill(255, 0, 255, 200);
+	// //render.drawFaces(selection);
+	// strokeWeight(1);
+	// stroke(50);
+	// render.drawEdges(mesh2);
+	// //if (p5.showIndex)
+	// //renderKeys();
+	// }
 	void hitDetect() {
 
 		int precision = 15;
@@ -299,7 +337,6 @@ public class SoftModelling extends PApplet {
 							surface.particlesSelected.add(p);
 						}
 						this.println("PSelect");
-						
 
 					}
 
@@ -310,9 +347,9 @@ public class SoftModelling extends PApplet {
 
 						Spring s = surface.getSpringswithKey(surface.springs,
 								e.key());
-						if (!surface.springsSelected.contains(s)){
+						if (!surface.springsSelected.contains(s)) {
 							surface.springsSelected.add(s);
-							s.isSelected=true;
+							s.isSelected = true;
 						}
 
 						Particle p = surface.getParticleswithKey(
@@ -520,8 +557,10 @@ public class SoftModelling extends PApplet {
 
 	void SUBDIVIDE_RUN(float theValue) {
 		mesh.subdivideMesh();
-		while (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
-		mesh.cleanUnusedSprings();}	}
+		while (this.mesh.getEdgesAsList().size() != this.surface.springs.size()) {
+			mesh.cleanUnusedSprings();
+		}
+	}
 
 	void EXTRUSION_CHANFER(float theValue) {
 		extrChanfer = theValue;
@@ -541,8 +580,9 @@ public class SoftModelling extends PApplet {
 
 	void EXTRUDE_RUN(float theValue) {
 		mesh.extrudeFaces();
-//		while (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
-//		mesh.cleanUnusedSprings();}	
+		// while
+		// (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
+		// mesh.cleanUnusedSprings();}
 	}
 
 	// -----------------------------------------------------------------------tut013
@@ -568,8 +608,10 @@ public class SoftModelling extends PApplet {
 
 	void LATTICE_RUN() {
 		mesh.lattice();
-		while (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
-		mesh.cleanUnusedSprings();}	}
+		while (this.mesh.getEdgesAsList().size() != this.surface.springs.size()) {
+			mesh.cleanUnusedSprings();
+		}
+	}
 
 	void EXPORT_STL() {
 		HET_Export
@@ -675,9 +717,17 @@ public class SoftModelling extends PApplet {
 
 		initAll();
 	}
-	
+
 	void SHOW_INDEX() {
 		showIndex = !showIndex;
+	}
+
+	void SHOW_ALPHABLENDING() {
+		showAlphaBlending = !showAlphaBlending;
+		if (showAlphaBlending)
+			colorMode(RGB, (float) 1.0);
+		else
+			colorMode(RGB, (float) 255);
 	}
 
 	// public void mousePressed() {}
@@ -718,15 +768,19 @@ public class SoftModelling extends PApplet {
 			saveFrames();
 		}
 		if (key == 'c' || key == 'C') {
-			while (this.mesh.getEdgesAsList().size()!=this.surface.springs.size()){
-			mesh.cleanUnusedSprings();}
+			while (this.mesh.getEdgesAsList().size() != this.surface.springs
+					.size()) {
+				mesh.cleanUnusedSprings();
+			}
 		}
 		if (key == 'p' || key == 'P') {
 			mesh.printCheck();
 		}
 		if (key == 'a' || key == 'A') {
-			while(mesh.selection.getFacesAsList().size()<mesh.getFacesAsList().size()){
-			mesh.growMeshSelection();}
+			while (mesh.selection.getFacesAsList().size() < mesh
+					.getFacesAsList().size()) {
+				mesh.growMeshSelection();
+			}
 
 		}
 		if (key == 'e' || key == 'E') {
@@ -741,9 +795,9 @@ public class SoftModelling extends PApplet {
 
 			exportIndex++;
 		}
-		
+
 		if (key == 'i' || key == 'I') {
-this.importMesh();
+			this.importMesh();
 		}
 
 		// -----------------------------------------------------------------------tut014//

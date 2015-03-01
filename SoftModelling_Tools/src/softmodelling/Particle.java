@@ -1,5 +1,6 @@
 package softmodelling;
 
+import processing.core.PImage;
 import toxi.geom.Vec3D;
 import toxi.physics.VerletParticle;
 
@@ -13,7 +14,7 @@ public class Particle extends VerletParticle {
 	boolean keepLocked = false;
 	boolean isSelected = false;
 	boolean hasBeenDragged = false;
-
+	
 
 	Particle(SoftModelling _p5, Vec3D _pos, int _key) {
 		super(_pos); // everything coming from the SuperClass (VerletParticle)
@@ -24,9 +25,15 @@ public class Particle extends VerletParticle {
 	}
 
 	void run() {
-		if (p5.displayPhysics){
-			render();
-			renderSelector();
+		this.pos=this;
+		if (p5.displayPhysics) {
+			if (!p5.showAlphaBlending) {
+				render();
+				renderSelector();
+			}
+			else{
+				renderAlphaBlending();
+			}
 		}
 
 		if (this.hasBeenDragged) {
@@ -34,6 +41,13 @@ public class Particle extends VerletParticle {
 		}
 		if (this.isSelected) {
 		}
+	}
+	
+	void renderAlphaBlending(){
+	   // color c = color( agePer, agePer*.75, 1.0 - agePer );
+		int c = p5.color(1.0f,1.0f,1.0f);
+		float radius = 10;
+		p5.renderImageAB(p5.emitterImg, pos, radius, c, 1.0f);		
 	}
 
 	void renderSelector() {
@@ -69,8 +83,7 @@ public class Particle extends VerletParticle {
 		if (this.isSelected) {
 			p5.strokeWeight(7);
 			p5.stroke(255, 0, 0);
-		}
-		else{
+		} else {
 			p5.stroke(155);
 			p5.strokeWeight(10);
 		}
@@ -82,8 +95,10 @@ public class Particle extends VerletParticle {
 				p5.pushMatrix();
 				p5.translate(x - 5, y, z + 15);
 				p5.rotateX(p5.radians(-90));
-//				p5.text("" + (key - 0) + " /" + (this.isSelected), 0, 0, 0);
-				p5.text("" + (key - 0) + " /" + (p5.surface.particlesSelected.contains(this)), 0, 0, 0);
+				// p5.text("" + (key - 0) + " /" + (this.isSelected), 0, 0, 0);
+				p5.text("" + (key - 0) + " /"
+						+ (p5.surface.particlesSelected.contains(this)), 0, 0,
+						0);
 
 				p5.popMatrix();
 			}
