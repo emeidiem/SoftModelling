@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
+import toxi.geom.Vec3D;
 import wblut.geom.WB_Point3d;
 import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HEC_FromObjFile;
@@ -165,13 +166,60 @@ class MeshClass extends HE_Mesh {
 				p5.stroke(255, 0, 0, 255);
 			}
 			p5.point(fc.xf(), fc.yf(), fc.zf());
+			Vec3D faceCenter = new Vec3D(fc.xf(), fc.yf(), fc.zf());
+//			Vec3D faceNormal = new Vec3D(f.getFaceNormal().xf(),f.getFaceNormal().y,f.getFaceNormal().z);
+			float angleX = PApplet.atan(f.getFaceNormal().zf()/f.getFaceNormal().yf());
+			float angleY = PApplet.atan(f.getFaceNormal().zf()/f.getFaceNormal().xf());
 
-			p5.strokeWeight(10);
+			//Draw normals
+			p5.strokeWeight(1);			
+			p5.pushMatrix();
+			p5.translate(fc.xf(), fc.yf(), fc.zf());
+			p5.stroke(1);
+			p5.line(0, 0, 0, f.getFaceNormal().scale(10).xf(),f.getFaceNormal().scale(10).yf(),f.getFaceNormal().scale(10).zf());
+			p5.popMatrix();
+			
+			
+//			WB_R xz = new Vec3D (f.getFaceNormal.x,0,f.getFaceNormal.z);
+//			float angleNormalX = f.getFaceCenter().angleBetween(f.getFaceNormal())
+			
 			if (!selection.contains(f)) {
-				p5.stroke(255, 255);
+				if (!p5.showAlphaBlending) {
+					p5.stroke(255, 255);
+				}
+				else{
+					int c = p5.color(1.0f,1.0f,1.0f);
+					float radius = (float) (p5.sqrt((float) f.getFaceArea())/1);
+					p5.renderImageAB(p5.particleImg, faceCenter, radius, c, .3f);	
+					p5.stroke(1,.5f);
+					p5.strokeWeight(1);
+					p5.noFill();
+					p5.pushMatrix();
+					p5.translate(fc.xf(), fc.yf(), fc.zf());
+					p5.rotateX(angleX-p5.PI/2);
+					p5.rotateY(angleY-p5.PI/2);
+					p5.ellipse(0,0, radius/4, radius/4);
+					p5.popMatrix();
+				}
 
 			} else {
-				p5.stroke(255, 0, 0, 255);
+				if (!p5.showAlphaBlending) {
+					p5.stroke(255, 0, 0, 255);
+				}
+				else{
+					int c = p5.color(1.0f,1.0f,1.0f);
+					float radius = (float) (p5.sqrt((float) f.getFaceArea())/1);
+					p5.renderImageAB(p5.particleImg, faceCenter, radius, c, .3f);		
+					p5.stroke(1,.5f);
+					p5.strokeWeight(1);
+					p5.noFill();
+					p5.pushMatrix();
+					p5.translate(fc.xf(), fc.yf(), fc.zf());
+					p5.rotateX(angleX-p5.PI/2);
+					p5.rotateY(angleY-p5.PI/2);
+					p5.ellipse(0,0, radius/4, radius/4);
+					p5.popMatrix();
+				}
 			}
 			p5.point(fc.xf(), fc.yf(), fc.zf());
 

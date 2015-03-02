@@ -46,8 +46,8 @@ public class Particle extends VerletParticle {
 	void renderAlphaBlending(){
 	   // color c = color( agePer, agePer*.75, 1.0 - agePer );
 		int c = p5.color(1.0f,1.0f,1.0f);
-		float radius = 10;
-		p5.renderImageAB(p5.emitterImg, pos, radius, c, 1.0f);		
+		float radius = 20;
+		p5.renderImageAB(p5.particleImg, pos, radius, c, 1.0f);		
 	}
 
 	void renderSelector() {

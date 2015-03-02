@@ -45,14 +45,20 @@ public class Spring extends VerletSpring {
 			else
 				p5.stroke(255);
 		} else {
-			p5.stroke(0, 1, 1, .05f);
-			p5.strokeWeight(1);
+			p5.stroke(1, 0, 1, .05f);
+			p5.strokeWeight(5);
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
-			p5.strokeWeight(.5f);
+			p5.stroke(1, 1, 1, .09f);
+//			p5.strokeWeight(5);
+//			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
+			p5.strokeWeight(3.5f);
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
 			p5.strokeWeight(1.5f);
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
 			p5.strokeWeight(2.1f);
+			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
+			p5.stroke(1, 1, 1, .2f);
+			p5.strokeWeight(1f);
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
 		}
 

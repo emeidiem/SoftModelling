@@ -58,24 +58,18 @@ public class Surface {
 
 			HE_Vertex vv = (HE_Vertex) verticesToCheck.get(i);
 			if (!verticesToAvoid.contains(vv)) {
-				Vec3D v1 = new Vec3D((float) vv.xf(), (float) vv.yf(),
-						(float) vv.zf());
-				List<HE_Vertex> neighbours = vv.getNeighborVertices();
-				float weight = 0;
-				
-				for(int j =0;j<neighbours.size();j++)
-				{
-					Vec3D v2 = new Vec3D((float) neighbours.get(j).xf(), (float) neighbours.get(j).yf(),(float) neighbours.get(j).zf());
-					weight += v1.distanceTo(v2)/2;
-				}
-				
+				Vec3D v1 = new Vec3D((float) vv.xf(), (float) vv.yf(), (float) vv.zf());
 				Particle p = (Particle) new Particle(p5, v1, vv.key());
-				p.setWeight(weight*0.01f);
+		
 				if (!particles.contains(p)) {
 					particles.add(p);
 					p5.physics.addParticle(p);
 					p.key = vv.key();
 				}
+				
+				float weight = 50.0f/(float)verticesToCheck.size();
+					for(int j =0;j<p5.physics.particles.size();j++)
+p5.physics.particles.get(j).setWeight(weight);
 			}
 		}
 	}

@@ -126,7 +126,7 @@ public class SoftModelling extends PApplet {
 		pgl = beginPGL();
 		coronaImg = loadImage(this.dataPath("AlphaBlending/corona.png"));
 		emitterImg = loadImage(this.dataPath("AlphaBlending/emitter.png"));
-		particleImg = loadImage(this.dataPath("AlphaBlending/particle.png"));
+		particleImg = loadImage(this.dataPath("AlphaBlending/particlePink.png"));
 		reflectionImg = loadImage(this.dataPath("AlphaBlending/reflection.png"));
 
 		// size(1920, 1080, P3D); //////
