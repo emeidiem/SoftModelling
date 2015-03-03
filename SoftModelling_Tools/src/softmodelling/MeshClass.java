@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import processing.core.PApplet;
+import toxi.geom.Line3D;
+import toxi.geom.ReadonlyVec3D;
 import toxi.geom.Vec3D;
 import wblut.geom.WB_Point3d;
 import wblut.hemesh.HEC_FromFacelist;
@@ -29,7 +31,6 @@ class MeshClass extends HE_Mesh {
 	SoftModelling p5;
 	HE_Selection selection;
 
-
 	// ////////////////CONSTRUCTOR
 	MeshClass(SoftModelling _p5, HEC_FromFacelist facelistCreator) {
 		super(facelistCreator);
@@ -54,11 +55,10 @@ class MeshClass extends HE_Mesh {
 			if (p5.selectionMode == 2)
 				renderSelectorsFaces();
 		}
-		if (p5.showIndex){
+		if (p5.showIndex) {
 			renderKeys();
 		}
 	}
-	
 
 	void updatemesh() {
 
@@ -77,16 +77,17 @@ class MeshClass extends HE_Mesh {
 		p5.noStroke();
 		p5.fill(200);
 		p5.render.drawFaces(this);
-		p5.fill(255, 0, 255, 200);
+		if (p5.showAlphaBlending)
+			p5.fill(1, 0, 1, .2f);
+		else
+			p5.fill(255, 0, 255, 200);
 		p5.render.drawFaces(selection);
 		p5.strokeWeight(1);
 		p5.stroke(50);
 		p5.render.drawEdges(this);
-		//if (p5.showIndex)
-			//renderKeys();
+		// if (p5.showIndex)
+		// renderKeys();
 	}
-	
-
 
 	void renderKeys() {
 		p5.fill(255, 0, 255);
@@ -167,64 +168,202 @@ class MeshClass extends HE_Mesh {
 			}
 			p5.point(fc.xf(), fc.yf(), fc.zf());
 			Vec3D faceCenter = new Vec3D(fc.xf(), fc.yf(), fc.zf());
-//			Vec3D faceNormal = new Vec3D(f.getFaceNormal().xf(),f.getFaceNormal().y,f.getFaceNormal().z);
-			float angleX = PApplet.atan(f.getFaceNormal().zf()/f.getFaceNormal().yf());
-			float angleY = PApplet.atan(f.getFaceNormal().zf()/f.getFaceNormal().xf());
+			Vec3D faceNormal = new Vec3D(f.getFaceNormal().xf(), f
+					.getFaceNormal().yf(), f.getFaceNormal().zf());
 
-			//Draw normals
-			p5.strokeWeight(1);			
-			p5.pushMatrix();
-			p5.translate(fc.xf(), fc.yf(), fc.zf());
-			p5.stroke(1);
-			p5.line(0, 0, 0, f.getFaceNormal().scale(10).xf(),f.getFaceNormal().scale(10).yf(),f.getFaceNormal().scale(10).zf());
-			p5.popMatrix();
-			
-			
-//			WB_R xz = new Vec3D (f.getFaceNormal.x,0,f.getFaceNormal.z);
-//			float angleNormalX = f.getFaceCenter().angleBetween(f.getFaceNormal())
-			
-			if (!selection.contains(f)) {
-				if (!p5.showAlphaBlending) {
+			Vec3D projectedNormal = new Vec3D(f.getFaceNormal().xf(), f
+					.getFaceNormal().yf(), 0); // Vec3D
+
+			// float angleZ = (float) Math.atan(f.getFaceNormal().yf() /
+			// f.getFaceNormal().xf()); // float, atan
+			// // minuscula
+			// float angleY = (float) Math.atan(f.getFaceNormal().zf()/
+			// projectedNormal.magnitude()); // susituir
+			// // .Length
+
+			float angleX = PApplet.atan(f.getFaceNormal().zf()
+					/ f.getFaceNormal().yf());
+			float angleY = PApplet.atan(f.getFaceNormal().zf()
+					/ -f.getFaceNormal().xf());
+
+			// angleX *= (f.getFaceNormal().yf()>0)? 1 : -1;
+			// angleY *= (f.getFaceNormal().xf()>0)? 1 : -1;
+
+			// if (f.getFaceNormal().xf()>0)angleX +=p5.PI;
+			// if (f.getFaceNormal().yf()>0)angleY +=p5.PI;
+
+			// Vec3D faceNormalX = new Vec3D(f.getFaceNormal().xf(), 0, f
+			// .getFaceNormal().zf());
+			// Vec3D faceNormalY = new Vec3D(0, f.getFaceNormal().yf(), f
+			// .getFaceNormal().zf());
+
+			// WB_R xz = new Vec3D (f.getFaceNormal.x,0,f.getFaceNormal.z);
+			// float angleNormalX =
+			// f.getFaceCenter().angleBetween(f.getFaceNormal())
+
+			if (!p5.showAlphaBlending) {
+				if (!selection.contains(f))
 					p5.stroke(255, 255);
-				}
-				else{
-					int c = p5.color(1.0f,1.0f,1.0f);
-					float radius = (float) (p5.sqrt((float) f.getFaceArea())/1);
-					p5.renderImageAB(p5.particleImg, faceCenter, radius, c, .3f);	
-					p5.stroke(1,.5f);
-					p5.strokeWeight(1);
-					p5.noFill();
-					p5.pushMatrix();
-					p5.translate(fc.xf(), fc.yf(), fc.zf());
-					p5.rotateX(angleX-p5.PI/2);
-					p5.rotateY(angleY-p5.PI/2);
-					p5.ellipse(0,0, radius/4, radius/4);
-					p5.popMatrix();
-				}
-
-			} else {
-				if (!p5.showAlphaBlending) {
+				else
 					p5.stroke(255, 0, 0, 255);
-				}
-				else{
-					int c = p5.color(1.0f,1.0f,1.0f);
-					float radius = (float) (p5.sqrt((float) f.getFaceArea())/1);
-					p5.renderImageAB(p5.particleImg, faceCenter, radius, c, .3f);		
-					p5.stroke(1,.5f);
-					p5.strokeWeight(1);
-					p5.noFill();
-					p5.pushMatrix();
-					p5.translate(fc.xf(), fc.yf(), fc.zf());
-					p5.rotateX(angleX-p5.PI/2);
-					p5.rotateY(angleY-p5.PI/2);
-					p5.ellipse(0,0, radius/4, radius/4);
-					p5.popMatrix();
-				}
+				p5.point(fc.xf(), fc.yf(), fc.zf());
+
 			}
-			p5.point(fc.xf(), fc.yf(), fc.zf());
+
+			else {
+				int col;
+				if (!selection.contains(f))
+					col = p5.color(1.0f, 1.0f, 1.0f);
+				else
+					col = p5.color(1.0f, 0.0f, 0.0f);
+
+				float radius = (float) (p5.sqrt((float) f.getFaceArea()) / 1);
+
+				// Draw normals
+				p5.strokeWeight(1);
+				p5.pushMatrix();
+				p5.translate(fc.xf(), fc.yf(), fc.zf());
+				p5.stroke(1);
+				p5.line(0, 0, 0, f.getFaceNormal().scale(radius / 6 + 1).xf(),
+						f.getFaceNormal().scale(radius / 6 + 1).yf(), f
+								.getFaceNormal().scale(radius / 6 + 1).zf());
+				p5.stroke(1, 0, 1, .4f);
+				p5.strokeWeight(4);
+				p5.line(0, 0, 0, f.getFaceNormal().scale(radius / 9 + 1).xf(),
+						f.getFaceNormal().scale(radius / 9 + 1).yf(), f
+								.getFaceNormal().scale(radius / 9 + 1).zf());
+
+				// p5.text(("(" + p5.nf(fnx, 2, 2) + "," + p5.nf(fny, 2, 2) +
+				// ","
+				// + p5.nf(fnz, 2, 2) + ")"), 0, 0, 0);
+				p5.popMatrix();
+
+				// draw ellipse
+
+				p5.pushMatrix();
+				p5.translate(fc.xf(), fc.yf(), fc.zf());
+				p5.rotateX(angleX);
+				Vec3D vertical = new Vec3D(1, 0, 0);
+				float angleZ = faceNormal.angleBetween(vertical);
+				angleZ *= (f.getFaceNormal().yf() > 0) ? 1 : -1;
+				p5.rotateZ(angleZ);
+				p5.rotateY(p5.PI / 2);
+
+				p5.renderImageAB(p5.particleImg, new Vec3D(), radius, col, .3f);
+
+				p5.stroke(1, .2f);
+				p5.strokeWeight(10);
+				p5.noFill();
+				// p5.rotateY(angleY);
+				// p5.rectMode(p5.CENTER);
+				// p5.rect(0, 0, radius / 4, radius / 4);
+
+				p5.ellipse(0, 0, radius / 3, radius / 3);
+				p5.stroke(1, .8f);
+				p5.strokeWeight(1);
+				p5.ellipse(0, 0, radius / 3, radius / 3);
+
+				p5.popMatrix();
+
+				// ////////////////////////////////////////////////////////////////////
+				ArrayList<Line3D> l = new ArrayList<Line3D>();
+				ArrayList<Vec3D> segments = new ArrayList<Vec3D>();
+				int numbSegments = 6;
+
+				for (int j = 0; j < f.getFaceVertices().size(); j++) {
+
+					Vec3D va = new Vec3D();
+					Vec3D vb = new Vec3D();
+
+					va = new Vec3D(f.getFaceVertices().get(j).xf(), f
+							.getFaceVertices().get(j).yf(), f.getFaceVertices()
+							.get(j).zf());
+
+					if (j < f.getFaceVertices().size() - 1) {
+
+						vb = new Vec3D(f.getFaceVertices().get(j + 1).xf(), f
+								.getFaceVertices().get(j + 1).yf(), f
+								.getFaceVertices().get(j + 1).zf());
+
+					}
+					if (j == f.getFaceVertices().size() - 1) {
+
+						vb = new Vec3D(f.getFaceVertices().get(0).xf(), f
+								.getFaceVertices().get(0).yf(), f
+								.getFaceVertices().get(0).zf());
+					}
+					
+					
+					
+				/*
+
+					Line3D ln = new Line3D(va, vb);
+					l.add(ln);
+					p5.println("l.size() = " + l.size());
+
+					p5.strokeWeight(20);
+
+					p5.point(ln.getMidPoint().x, ln.getMidPoint().y,
+							ln.getMidPoint().z);
+
+					ArrayList<Vec3D> segmentsLine = new ArrayList<Vec3D>();
+
+					// int numbSegments = 6;
+					// segments = new ArrayList<Vec3D>();
+
+					ln.splitIntoSegments(segmentsLine, ln.getLength()
+							/ (numbSegments), true);
+					p5.fill(1);
+					// p5.text(segmentsLine.size(), ln.getMidPoint().x,
+					// ln.getMidPoint().y, ln.getMidPoint().z);
+					p5.noFill();
+					p5.println("segmentsLine.size() = " + segmentsLine.size());
+
+					// if (j < f.getFaceVertices().size()) {
+					for (int h = 0; h < segmentsLine.size(); h++) {
+						segments.add(segmentsLine.get(h));
+						p5.println("segments added = " + h);
+
+						p5.strokeWeight(5);
+						p5.point(segmentsLine.get(h).x, segmentsLine.get(h).y,
+								segmentsLine.get(h).z);
+						// p5.text(h, segmentsLine.get(h).x,
+						// segmentsLine.get(h).y,
+						// segmentsLine.get(h).z);
+						// }
+					}
+					
+					*/
+
+				}
+				
+				/*
+
+				p5.println("segments.size() = " + segments.size());
+
+				int step = numbSegments + 1;
+
+				for (int k = 0; k < segments.size() - step * 2; k += step) {
+					Vec3D p1 = segments.get(k + step / 2);
+					Vec3D p2 = segments.get(k + step - 1);
+					Vec3D p3 = segments.get(k + step + 1);
+					Vec3D p4 = segments.get(k + step + (step / 2));
+					p5.bezier(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, p3.x, p3.y,
+							p3.z, p4.x, p4.y, p4.z);
+				}
+				*/
+
+
+			}
 
 		}
 
+	}
+
+	WB_Point3d interpolate(WB_Point3d va, WB_Point3d vb, float percentage) {
+		WB_Point3d va_vb = va.subToVector(vb);
+		va_vb.scale(percentage);
+		return va_vb;
 	}
 
 	void lockSelectedFaces(boolean negativelocking) {
@@ -301,8 +440,8 @@ class MeshClass extends HE_Mesh {
 				HE_Edge ee = (HE_Edge) edges.get(j);
 				this.selection.addEdges(edges);
 				// Particle p = (Particle) surface.particles.get(j);
-				Spring s = p5.surface.getSpringswithKey(
-						p5.surface.springs, ee.key());
+				Spring s = p5.surface.getSpringswithKey(p5.surface.springs,
+						ee.key());
 				s.isSelected = true;
 				if (!p5.surface.springsSelected.contains(s)) {
 					p5.surface.springsSelected.add(s);
@@ -338,11 +477,12 @@ class MeshClass extends HE_Mesh {
 
 	void subdivideMesh() {
 
-//		printCheck();
+		// printCheck();
 
-		List <HE_Vertex>prevmeshvertices = (List<HE_Vertex>) this.getVerticesAsList();
-		List <HE_Edge>prevmeshedges = (List<HE_Edge>) this.getEdgesAsList();
-		List <HE_Face>prevmeshfaces = (List<HE_Face>) this.getFacesAsList();
+		List<HE_Vertex> prevmeshvertices = (List<HE_Vertex>) this
+				.getVerticesAsList();
+		List<HE_Edge> prevmeshedges = (List<HE_Edge>) this.getEdgesAsList();
+		List<HE_Face> prevmeshfaces = (List<HE_Face>) this.getFacesAsList();
 
 		removeUnusedSprings();
 
@@ -404,15 +544,16 @@ class MeshClass extends HE_Mesh {
 		if (selection.getFacesAsList().size() > 0) {
 			selection.collectHalfedges();
 			selection.collectVertices();
-			p5.surface.createNewParticlesFromMesh(this.selection
-					.getVerticesAsList(), prevmeshvertices);
+			p5.surface.createNewParticlesFromMesh(
+					this.selection.getVerticesAsList(), prevmeshvertices);
 			p5.surface.createSpringsFromMesh(this.selection.getInnerEdges());
 			p5.surface.createSpringsFromMesh(this.selection.getOuterEdges());
 		} else {
-			p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(), prevmeshvertices);
+			p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(),
+					prevmeshvertices);
 			p5.surface.createSpringsFromMesh(this.getEdgesAsList());
 		}
-//		printCheck();
+		// printCheck();
 	}
 
 	void cleanUnusedSprings() {
@@ -420,18 +561,20 @@ class MeshClass extends HE_Mesh {
 		for (int i = 0; i < p5.surface.springs.size(); i++) {
 			Spring s = (Spring) p5.surface.springs.get(i);
 			HE_Edge e = (HE_Edge) this.getEdgeByKey(s.key);
-			if ((  (s.a.key==e.getEndVertex().key())&&(s.b.key==e.getStartVertex().key())  )   ||    (  (s.b.key==e.getEndVertex().key())&&(s.a.key==e.getStartVertex().key())  )  ){
-				
-			}
-			else{
+			if (((s.a.key == e.getEndVertex().key()) && (s.b.key == e
+					.getStartVertex().key()))
+					|| ((s.b.key == e.getEndVertex().key()) && (s.a.key == e
+							.getStartVertex().key()))) {
+
+			} else {
 				p5.physics.removeSpring(s);
 				p5.surface.springs.remove(s);
 			}
-			
+
 		}
 
 	}
-	
+
 	void removeUnusedSprings() {
 
 		if (selection.getFacesAsList().size() == 0) {
@@ -499,7 +642,7 @@ class MeshClass extends HE_Mesh {
 	}
 
 	void extrudeFaces() {
-		//printCheck();
+		// printCheck();
 
 		List<HE_Vertex> prevmeshvertices = this.getVerticesAsList();
 		List<HE_Edge> prevmeshedges = this.getEdgesAsList();
@@ -509,7 +652,8 @@ class MeshClass extends HE_Mesh {
 		this.modifySelected(new HEM_Extrude().setRelative(true).setFuse(true)
 				.setDistance(p5.extrDistance).setChamfer(p5.extrChanfer)
 				.setPeak(false), selection);
-		p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(), prevmeshvertices);
+		p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(),
+				prevmeshvertices);
 		selection.clearEdges();
 		selection.collectEdges();
 		// p5.surface.removeSpringsWithoutBoxes();
@@ -524,13 +668,13 @@ class MeshClass extends HE_Mesh {
 		if (p5.extrLockExtrudeParticles) {
 			lockSelectedFaces(false);
 		}
-//		p5.surface.removeSpringsWithoutBoxes();
-//		p5.surface.recomputeAllSpringsToPhysics();
-//		p5.surface.recomputeAllSpringsToPhysics();
-//		p5.surface.removeSpringsWithoutBoxes();
-//		p5.surface.removeSpringsifNotInPhysics();
-//		p5.surface.removeDuplicatesSprings();
-////		printCheck();
+		// p5.surface.removeSpringsWithoutBoxes();
+		// p5.surface.recomputeAllSpringsToPhysics();
+		// p5.surface.recomputeAllSpringsToPhysics();
+		// p5.surface.removeSpringsWithoutBoxes();
+		// p5.surface.removeSpringsifNotInPhysics();
+		// p5.surface.removeDuplicatesSprings();
+		// // printCheck();
 
 	}
 
@@ -602,7 +746,7 @@ class MeshClass extends HE_Mesh {
 		p5.surface.removeSpringsifNotInPhysics();
 		p5.surface.removeDuplicatesSprings();
 
-//		printCheck();
+		// printCheck();
 
 		if (p5.lattLockExtrudeParticles)
 			lockSelectedFaces(false);
@@ -614,13 +758,15 @@ class MeshClass extends HE_Mesh {
 			Particle p = (Particle) p5.surface.getParticleswithKey(
 					p5.surface.particles, v.key());
 			p.isSelected = true;
-			if (!p5.surface.particlesSelected.contains(p))p5.surface.particlesSelected.add(p);
+			if (!p5.surface.particlesSelected.contains(p))
+				p5.surface.particlesSelected.add(p);
 		}
 	}
 
 	void recomputeMesh(List prevmeshvertices, List prevmeshedges,
 			List prevmeshfaces) {
-		p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(), prevmeshvertices);
+		p5.surface.createNewParticlesFromMesh(this.getVerticesAsList(),
+				prevmeshvertices);
 		p5.surface
 				.createSpringsFromMesh(this.checkModifiedEdges(prevmeshfaces));
 		p5.surface.recomputeSpringsKeys();
@@ -630,7 +776,7 @@ class MeshClass extends HE_Mesh {
 
 	void killSelectedFaces() {
 
-//		printCheck();
+		// printCheck();
 
 		if (p5.killspringsActive) {
 			List innerEdges = selection.getInnerEdges();
@@ -691,7 +837,7 @@ class MeshClass extends HE_Mesh {
 		p5.surface.removeSpringsWithoutBoxes();
 		p5.surface.removeSpringsifNotInPhysics();
 		p5.surface.removeDuplicatesSprings();
-//		printCheck();
+		// printCheck();
 
 	}
 
