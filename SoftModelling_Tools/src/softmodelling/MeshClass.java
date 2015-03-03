@@ -8,6 +8,7 @@ import toxi.geom.Line3D;
 import toxi.geom.ReadonlyVec3D;
 import toxi.geom.Vec3D;
 import wblut.geom.WB_Point3d;
+import wblut.geom.WB_Vector3d;
 import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HEC_FromObjFile;
 import wblut.hemesh.HEM_Extrude;
@@ -268,91 +269,62 @@ class MeshClass extends HE_Mesh {
 				// ////////////////////////////////////////////////////////////////////
 				ArrayList<Line3D> l = new ArrayList<Line3D>();
 				ArrayList<Vec3D> segments = new ArrayList<Vec3D>();
+				ArrayList<WB_Point3d> crvPoints = new ArrayList<WB_Point3d>();
 				int numbSegments = 6;
 
 				for (int j = 0; j < f.getFaceVertices().size(); j++) {
 
-					Vec3D va = new Vec3D();
-					Vec3D vb = new Vec3D();
+					WB_Point3d va = new WB_Point3d();
+					WB_Point3d vb = new WB_Point3d();
 
-					va = new Vec3D(f.getFaceVertices().get(j).xf(), f
-							.getFaceVertices().get(j).yf(), f.getFaceVertices()
-							.get(j).zf());
+					va = f.getFaceVertices().get(j);
 
+					if (j < f.getFaceVertices().size() - 1)
+						vb = f.getFaceVertices().get(j + 1);
+					else
+						vb = f.getFaceVertices().get(0);
+
+					WB_Point3d centerAB = interpolate(va, vb, .5f);
+					WB_Point3d tan1 = interpolate(va, vb, .25f);
+					WB_Point3d tan2 = interpolate(va, vb, .75f);
+					crvPoints.add(tan1);
+					crvPoints.add(centerAB);
+					crvPoints.add(tan2);
+
+				}
+				WB_Point3d p1, p2, p3, p4;
+				// fullcircle
+				p5.strokeWeight(1);
+				p5.stroke(1,.3f);
+				for (int j = 0; j < f.getFaceVertices().size(); j++) {
+					p1 = crvPoints.get(j * 3 + 1);
+					p2 = crvPoints.get(j * 3 + 2);
 					if (j < f.getFaceVertices().size() - 1) {
-
-						vb = new Vec3D(f.getFaceVertices().get(j + 1).xf(), f
-								.getFaceVertices().get(j + 1).yf(), f
-								.getFaceVertices().get(j + 1).zf());
-
+						p3 = crvPoints.get(j * 3 + 3);
+						p4 = crvPoints.get(j * 3 + 4);
+					} else {
+						p3 = crvPoints.get(0);
+						p4 = crvPoints.get(1);
 					}
-					if (j == f.getFaceVertices().size() - 1) {
-
-						vb = new Vec3D(f.getFaceVertices().get(0).xf(), f
-								.getFaceVertices().get(0).yf(), f
-								.getFaceVertices().get(0).zf());
-					}
-					
-					
-					
-				/*
-
-					Line3D ln = new Line3D(va, vb);
-					l.add(ln);
-					p5.println("l.size() = " + l.size());
-
-					p5.strokeWeight(20);
-
-					p5.point(ln.getMidPoint().x, ln.getMidPoint().y,
-							ln.getMidPoint().z);
-
-					ArrayList<Vec3D> segmentsLine = new ArrayList<Vec3D>();
-
-					// int numbSegments = 6;
-					// segments = new ArrayList<Vec3D>();
-
-					ln.splitIntoSegments(segmentsLine, ln.getLength()
-							/ (numbSegments), true);
-					p5.fill(1);
-					// p5.text(segmentsLine.size(), ln.getMidPoint().x,
-					// ln.getMidPoint().y, ln.getMidPoint().z);
-					p5.noFill();
-					p5.println("segmentsLine.size() = " + segmentsLine.size());
-
-					// if (j < f.getFaceVertices().size()) {
-					for (int h = 0; h < segmentsLine.size(); h++) {
-						segments.add(segmentsLine.get(h));
-						p5.println("segments added = " + h);
-
-						p5.strokeWeight(5);
-						p5.point(segmentsLine.get(h).x, segmentsLine.get(h).y,
-								segmentsLine.get(h).z);
-						// p5.text(h, segmentsLine.get(h).x,
-						// segmentsLine.get(h).y,
-						// segmentsLine.get(h).z);
-						// }
-					}
-					
-					*/
-
+					p5.bezier((float) p1.x, (float) p1.y, (float) p1.z,
+							(float) p2.x, (float) p2.y, (float) p2.z,
+							(float) p3.x, (float) p3.y, (float) p3.z,
+							(float) p4.x, (float) p4.y, (float) p4.z);
 				}
-				
-				/*
+				// incompletecircle
+				p5.strokeWeight(3);
+				p5.stroke(1,1f);
+				for (int j = 0; j < f.getFaceVertices().size() - 1; j++) {
+					p1 = crvPoints.get(j * 3 + 1);
+					p2 = crvPoints.get(j * 3 + 2);
+					p3 = crvPoints.get(j * 3 + 3);
+					p4 = crvPoints.get(j * 3 + 4);
 
-				p5.println("segments.size() = " + segments.size());
-
-				int step = numbSegments + 1;
-
-				for (int k = 0; k < segments.size() - step * 2; k += step) {
-					Vec3D p1 = segments.get(k + step / 2);
-					Vec3D p2 = segments.get(k + step - 1);
-					Vec3D p3 = segments.get(k + step + 1);
-					Vec3D p4 = segments.get(k + step + (step / 2));
-					p5.bezier(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, p3.x, p3.y,
-							p3.z, p4.x, p4.y, p4.z);
+					p5.bezier((float) p1.x, (float) p1.y, (float) p1.z,
+							(float) p2.x, (float) p2.y, (float) p2.z,
+							(float) p3.x, (float) p3.y, (float) p3.z,
+							(float) p4.x, (float) p4.y, (float) p4.z);
 				}
-				*/
-
 
 			}
 
@@ -361,8 +333,12 @@ class MeshClass extends HE_Mesh {
 	}
 
 	WB_Point3d interpolate(WB_Point3d va, WB_Point3d vb, float percentage) {
-		WB_Point3d va_vb = va.subToVector(vb);
+		WB_Vector3d va2 = va.toVector();
+		WB_Vector3d vb2 = vb.toVector();
+		WB_Vector3d va_vb = vb2.sub(va2);
 		va_vb.scale(percentage);
+		va_vb.moveBy(va);
+
 		return va_vb;
 	}
 
