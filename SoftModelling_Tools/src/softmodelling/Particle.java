@@ -14,7 +14,6 @@ public class Particle extends VerletParticle {
 	boolean keepLocked = false;
 	boolean isSelected = false;
 	boolean hasBeenDragged = false;
-	
 
 	Particle(SoftModelling _p5, Vec3D _pos, int _key) {
 		super(_pos); // everything coming from the SuperClass (VerletParticle)
@@ -25,15 +24,14 @@ public class Particle extends VerletParticle {
 	}
 
 	void run() {
-		this.pos=this;
+		this.pos = this;
 		if (p5.displayPhysics) {
 			if (!p5.showAlphaBlending) {
 				render();
-				renderSelector();
-			}
-			else{
+			} else {
 				renderAlphaBlending();
 			}
+			renderSelector();
 		}
 
 		if (this.hasBeenDragged) {
@@ -42,12 +40,16 @@ public class Particle extends VerletParticle {
 		if (this.isSelected) {
 		}
 	}
-	
-	void renderAlphaBlending(){
-	   // color c = color( agePer, agePer*.75, 1.0 - agePer );
-		int c = p5.color(1.0f,1.0f,1.0f);
+
+	void renderAlphaBlending() {
+		// color c = color( agePer, agePer*.75, 1.0 - agePer );
+		int c = p5.color(1.0f, 1.0f, 1.0f);
 		float radius = 20;
-		p5.renderImageAB(p5.particleImg, pos, radius, c, 1.0f);		
+		if (p5.selectionMode != 0) {
+			radius = 9;
+		}
+		p5.renderImageAB(p5.particleImg, pos, radius, c, 1.0f);
+
 	}
 
 	void renderSelector() {
@@ -61,15 +63,31 @@ public class Particle extends VerletParticle {
 			}
 			p5.point(x, y, z);
 
-			p5.strokeWeight(10);
+			p5.strokeWeight(8);
 			if (!isSelected) {
 				p5.stroke(255, 255);
 
 			} else {
-				p5.stroke(255, 0, 0, 255);
+				p5.stroke(255, 0, 255, 255);
 			}
 			p5.point(x, y, z);
+
 		}
+
+		if ((isSelected) && (p5.showAlphaBlending)) {
+			p5.stroke(1, 1, 1, .5f);
+			p5.strokeWeight(2);
+
+			p5.pushMatrix();
+			p5.translate(x, y, z);
+			p5.point(0, 0);
+			if (p5.selectionMode == 0)
+				p5.ellipse(0, 0, 10, 10);
+			else
+				p5.ellipse(0, 0, 5, 5);
+			p5.popMatrix();
+		}
+
 	}
 
 	void render() {

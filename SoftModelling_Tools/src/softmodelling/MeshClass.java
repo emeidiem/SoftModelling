@@ -134,24 +134,48 @@ class MeshClass extends HE_Mesh {
 		for (int i = 0; i < this.getEdgesAsList().size(); i++) {
 			HE_Edge e = (HE_Edge) getEdgesAsList().get(i);
 			WB_Point3d fc = (WB_Point3d) e.getEdgeCenter();
-			p5.strokeWeight(15);
-			if (!selection.contains(e)) {
-				p5.stroke(100, 255);
 
-			} else {
-				p5.stroke(255, 0, 0, 255);
+			if (p5.showAlphaBlending) {
+				int c = p5.color(1.0f, 1.0f, 1.0f);
+				float radius = 20;
+				p5.renderImageAB(p5.particleImg,
+						new Vec3D(fc.xf(), fc.yf(), fc.zf()), radius, c, 1.0f);
+
+				if (selection.contains(e)) {
+					p5.stroke(1, 1, 1, .5f);
+					p5.strokeWeight(2);
+
+					p5.pushMatrix();
+					p5.translate(fc.xf(), fc.yf(), fc.zf());
+					p5.point(0, 0);
+					p5.ellipse(0, 0, 10, 10);
+					p5.popMatrix();
+				
+					
+				}
 			}
-			p5.point(fc.xf(), fc.yf(), fc.zf());
 
-			p5.strokeWeight(10);
-			if (!selection.contains(e)) {
-				p5.stroke(255, 255);
+			else {
 
-			} else {
-				p5.stroke(255, 0, 0, 255);
+				p5.strokeWeight(15);
+				if (!selection.contains(e)) {
+					p5.stroke(100, 255);
+
+				} else {
+					p5.stroke(255, 0, 0, 255);
+				}
+				p5.point(fc.xf(), fc.yf(), fc.zf());
+
+				p5.strokeWeight(10);
+				if (!selection.contains(e)) {
+					p5.stroke(255, 255);
+
+				} else {
+					p5.stroke(255, 0, 0, 255);
+				}
+				p5.point(fc.xf(), fc.yf(), fc.zf());
+
 			}
-			p5.point(fc.xf(), fc.yf(), fc.zf());
-
 		}
 
 	}
@@ -165,7 +189,10 @@ class MeshClass extends HE_Mesh {
 				p5.stroke(100, 255);
 
 			} else {
-				p5.stroke(255, 0, 0, 255);
+				if (!p5.showAlphaBlending)
+					p5.stroke(255, 0, 0, 255);
+				else
+					p5.stroke(1, 0, 1, .3f);
 			}
 			p5.point(fc.xf(), fc.yf(), fc.zf());
 			Vec3D faceCenter = new Vec3D(fc.xf(), fc.yf(), fc.zf());
@@ -295,7 +322,7 @@ class MeshClass extends HE_Mesh {
 				WB_Point3d p1, p2, p3, p4;
 				// fullcircle
 				p5.strokeWeight(1);
-				p5.stroke(1,.3f);
+				p5.stroke(1, .3f);
 				for (int j = 0; j < f.getFaceVertices().size(); j++) {
 					p1 = crvPoints.get(j * 3 + 1);
 					p2 = crvPoints.get(j * 3 + 2);
@@ -313,7 +340,7 @@ class MeshClass extends HE_Mesh {
 				}
 				// incompletecircle
 				p5.strokeWeight(3);
-				p5.stroke(1,1f);
+				p5.stroke(1, 1f);
 				for (int j = 0; j < f.getFaceVertices().size() - 1; j++) {
 					p1 = crvPoints.get(j * 3 + 1);
 					p2 = crvPoints.get(j * 3 + 2);

@@ -59,8 +59,9 @@ public class Spring extends VerletSpring {
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
 			p5.stroke(1, 1, 1, .2f);
 			p5.strokeWeight(1f);
-			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
 		}
+		p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
+
 
 
 		if (p5.showIndex) {

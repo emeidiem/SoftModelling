@@ -12,7 +12,9 @@ package softmodelling;
 
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PGraphics;
 import processing.core.PImage;
+import processing.core.PMatrix;
 import processing.core.PVector;
 import processing.opengl.PGL;
 import peasy.PeasyCam;
@@ -26,6 +28,8 @@ import java.util.List;
 //
 //import javax.swing.JFileChooser;
 //import javax.swing.filechooser.FileNameExtensionFilter;
+
+
 
 import controlP5.*;
 import toxi.processing.*;
@@ -47,11 +51,18 @@ public class SoftModelling extends PApplet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	int widthS = 2560;
+	int heightS = 1440;//1600
+
+	
+	PGraphics pg;
 	PGL pgl;
 	PImage coronaImg;
 	PImage emitterImg;
 	PImage particleImg;
 	PImage reflectionImg;
+	PImage backgroundIMG;
 
 	PFont f;
 	PeasyCam cam;
@@ -104,6 +115,7 @@ public class SoftModelling extends PApplet {
 
 	int exportIndex = 106;
 
+	  PMatrix mat_scene; // to store initial PMatrix
 	Gui gui;
 	MeshClass mesh;
 	WB_Render render;
@@ -121,13 +133,19 @@ public class SoftModelling extends PApplet {
 	public void setup() {
 
 		// size(1900, 980, P3D);
-		size(1920, 1200, P3D);
+		size(widthS, heightS, P3D);
 		smooth(4);
+//		hint(DISABLE_OPENGL_2X_SMOOTH);
+		
 		pgl = beginPGL();
+		
+		
 		coronaImg = loadImage(this.dataPath("AlphaBlending/corona.png"));
 		emitterImg = loadImage(this.dataPath("AlphaBlending/emitter.png"));
 		particleImg = loadImage(this.dataPath("AlphaBlending/particlePink.png"));
 		reflectionImg = loadImage(this.dataPath("AlphaBlending/reflection.png"));
+		backgroundIMG = loadImage(this.dataPath("background_2560x1440.jpg"));
+		backgroundIMG.resize(widthS, heightS);
 
 		// size(1920, 1080, P3D); //////
 
@@ -139,6 +157,7 @@ public class SoftModelling extends PApplet {
 
 		smooth();
 		cursor(CROSS);
+		mat_scene = getMatrix();
 		cam = new PeasyCam(this, 600);
 		cam.lookAt(0, 0, 0);
 		physics = new VerletPhysics();
@@ -205,7 +224,7 @@ public class SoftModelling extends PApplet {
 		// meshimport = new
 		// HEC_FromObjFile(chooser.getSelectedFile().getPath());
 		meshimport = new HEC_FromObjFile(
-				this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
+				this.dataPath("Meshes/pavAAMadrid2013.obj"));
 
 		// meshimport = new
 		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
@@ -248,7 +267,12 @@ public class SoftModelling extends PApplet {
 
 	public void draw() {
 		background(0);
+//		pg.background(backgroundIMG);
+		background(backgroundIMG);
+//		this.image(backgroundIMG, 0, 0);
 
+		if (this.showAlphaBlending)
+			drawAlphaBlending();
 		if (gui.cp5.window(this).isMouseOver()) {
 			cam.setActive(false);
 		} else {
@@ -261,10 +285,11 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
-		if (this.showAlphaBlending)
-			drawAlphaBlending();
+//		saveVideoFrames();
+
 		// gizmo.run();
 		// renderImportmesh();
+
 
 	}
 
@@ -273,17 +298,17 @@ public class SoftModelling extends PApplet {
 		pgl.enable(PGL.BLEND);
 		pgl.blendFunc(PGL.SRC_ALPHA, PGL.ONE);
 	}
-	
-	void renderImageAB(PImage img, Vec3D _loc, float _diam, int _col, float _alpha ) {
-		  pushMatrix();
-		  translate( _loc.x, _loc.y, _loc.z );
-		  tint(red(_col), green(_col), blue(_col), _alpha);
-		  imageMode(CENTER);
-		  image(img,0,0,_diam,_diam);
-		  popMatrix();
-		  tint(1,1,1,1);
-		}
 
+	void renderImageAB(PImage img, Vec3D _loc, float _diam, int _col,
+			float _alpha) {
+		pushMatrix();
+		translate(_loc.x, _loc.y, _loc.z);
+		tint(red(_col), green(_col), blue(_col), _alpha);
+		imageMode(CENTER);
+		image(img, 0, 0, _diam, _diam);
+		popMatrix();
+		tint(1, 1, 1, 1);
+	}
 
 	// void renderImportmesh() {
 	// noStroke();
@@ -467,6 +492,15 @@ public class SoftModelling extends PApplet {
 		// if ((!theEvent.isFrom(gui.bMoveUp))) {
 		// gui.bMoveUp.setImage(loadImage("icons/SoftModelling_Icon_Icon_ArrowUp_B.png"));
 		// }
+	}
+
+	void SCALEICONS(int scaleIcons) {
+
+		int iconScaleValue = scaleIcons;
+		gui.sizeIcons *= scaleIcons;
+		gui.margin *= scaleIcons;
+		gui.space *= scaleIcons;
+
 	}
 
 	void SP_LENGTH(int theValue) {
@@ -799,6 +833,9 @@ public class SoftModelling extends PApplet {
 		if (key == 'i' || key == 'I') {
 			this.importMesh();
 		}
+		if (key == 'x' || key == 'X') {
+			gui.createButtonsSimple();
+		}
 
 		// -----------------------------------------------------------------------tut014//
 		if (gui.cp5.controller("level23") != null) {
@@ -866,6 +903,13 @@ public class SoftModelling extends PApplet {
 		PicName = ("Images/frame_" + this.year() + "-" + this.month() + "-"
 				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
 				+ this.second() + "_" + frameCount + ".png");
+		saveFrame(PicName);
+	}
+	
+	void saveVideoFrames() {
+		String PicName;
+		// PicName = ("Images/frame_" + frameCount + ".png");
+		PicName = ("VideoFrames/frame_" + this.frameCount);
 		saveFrame(PicName);
 	}
 
