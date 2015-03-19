@@ -361,13 +361,18 @@ class MeshClass extends HE_Mesh {
 								+ "," + p3.y + "," + p3.z + "/" + p4.x + ","
 								+ p4.y + "," + p4.z;
 					}
+					
 				}
 
 			}
 
 		}
 		if (p5.exportBeziersOn) {
-			p5.saveStrings("Bezierlines/beziers.txt", bezierlines);
+
+			p5.saveStrings("Bezierlines/beziers_"+ p5.year() + "-" + p5.month() + "-"
+					+ p5.day() + "_" + p5.hour() + "-"
+					+ p5.minute() + "-" + p5.second() + "_"
+					+ p5.frameCount + ".txt", bezierlines);
 			p5.exportBeziersOn = false;
 		}
 

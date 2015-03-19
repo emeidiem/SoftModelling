@@ -54,8 +54,8 @@ public class SoftModelling extends PApplet {
 //	int heightS = 1600;// 1600 //1440
 	
 	//laptop
-	int widthS = 1920;
-	int heightS = 1200;// 1600 //1440
+	int widthS = 1280; //1920
+	int heightS = 720;// 1600 //1440 //1200
 
 	PGraphics pg;
 	PGL pgl;
@@ -226,7 +226,7 @@ public class SoftModelling extends PApplet {
 		// meshimport = new
 		// HEC_FromObjFile(chooser.getSelectedFile().getPath());
 		meshimport = new HEC_FromObjFile(
-				this.dataPath("Meshes/pavAAMadrid2013.obj"));
+				this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
 
 		// meshimport = new
 		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
@@ -437,7 +437,7 @@ public class SoftModelling extends PApplet {
 	}
 
 	public boolean sketchFullScreen() {
-		return false;
+		return true;
 	}
 
 	public void mousePressed() {
