@@ -31,9 +31,6 @@ import java.io.File;
 //import javax.swing.JFileChooser;
 //import javax.swing.filechooser.FileNameExtensionFilter;
 
-
-
-
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -59,12 +56,12 @@ public class SoftModelling extends PApplet {
 	 */
 	private static final long serialVersionUID = 1L;
 
-//	int widthS = 2560;
-//	int heightS = 1600;// 1600 //1440
-	
-	//laptop
-	int widthS = 1920;//1280; 
-	int heightS = 1200; //720;// 1600 //1440 //
+	// int widthS = 2560;
+	// int heightS = 1600;// 1600 //1440
+
+	// laptop
+	int widthS = 1920;// 1280;
+	int heightS = 1200; // 720;// 1600 //1440 //
 
 	PGraphics pg;
 	PGL pgl;
@@ -137,7 +134,7 @@ public class SoftModelling extends PApplet {
 	HET_Selector selector;
 	float moveUpValue = 0;
 	HEC_FromObjFile meshimport;
-	float speedMove =10;
+	float speedMove = 10;
 
 	// Create a file chooser
 	// final JFileChooser fc = new JFileChooser();
@@ -155,7 +152,8 @@ public class SoftModelling extends PApplet {
 		emitterImg = loadImage(this.dataPath("AlphaBlending/emitter.png"));
 		particleImg = loadImage(this.dataPath("AlphaBlending/particlePink.png"));
 		reflectionImg = loadImage(this.dataPath("AlphaBlending/reflection.png"));
-		backgroundIMG = loadImage(this.dataPath("Backgrounds/background_2560x1440.jpg"));
+		backgroundIMG = loadImage(this
+				.dataPath("Backgrounds/background_2560x1440.jpg"));
 		backgroundIMG.resize(widthS, heightS);
 
 		// size(1920, 1080, P3D); //////
@@ -223,20 +221,23 @@ public class SoftModelling extends PApplet {
 	}
 
 	void importMesh() {
-		
-		
+
 		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("OBJ mesh", "obj");
-		 chooser.setFileFilter(filter);
-		 int returnVal = chooser.showOpenDialog(this);
-		 if(returnVal == JFileChooser.APPROVE_OPTION) {
-		 System.out.println("You chose to open this file: " +
-		 chooser.getSelectedFile().getName());
-		 }
-		 
-		 meshimport = new
-		 HEC_FromObjFile(chooser.getSelectedFile().getPath());
-		 
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+				"OBJ mesh", "obj");
+		chooser.setFileFilter(filter);
+		int returnVal = chooser.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			System.out.println("You chose to open this file: "
+					+ chooser.getSelectedFile().getName());
+		}
+
+		String st = chooser.getSelectedFile().getPath();
+
+		meshimport = new HEC_FromObjFile(st);
+
+		cam.lookAt(0, 0, 0);
+
 		// meshimport = new HEC_FromObjFile(
 		// this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
 
@@ -668,12 +669,13 @@ public class SoftModelling extends PApplet {
 	}
 
 	void EXPORT_OBJ() {
-		
-		HET_Export.saveToOBJ(mesh,
-				this.sketchPath("MeshesExport/SoftModelling_mesh_" + this.year() + "-"
-						+ this.month() + "-" + this.day() + "_" + this.hour()
-						+ "-" + this.minute() + "-" + this.second() + "_"
-						+ frameCount + ".obj"));
+
+		HET_Export.saveToOBJ(
+				mesh,
+				this.sketchPath("MeshesExport/SoftModelling_mesh_"
+						+ this.year() + "-" + this.month() + "-" + this.day()
+						+ "_" + this.hour() + "-" + this.minute() + "-"
+						+ this.second() + "_" + frameCount + ".obj"));
 		exportBeziersOn = true;
 
 		exportIndex++;
@@ -928,7 +930,7 @@ public class SoftModelling extends PApplet {
 				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
 				+ this.second() + "_" + frameCount + ".png");
 		saveFrame(PicName);
-		
+
 		String PicName2;
 		// PicName = ("Images/frame_" + frameCount + ".png");
 		PicName2 = ("Images/frame_" + this.year() + "-" + this.month() + "-"
