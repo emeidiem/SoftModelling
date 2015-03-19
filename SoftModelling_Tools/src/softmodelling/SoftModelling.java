@@ -25,9 +25,17 @@ import toxi.physics.behaviors.GravityBehavior;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.File;
+
 //
 //import javax.swing.JFileChooser;
 //import javax.swing.filechooser.FileNameExtensionFilter;
+
+
+
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import controlP5.*;
 import toxi.processing.*;
@@ -35,6 +43,7 @@ import wblut.geom.WB_Point3d;
 import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HEC_FromObjFile;
 import wblut.hemesh.HET_Export;
+import wblut.hemesh.HET_OBJWriter;
 import wblut.hemesh.HET_Selector;
 import wblut.hemesh.HE_Edge;
 import wblut.hemesh.HE_Face;
@@ -54,8 +63,8 @@ public class SoftModelling extends PApplet {
 //	int heightS = 1600;// 1600 //1440
 	
 	//laptop
-	int widthS = 1280; //1920
-	int heightS = 720;// 1600 //1440 //1200
+	int widthS = 1920;//1280; 
+	int heightS = 1200; //720;// 1600 //1440 //
 
 	PGraphics pg;
 	PGL pgl;
@@ -146,7 +155,7 @@ public class SoftModelling extends PApplet {
 		emitterImg = loadImage(this.dataPath("AlphaBlending/emitter.png"));
 		particleImg = loadImage(this.dataPath("AlphaBlending/particlePink.png"));
 		reflectionImg = loadImage(this.dataPath("AlphaBlending/reflection.png"));
-		backgroundIMG = loadImage(this.dataPath("background_2560x1440.jpg"));
+		backgroundIMG = loadImage(this.dataPath("Backgrounds/background_2560x1440.jpg"));
 		backgroundIMG.resize(widthS, heightS);
 
 		// size(1920, 1080, P3D); //////
@@ -214,19 +223,22 @@ public class SoftModelling extends PApplet {
 	}
 
 	void importMesh() {
-		// JFileChooser chooser = new JFileChooser();
-		// FileNameExtensionFilter filter = new FileNameExtensionFilter(
-		// "OBJ mesh", "obj");
-		// chooser.setFileFilter(filter);
-		// int returnVal = chooser.showOpenDialog(this);
-		// if(returnVal == JFileChooser.APPROVE_OPTION) {
-		// System.out.println("You chose to open this file: " +
-		// chooser.getSelectedFile().getName());
-		// }
-		// meshimport = new
-		// HEC_FromObjFile(chooser.getSelectedFile().getPath());
-		meshimport = new HEC_FromObjFile(
-				this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
+		
+		
+		JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("OBJ mesh", "obj");
+		 chooser.setFileFilter(filter);
+		 int returnVal = chooser.showOpenDialog(this);
+		 if(returnVal == JFileChooser.APPROVE_OPTION) {
+		 System.out.println("You chose to open this file: " +
+		 chooser.getSelectedFile().getName());
+		 }
+		 
+		 meshimport = new
+		 HEC_FromObjFile(chooser.getSelectedFile().getPath());
+		 
+		// meshimport = new HEC_FromObjFile(
+		// this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
 
 		// meshimport = new
 		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
@@ -437,7 +449,7 @@ public class SoftModelling extends PApplet {
 	}
 
 	public boolean sketchFullScreen() {
-		return true;
+		return false;
 	}
 
 	public void mousePressed() {
@@ -656,12 +668,13 @@ public class SoftModelling extends PApplet {
 	}
 
 	void EXPORT_OBJ() {
-
+		
 		HET_Export.saveToOBJ(mesh,
-				dataPath("Meshes/SoftModelling_mesh_" + this.year() + "-"
+				this.sketchPath("MeshesExport/SoftModelling_mesh_" + this.year() + "-"
 						+ this.month() + "-" + this.day() + "_" + this.hour()
 						+ "-" + this.minute() + "-" + this.second() + "_"
 						+ frameCount + ".obj"));
+		exportBeziersOn = true;
 
 		exportIndex++;
 	}

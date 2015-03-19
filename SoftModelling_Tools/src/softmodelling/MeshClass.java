@@ -182,7 +182,7 @@ class MeshClass extends HE_Mesh {
 
 	void renderSelectorsFaces() {
 
-		String[] bezierlines = new String[this.getFacesAsList().size()]; //
+		ArrayList bezierlines = new ArrayList(); //
 
 		for (int i = 0; i < this.getFacesAsList().size(); i++) {
 			HE_Face f = (HE_Face) getFacesAsList().get(i);
@@ -340,6 +340,7 @@ class MeshClass extends HE_Mesh {
 							(float) p2.x, (float) p2.y, (float) p2.z,
 							(float) p3.x, (float) p3.y, (float) p3.z,
 							(float) p4.x, (float) p4.y, (float) p4.z);
+
 				}
 				// incompletecircle
 				p5.strokeWeight(3);
@@ -356,23 +357,29 @@ class MeshClass extends HE_Mesh {
 							(float) p4.x, (float) p4.y, (float) p4.z);
 
 					if (p5.exportBeziersOn) {
-						bezierlines[i] = p1.x + "," + p1.y + "," + p1.z + "/"
-								+ p2.x + "," + p2.y + "," + p2.z + "/" + p3.x
-								+ "," + p3.y + "," + p3.z + "/" + p4.x + ","
-								+ p4.y + "," + p4.z;
+
+						String ss = p1.x + "," + p1.y + "," + p1.z + "/" + p2.x
+								+ "," + p2.y + "," + p2.z + "/" + p3.x + ","
+								+ p3.y + "," + p3.z + "/" + p4.x + "," + p4.y
+								+ "," + p4.z;
+						bezierlines.add(ss);
 					}
-					
+
 				}
 
 			}
 
 		}
 		if (p5.exportBeziersOn) {
-
-			p5.saveStrings("Bezierlines/beziers_"+ p5.year() + "-" + p5.month() + "-"
-					+ p5.day() + "_" + p5.hour() + "-"
-					+ p5.minute() + "-" + p5.second() + "_"
-					+ p5.frameCount + ".txt", bezierlines);
+String [] stn = new String [bezierlines.size()];
+for (int j = 0; j < bezierlines.size() - 1; j++){
+	stn[j] = (String) bezierlines.get(j);
+}
+			p5.saveStrings(
+					"Bezierlines/beziers_" + p5.year() + "-" + p5.month() + "-"
+							+ p5.day() + "_" + p5.hour() + "-" + p5.minute()
+							+ "-" + p5.second() + "_" + p5.frameCount + ".txt",
+					stn);
 			p5.exportBeziersOn = false;
 		}
 
@@ -409,7 +416,6 @@ class MeshClass extends HE_Mesh {
 				p.checkNeighborstoRemovePhysics();
 			}
 		}
-
 
 	}
 
