@@ -1,8 +1,12 @@
 package softmodelling;
 
+import java.util.List;
+
 import processing.core.PImage;
 import toxi.geom.Vec3D;
 import toxi.physics.VerletParticle;
+import wblut.hemesh.HE_Edge;
+import wblut.hemesh.HE_Vertex;
 
 public class Particle extends VerletParticle {
 
@@ -88,6 +92,38 @@ public class Particle extends VerletParticle {
 			p5.popMatrix();
 		}
 
+	}
+
+	void checkNeighborstoAddPhysics() {
+		if (!p5.physics.particles.contains(this))
+			p5.physics.addParticle(this);
+
+	}
+
+	void checkNeighborstoRemovePhysics() {
+		HE_Vertex vv = (HE_Vertex) p5.mesh.getVertexByKey(this.key);
+		List<HE_Vertex> neighbors = vv.getNeighborVertices();
+		List<HE_Edge> neighborEdges = vv.getEdgeStar();
+
+		boolean neighborslocked = false;
+		for (int i = 0; i < neighbors.size(); i++) {
+			HE_Vertex n = neighbors.get(i);
+			Particle p = p5.surface.getParticleswithKey(p5.surface.particles,
+					n.key());
+			if (p.isLocked)
+				neighborslocked = true;
+		}
+		if ((neighborslocked) && (p5.physics.particles.contains(this)))
+			p5.physics.removeParticle(this);
+
+		for (int i = 0; i < neighborEdges.size(); i++) {
+			HE_Edge e = neighborEdges.get(i);
+			Spring s = p5.surface
+					.getSpringswithKey(p5.surface.springs, e.key());
+			if ((s.a.isLocked) && (s.b.isLocked)) {
+				p5.physics.removeSpring(s);
+			}
+		}
 	}
 
 	void render() {

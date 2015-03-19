@@ -29,8 +29,6 @@ import java.util.List;
 //import javax.swing.JFileChooser;
 //import javax.swing.filechooser.FileNameExtensionFilter;
 
-
-
 import controlP5.*;
 import toxi.processing.*;
 import wblut.geom.WB_Point3d;
@@ -51,11 +49,14 @@ public class SoftModelling extends PApplet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	int widthS = 2560;
-	int heightS = 1440;//1600
 
+//	int widthS = 2560;
+//	int heightS = 1600;// 1600 //1440
 	
+	//laptop
+	int widthS = 1920;
+	int heightS = 1200;// 1600 //1440
+
 	PGraphics pg;
 	PGL pgl;
 	PImage coronaImg;
@@ -114,8 +115,9 @@ public class SoftModelling extends PApplet {
 	boolean showAlphaBlending = false;
 
 	int exportIndex = 106;
+	boolean exportBeziersOn = false;
 
-	  PMatrix mat_scene; // to store initial PMatrix
+	PMatrix mat_scene; // to store initial PMatrix
 	Gui gui;
 	MeshClass mesh;
 	WB_Render render;
@@ -126,6 +128,7 @@ public class SoftModelling extends PApplet {
 	HET_Selector selector;
 	float moveUpValue = 0;
 	HEC_FromObjFile meshimport;
+	float speedMove =10;
 
 	// Create a file chooser
 	// final JFileChooser fc = new JFileChooser();
@@ -135,11 +138,10 @@ public class SoftModelling extends PApplet {
 		// size(1900, 980, P3D);
 		size(widthS, heightS, P3D);
 		smooth(4);
-//		hint(DISABLE_OPENGL_2X_SMOOTH);
-		
+		// hint(DISABLE_OPENGL_2X_SMOOTH);
+
 		pgl = beginPGL();
-		
-		
+
 		coronaImg = loadImage(this.dataPath("AlphaBlending/corona.png"));
 		emitterImg = loadImage(this.dataPath("AlphaBlending/emitter.png"));
 		particleImg = loadImage(this.dataPath("AlphaBlending/particlePink.png"));
@@ -267,9 +269,9 @@ public class SoftModelling extends PApplet {
 
 	public void draw() {
 		background(0);
-//		pg.background(backgroundIMG);
+		// pg.background(backgroundIMG);
 		background(backgroundIMG);
-//		this.image(backgroundIMG, 0, 0);
+		// this.image(backgroundIMG, 0, 0);
 
 		if (this.showAlphaBlending)
 			drawAlphaBlending();
@@ -285,11 +287,10 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
-//		saveVideoFrames();
+		// saveVideoFrames();
 
 		// gizmo.run();
 		// renderImportmesh();
-
 
 	}
 
@@ -547,6 +548,7 @@ public class SoftModelling extends PApplet {
 
 	void UNLOCK_ELEMENT(float theValue) {
 		// unlockParticle = true;
+		this.surface.addSpringsPhysicsUnlocking();
 		if (selectionMode == 0)
 			surface.unlockSelectParticles();
 		if (selectionMode == 1)
@@ -810,6 +812,12 @@ public class SoftModelling extends PApplet {
 		if (key == 'p' || key == 'P') {
 			mesh.printCheck();
 		}
+		if (key == 'g' || key == 'G') {
+			if (this.gui.gravityOn.getState() == false)
+				this.gui.gravityOn.setState(true);
+			else
+				this.gui.gravityOn.setState(false);
+		}
 		if (key == 'a' || key == 'A') {
 			while (mesh.selection.getFacesAsList().size() < mesh
 					.getFacesAsList().size()) {
@@ -835,6 +843,9 @@ public class SoftModelling extends PApplet {
 		}
 		if (key == 'x' || key == 'X') {
 			gui.createButtonsSimple();
+		}
+		if (key == 'l' || key == 'L') {
+			exportBeziersOn = true;
 		}
 
 		// -----------------------------------------------------------------------tut014//
@@ -904,8 +915,15 @@ public class SoftModelling extends PApplet {
 				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
 				+ this.second() + "_" + frameCount + ".png");
 		saveFrame(PicName);
+		
+		String PicName2;
+		// PicName = ("Images/frame_" + frameCount + ".png");
+		PicName2 = ("Images/frame_" + this.year() + "-" + this.month() + "-"
+				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
+				+ this.second() + "_" + frameCount + ".tiff");
+		saveFrame(PicName2);
 	}
-	
+
 	void saveVideoFrames() {
 		String PicName;
 		// PicName = ("Images/frame_" + frameCount + ".png");

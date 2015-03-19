@@ -31,6 +31,7 @@ class MeshClass extends HE_Mesh {
 	// HE_Mesh mesh;
 	SoftModelling p5;
 	HE_Selection selection;
+	ArrayList beziersArrayList;
 
 	// ////////////////CONSTRUCTOR
 	MeshClass(SoftModelling _p5, HEC_FromFacelist facelistCreator) {
@@ -150,8 +151,7 @@ class MeshClass extends HE_Mesh {
 					p5.point(0, 0);
 					p5.ellipse(0, 0, 10, 10);
 					p5.popMatrix();
-				
-					
+
 				}
 			}
 
@@ -181,6 +181,9 @@ class MeshClass extends HE_Mesh {
 	}
 
 	void renderSelectorsFaces() {
+
+		String[] bezierlines = new String[this.getFacesAsList().size()]; //
+
 		for (int i = 0; i < this.getFacesAsList().size(); i++) {
 			HE_Face f = (HE_Face) getFacesAsList().get(i);
 			WB_Point3d fc = (WB_Point3d) f.getFaceCenter();
@@ -351,10 +354,21 @@ class MeshClass extends HE_Mesh {
 							(float) p2.x, (float) p2.y, (float) p2.z,
 							(float) p3.x, (float) p3.y, (float) p3.z,
 							(float) p4.x, (float) p4.y, (float) p4.z);
+
+					if (p5.exportBeziersOn) {
+						bezierlines[i] = p1.x + "," + p1.y + "," + p1.z + "/"
+								+ p2.x + "," + p2.y + "," + p2.z + "/" + p3.x
+								+ "," + p3.y + "," + p3.z + "/" + p4.x + ","
+								+ p4.y + "," + p4.z;
+					}
 				}
 
 			}
 
+		}
+		if (p5.exportBeziersOn) {
+			p5.saveStrings("Bezierlines/beziers.txt", bezierlines);
+			p5.exportBeziersOn = false;
 		}
 
 	}
@@ -381,12 +395,17 @@ class MeshClass extends HE_Mesh {
 				p.unlock();
 				p.keepLocked = false;
 				p.lockSelected = false;
+				p.checkNeighborstoAddPhysics();
+
 			} else {
 				p.lock();
 				p.keepLocked = true;
 				p.lockSelected = true;
+				p.checkNeighborstoRemovePhysics();
 			}
 		}
+
+
 	}
 
 	void lockSelectedEdges(boolean negativelocking) {
@@ -409,6 +428,9 @@ class MeshClass extends HE_Mesh {
 					p2.unlock();
 					p2.keepLocked = false;
 					p2.lockSelected = false;
+					p1.checkNeighborstoAddPhysics();
+					p2.checkNeighborstoAddPhysics();
+
 				} else {
 					p1.lock();
 					p1.keepLocked = true;
@@ -416,9 +438,13 @@ class MeshClass extends HE_Mesh {
 					p2.lock();
 					p2.keepLocked = true;
 					p2.lockSelected = true;
+					p1.checkNeighborstoRemovePhysics();
+					p2.checkNeighborstoRemovePhysics();
+
 				}
 			}
 		}
+
 	}
 
 	void growMeshSelection() {

@@ -500,7 +500,7 @@ public class Gui {
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (p.isSelected) {
 					p.lock();
-					p.y -= 1;
+					p.y -= p5.speedMove;
 				}
 			}
 		}
@@ -511,7 +511,7 @@ public class Gui {
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (p.isSelected) {
 					p.lock();
-					p.y += 1;
+					p.y += p5.speedMove;
 				}
 			}
 		}
@@ -531,7 +531,7 @@ public class Gui {
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (p.isSelected) {
 					p.lock();
-					p.x += 1;
+					p.x += p5.speedMove;
 				}
 			}
 		}
@@ -542,7 +542,7 @@ public class Gui {
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (p.isSelected) {
 					p.lock();
-					p.z += 1;
+					p.z += p5.speedMove;
 				}
 			}
 		}
@@ -553,7 +553,7 @@ public class Gui {
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (p.isSelected) {
 					p.lock();
-					p.z -= 1;
+					p.z -= p5.speedMove;
 				}
 			}
 		}

@@ -189,18 +189,32 @@ p5.physics.particles.get(j).setWeight(weight);
 				p.lock();
 				p.keepLocked = true;
 				p.lockSelected = true;
+				p.checkNeighborstoRemovePhysics();
+				
 			}
 		}
 	}
 
 	void unlockSelectParticles() {
-		for (int i = 0; i < particles.size(); i++) {
-			Particle p = (Particle) particles.get(i);
+		for (int i = 0; i < this.particlesSelected.size(); i++) {
+			Particle p = (Particle) particlesSelected.get(i);
 			if (p.isSelected) {
 				if (p.keepLocked)
 					p.unlock();
 				p.keepLocked = false;
 				p.lockSelected = false;
+				p.checkNeighborstoAddPhysics();
+//				addSpringsPhysicsUnlocking();
+			}
+		}
+	}
+	
+	void addSpringsPhysicsUnlocking(){
+		for (int i = 0; i < p5.surface.springs.size(); i++) {
+			Spring s = p5.surface.springs.get(i);
+			if (!p5.physics.springs.contains(s)){
+				if ((s.a.isLocked())||(s.b.isLocked()))
+				p5.physics.addSpring(s);
 			}
 		}
 	}
