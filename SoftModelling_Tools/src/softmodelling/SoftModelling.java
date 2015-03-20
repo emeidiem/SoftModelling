@@ -24,12 +24,15 @@ import toxi.physics.behaviors.GravityBehavior;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.BufferedWriter;
 import java.io.File;
 
 //
 //import javax.swing.JFileChooser;
 //import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -122,6 +125,8 @@ public class SoftModelling extends PApplet {
 
 	int exportIndex = 106;
 	boolean exportBeziersOn = false;
+	String[] myInputFileContents;
+	String myFilePath;
 
 	PMatrix mat_scene; // to store initial PMatrix
 	Gui gui;
@@ -133,7 +138,6 @@ public class SoftModelling extends PApplet {
 	Gizmo gizmo;
 	HET_Selector selector;
 	float moveUpValue = 0;
-	HEC_FromObjFile meshimport;
 	float speedMove = 10;
 
 	// Create a file chooser
@@ -220,50 +224,18 @@ public class SoftModelling extends PApplet {
 		mesh.selection = new HE_Selection(mesh);
 	}
 
-	void importMesh() {
 
-		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"OBJ mesh", "obj");
-		chooser.setFileFilter(filter);
-		int returnVal = chooser.showOpenDialog(this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			System.out.println("You chose to open this file: "
-					+ chooser.getSelectedFile().getName());
+
+	void fileSelected(File selection) {
+		if (selection == null) {
+			println("no selection so far...");
+		} else {
+
+			myFilePath = selection.getAbsolutePath();
+			myInputFileContents = loadStrings(myFilePath);// this moves here...
+
+			println("User selected " + myFilePath);
 		}
-
-		String st = chooser.getSelectedFile().getPath();
-
-		meshimport = new HEC_FromObjFile(st);
-
-		cam.lookAt(0, 0, 0);
-
-		// meshimport = new HEC_FromObjFile(
-		// this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
-
-		// meshimport = new
-		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
-
-		// meshimport = new
-		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced.obj"));
-		// meshimport = new
-		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced_quad.obj"));
-
-		meshimport.create();
-		HE_Mesh mesh2 = new HE_Mesh(meshimport);
-		mesh.clean();
-		mesh.clear();
-		mesh.add(mesh2);
-		mesh.validate(true, true);
-		mesh.collapseDegenerateEdges();
-		this.physics.particles.clear();
-		this.physics.springs.clear();
-		surface.particles.clear();
-		surface.springs.clear();
-		mesh.selection = new HE_Selection(mesh);
-		surface.initSurface();
-		this.updatePhysics = false;
-		gui.gravityOn.setValue(false);
 	}
 
 	void initAll() {
@@ -670,14 +642,14 @@ public class SoftModelling extends PApplet {
 
 	void EXPORT_OBJ() {
 
-		HET_Export.saveToOBJ(
-				mesh,
-				this.sketchPath("MeshesExport/SoftModelling_mesh_"
-						+ this.year() + "-" + this.month() + "-" + this.day()
-						+ "_" + this.hour() + "-" + this.minute() + "-"
-						+ this.second() + "_" + frameCount + ".obj"));
-		exportBeziersOn = true;
+		String filename = "MeshesExport/SoftModelling_mesh_" + this.year()
+				+ "-" + this.month() + "-" + this.day() + "_" + this.hour()
+				+ "-" + this.minute() + "-" + this.second() + "_" + frameCount
+				+ ".obj";
+		// HET_Export.saveToOBJ(mesh, this.sketchPath(filename));
 
+		saveMeshAsOBJ(mesh, filename);
+		exportBeziersOn = true;
 		exportIndex++;
 	}
 
@@ -841,20 +813,11 @@ public class SoftModelling extends PApplet {
 
 		}
 		if (key == 'e' || key == 'E') {
-
-			HET_Export.saveToOBJ(
-					mesh,
-					this.sketchPath("data/Meshes/SoftModelling_mesh_"
-							+ this.year() + "-" + this.month() + "-"
-							+ this.day() + "_" + this.hour() + "-"
-							+ this.minute() + "-" + this.second() + "_"
-							+ frameCount + ".obj"));
-
-			exportIndex++;
+			EXPORT_OBJ();
 		}
 
 		if (key == 'i' || key == 'I') {
-			this.importMesh();
+			mesh.chooseFile();
 		}
 		if (key == 'x' || key == 'X') {
 			gui.createButtonsSimple();
@@ -869,6 +832,35 @@ public class SoftModelling extends PApplet {
 			gui.cp5.controller("level23").remove();
 		}
 
+	}
+
+	public static void saveMeshAsOBJ(HE_Mesh mesh, String file) {
+		FileWriter fw;
+		float[][] vertices = mesh.getVerticesAsFloat();
+		int[][] faces = mesh.getFacesAsInt();
+		try {
+			fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(fw);
+			for (int i = 0; i < vertices.length; i++) {
+				float[] v = vertices[i];
+				bw.write("v " + v[0] + " " + v[1] + " " + v[2]);
+				bw.newLine();
+			}
+			for (int i = 0; i < faces.length; i++) {
+				int[] f = faces[i];
+				String faceString = "f";
+				for (int j = 0; j < f.length; j++) {
+					faceString += " " + (f[j] + 1);
+				}
+				bw.write(faceString);
+				bw.newLine();
+			}
+			bw.flush();
+			bw.close();
+			System.out.println("OBJ exported: " + file);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	public void keyReleased() {

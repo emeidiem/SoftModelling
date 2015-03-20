@@ -521,7 +521,7 @@ public class Gui {
 				Particle p = (Particle) p5.surface.particles.get(i);
 				if (p.isSelected) {
 					p.lock();
-					p.x -= 1;
+					p.x -= p5.speedMove;
 				}
 			}
 		}

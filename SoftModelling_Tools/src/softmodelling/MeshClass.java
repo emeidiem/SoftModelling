@@ -1,5 +1,6 @@
 package softmodelling;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +27,13 @@ import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Selection;
 import wblut.hemesh.HE_Vertex;
 
-class MeshClass extends HE_Mesh {
+public class MeshClass extends HE_Mesh {
 
 	// HE_Mesh mesh;
 	SoftModelling p5;
 	HE_Selection selection;
 	ArrayList beziersArrayList;
+	HEC_FromObjFile meshimport;
 
 	// ////////////////CONSTRUCTOR
 	MeshClass(SoftModelling _p5, HEC_FromFacelist facelistCreator) {
@@ -73,6 +75,70 @@ class MeshClass extends HE_Mesh {
 				}
 			}
 		}
+	}
+
+	public void chooseFile() {
+		// Assumes PApplet's reference. Won't find callback:
+		// pa.selectInput("Select a mesh to process:", "fileSelected");
+		
+		// Specifies Mesh's reference. Callback is found:
+		p5.selectInput("Select a mesh to process:", "fileSelected", null, this);
+
+	}
+
+	public void fileSelected(File selection) {
+		final String path;
+
+		if (selection == null)
+			p5.println("Window was closed or the user hit cancel.");
+
+		else if (selection.isDirectory())
+			p5.println("\"" + selection + "\" is a folder, not a file.");
+
+		else if ((path = selection.getPath()).endsWith(".3dm")
+				|| path.endsWith(".obj")) {
+			p5.println("User selected: " + path);
+			importMesh(path);
+		}
+
+		else {
+			p5.println(path + " is invalid!!!");
+			p5.println("Gotta be '.3dm' or '.obj' extension file!");
+		}
+	}
+	
+	public void importMesh(String meshimportPath) {
+
+		meshimport = new HEC_FromObjFile(meshimportPath);
+		// cam.lookAt(0, 0, 0);
+
+		// meshimport = new HEC_FromObjFile(
+		// this.dataPath("Meshes/MickeyMouse_superreduced.obj"));
+
+		// meshimport = new
+		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_fromRhinoHD_lowres3.obj"));
+
+		// meshimport = new
+		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced.obj"));
+		// meshimport = new
+		// HEC_FromObjFile(this.dataPath("Meshes/MickeyMouse_reduced_quad.obj"));
+
+		meshimport.create();
+		HE_Mesh mesh2 = new HE_Mesh(meshimport);
+		this.clean();
+		this.clear();
+		this.add(mesh2);
+		this.validate(true, true);
+		this.collapseDegenerateEdges();
+		p5.physics.particles.clear();
+		p5.physics.springs.clear();
+		p5.surface.particles.clear();
+		p5.surface.springs.clear();
+		p5.mesh.selection = new HE_Selection(this);
+		p5.surface.initSurface();
+		p5.updatePhysics = false;
+		p5.gui.gravityOn.setValue(false);
+
 	}
 
 	void rendermesh() {
@@ -371,10 +437,10 @@ class MeshClass extends HE_Mesh {
 
 		}
 		if (p5.exportBeziersOn) {
-String [] stn = new String [bezierlines.size()];
-for (int j = 0; j < bezierlines.size() - 1; j++){
-	stn[j] = (String) bezierlines.get(j);
-}
+			String[] stn = new String[bezierlines.size()];
+			for (int j = 0; j < bezierlines.size() - 1; j++) {
+				stn[j] = (String) bezierlines.get(j);
+			}
 			p5.saveStrings(
 					"Bezierlines/beziers_" + p5.year() + "-" + p5.month() + "-"
 							+ p5.day() + "_" + p5.hour() + "-" + p5.minute()
