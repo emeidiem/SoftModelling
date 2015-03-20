@@ -122,6 +122,7 @@ public class SoftModelling extends PApplet {
 	boolean modeSelected = false;
 	boolean showIndex = false;
 	boolean showAlphaBlending = false;
+	boolean saveVideoFramesOn = false;
 
 	int exportIndex = 106;
 	boolean exportBeziersOn = false;
@@ -224,8 +225,6 @@ public class SoftModelling extends PApplet {
 		mesh.selection = new HE_Selection(mesh);
 	}
 
-
-
 	void fileSelected(File selection) {
 		if (selection == null) {
 			println("no selection so far...");
@@ -272,10 +271,11 @@ public class SoftModelling extends PApplet {
 		}
 		surface.run();
 		mesh.run();
-		// saveVideoFrames();
 
 		// gizmo.run();
 		// renderImportmesh();
+		if (saveVideoFramesOn)
+			saveVideoFrames();
 
 	}
 
@@ -296,18 +296,6 @@ public class SoftModelling extends PApplet {
 		tint(1, 1, 1, 1);
 	}
 
-	// void renderImportmesh() {
-	// noStroke();
-	// fill(200);
-	// this.render.drawFaces(mesh2);
-	// fill(255, 0, 255, 200);
-	// //render.drawFaces(selection);
-	// strokeWeight(1);
-	// stroke(50);
-	// render.drawEdges(mesh2);
-	// //if (p5.showIndex)
-	// //renderKeys();
-	// }
 	void hitDetect() {
 
 		int precision = 15;
@@ -790,6 +778,9 @@ public class SoftModelling extends PApplet {
 		if (key == 's' || key == 'S') {
 			saveFrames();
 		}
+		if (key == 'f' || key == 'F') {
+			saveVideoFramesOn = !saveVideoFramesOn;
+		}
 		if (key == 'c' || key == 'C') {
 			while (this.mesh.getEdgesAsList().size() != this.surface.springs
 					.size()) {
@@ -918,23 +909,23 @@ public class SoftModelling extends PApplet {
 	void saveFrames() {
 		String PicName;
 		// PicName = ("Images/frame_" + frameCount + ".png");
-		PicName = ("data/Images/frame_" + this.year() + "-" + this.month() + "-"
-				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
-				+ this.second() + "_" + frameCount + ".png");
+		PicName = ("data/Images/frame_" + this.year() + "-" + this.month()
+				+ "-" + this.day() + "_" + this.hour() + "-" + this.minute()
+				+ "-" + this.second() + "_" + frameCount + ".png");
 		saveFrame(PicName);
 
 		String PicName2;
 		// PicName = ("Images/frame_" + frameCount + ".png");
-		PicName2 = ("data/Images/frame_" + this.year() + "-" + this.month() + "-"
-				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
-				+ this.second() + "_" + frameCount + ".tiff");
+		PicName2 = ("data/Images/frame_" + this.year() + "-" + this.month()
+				+ "-" + this.day() + "_" + this.hour() + "-" + this.minute()
+				+ "-" + this.second() + "_" + frameCount + ".tiff");
 		saveFrame(PicName2);
 	}
 
 	void saveVideoFrames() {
 		String PicName;
 		// PicName = ("Images/frame_" + frameCount + ".png");
-		PicName = ("data/VideoFrames/frame_" + this.frameCount);
+		PicName = ("data/VideoFrames/frame_" + this.frameCount+ ".jpg");
 		saveFrame(PicName);
 	}
 
