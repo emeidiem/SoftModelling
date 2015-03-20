@@ -89,29 +89,29 @@ public class Gui {
 				.addToggle("FACEMODE")
 				.setPosition(margin, margin)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"))
 				.updateSize().setValue(false);
 		bEdges = cp5
 				.addToggle("EDGEMODE")
 				.setPosition(margin, margin + sizeIcons + space)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"))
 				.updateSize().setValue(false);
 		bVertex = cp5
 				.addToggle("VERTEXMODE")
 				.setPosition(margin, margin + sizeIcons * 2 + space * 2)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"))
 				.updateSize().setValue(false);
 		// ////////////////////////////////////
-		PImage gravityOnImg = p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_A.png");
-		PImage gravityOnImgAct = p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_C.png");
+		PImage gravityOnImg = p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_A.png");
+		PImage gravityOnImgAct = p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_C.png");
 
 		gravityOn = cp5
 				.addToggle("UPDATE_PHYSICS")
@@ -125,9 +125,9 @@ public class Gui {
 				.addButton("circle1")
 				.setPosition(margin, p5.height - margin - sizeIcons * 2 - space)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_B.png"))
 				.updateSize();
 		gravityKnob = cp5
 				.addKnob("GRAVITY")
@@ -144,9 +144,9 @@ public class Gui {
 				.setPosition(p5.width - sizeIcons - margin,
 						p5.height - margin - sizeIcons * 2 - space)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SaveFile_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SaveFile_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SaveFile_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SaveFile_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SaveFile_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SaveFile_B.png"))
 				.updateSize();
 		// ////////////////////////////////////
 		bShowindex = cp5
@@ -154,9 +154,9 @@ public class Gui {
 				.setPosition(p5.width - sizeIcons - margin,
 						p5.height - margin - sizeIcons * 3 - space * 2)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_B.png"))
 				.updateSize();
 		// ////////////////////////////////////
 		bAlphaBlending = cp5
@@ -164,9 +164,9 @@ public class Gui {
 				.setPosition(p5.width - sizeIcons - margin,
 						p5.height - margin - sizeIcons * 4 - space * 3)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_AlphaBlending_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_AlphaBlending_C.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_AlphaBlending_C.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_AlphaBlending_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_AlphaBlending_C.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_AlphaBlending_C.png"))
 				.updateSize();
 		// ////////////////////////////////////
 		bReset = cp5
@@ -174,42 +174,42 @@ public class Gui {
 				.setPosition(p5.width - sizeIcons - margin,
 						p5.height - margin - sizeIcons)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Reset_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Reset_C.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Reset_C.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Reset_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Reset_C.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Reset_C.png"))
 				.updateSize();
 		// ////////////////////////////////////
 		bGrow = cp5
 				.addButton("GROW")
 				.setPosition(margin + sizeIcons + space, margin)
-				.setImages(p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Grow_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Grow_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Grow_B.png"))
+				.setImages(p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Grow_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Grow_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Grow_B.png"))
 				.updateSize();
 		bShrink = cp5
 				.addButton("SHRINK")
 				.setPosition(margin + sizeIcons * 2 + space * 2, margin)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Shrink_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Shrink_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Shrink_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Shrink_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Shrink_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Shrink_B.png"))
 				.updateSize();
 		bDeselect = cp5
 				.addButton("DESELECT")
 				.setPosition(p5.width - margin - sizeIcons * 1, margin)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Deselect_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Deselect_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Deselect_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Deselect_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Deselect_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Deselect_B.png"))
 				.updateSize();
 		// ////////////////////////////////////
 		bMove = cp5
 				.addButton("ACTIVATE_MOVE")
 				.setPosition(margin + sizeIcons + space,
 						margin + sizeIcons + space)
-				.setImages(p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Move_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Move_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Move_B.png"))
+				.setImages(p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Move_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Move_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Move_B.png"))
 				.updateSize();
 
 		bMoveUp = cp5
@@ -218,9 +218,9 @@ public class Gui {
 						margin + sizeIcons * 2 + space * 2 + sizeIcons / 2,
 						margin + sizeIcons + space)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"))
 				.updateSize();
 
 		bMoveDown = cp5
@@ -229,9 +229,9 @@ public class Gui {
 						margin + sizeIcons * 2 + space * 2 + sizeIcons / 2,
 						margin + sizeIcons + space + sizeIcons / 2 + 4)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"))
 				.updateSize();
 
 		bMoveLeft = cp5
@@ -241,9 +241,9 @@ public class Gui {
 								/ 2,
 						margin + sizeIcons + space + sizeIcons / 2 - 45 / 2)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowLeft_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_ArrowLeft_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowLeft_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowLeft_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_ArrowLeft_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowLeft_B.png"))
 				.updateSize();
 
 		bMoveRight = cp5
@@ -253,9 +253,9 @@ public class Gui {
 								/ 2,
 						margin + sizeIcons + space + sizeIcons / 2 - 45 / 2)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowRight_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowRight_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowRight_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowRight_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowRight_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowRight_B.png"))
 				.updateSize();
 
 		bMoveZUp = cp5
@@ -264,9 +264,9 @@ public class Gui {
 						margin + sizeIcons * 3 + space * 3 + sizeIcons / 2,
 						margin + sizeIcons + space)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowUp_B.png"))
 				.updateSize();
 
 		bMoveZDown = cp5
@@ -275,9 +275,9 @@ public class Gui {
 						margin + sizeIcons * 3 + space * 3 + sizeIcons / 2,
 						margin + sizeIcons + space + sizeIcons / 2 + 4)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ArrowDown_B.png"))
 				.updateSize();
 
 		// ////////////////////////////////////
@@ -286,9 +286,9 @@ public class Gui {
 				.setPosition(margin + sizeIcons + space,
 						margin + sizeIcons * 2 + space * 2)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Subdivide2_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Subdivide2_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Subdivide2_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Subdivide2_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Subdivide2_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Subdivide2_B.png"))
 				.updateSize();
 
 		// ////////////////////////////////////
@@ -296,18 +296,18 @@ public class Gui {
 				.addButton("LOCK_ELEMENT")
 				.setPosition(margin + sizeIcons + space,
 						margin + sizeIcons * 3 + space * 3)
-				.setImages(p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Lock_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Lock_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Lock_B.png"))
+				.setImages(p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Lock_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Lock_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Lock_B.png"))
 				.updateSize();
 		bUnlock = cp5
 				.addButton("UNLOCK_ELEMENT")
 				.setPosition(margin + sizeIcons * 2 + space * 2,
 						margin + sizeIcons * 3 + space * 3)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_UnLock_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_UnLock_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_UnLock_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_UnLock_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_UnLock_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_UnLock_B.png"))
 				.updateSize();
 
 		// ////////////////////////////////////
@@ -316,9 +316,9 @@ public class Gui {
 				.setPosition(margin + sizeIcons + space,
 						margin + sizeIcons * 4 + space * 4)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Extrude_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Extrude_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Extrude_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Extrude_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Extrude_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Extrude_B.png"))
 				.updateSize();
 		
 		
@@ -327,9 +327,9 @@ public class Gui {
 				.setPosition(margin + sizeIcons * 2 + space * 2,
 						margin + sizeIcons * 4 + space * 4)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
 				.updateSize();
 		extrudeDistKnob = cp5
 				.addKnob("EXTRUSION_DISTANCE")
@@ -346,9 +346,9 @@ public class Gui {
 				.setPosition(margin + sizeIcons * 2 + space * 3 + 75,
 						margin + sizeIcons * 4 + space * 4)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
 				.updateSize();
 		extrudeChanferKnob = cp5
 				.addKnob("EXTRUSION_CHANFER")
@@ -366,18 +366,18 @@ public class Gui {
 				.setPosition(margin + sizeIcons + space,
 						margin + sizeIcons * 5 + space * 5)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Shell_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Shell_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Shell_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Shell_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Shell_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Shell_B.png"))
 				.updateSize();
 		bc4 = cp5
 				.addButton("circle4")
 				.setPosition(margin + sizeIcons * 2 + space * 2,
 						margin + sizeIcons * 5 + space * 5)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
 				.updateSize();
 		shellDepthKnob = cp5
 				.addKnob("SHELL_DEPTH")
@@ -396,18 +396,18 @@ public class Gui {
 				.setPosition(margin + sizeIcons + space,
 						margin + sizeIcons * 6 + space * 6)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Lattice_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Lattice_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Lattice_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Lattice_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Lattice_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Lattice_B.png"))
 				.updateSize();
 		bc5 = cp5
 				.addButton("circle5")
 				.setPosition(margin + sizeIcons * 2 + space * 2,
 						margin + sizeIcons * 6 + space * 6)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
 				.updateSize();
 		latticeDepthKnob = cp5
 				.addKnob("LATTICE_DEPTH")
@@ -424,9 +424,9 @@ public class Gui {
 				.setPosition(margin + sizeIcons * 2 + space * 3 + 75,
 						margin + sizeIcons * 6 + space * 6)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
 				.updateSize();
 		latticeOffsetKnob = cp5
 				.addKnob("LATTICE_WIDTH")
@@ -443,18 +443,18 @@ public class Gui {
 				.setPosition(margin + sizeIcons + space,
 						margin + sizeIcons * 7 + space * 7)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SPLen_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SPLen_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SPLen_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SPLen_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SPLen_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SPLen_B.png"))
 				.updateSize();
 		bc7 = cp5
 				.addButton("circle7")
 				.setPosition(margin + sizeIcons * 1 + space * 3 + 75,
 						margin + sizeIcons * 7 + space * 7)
 				.setImages(
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
-						p5.loadImage("icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_A.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"),
+						p5.loadImage("data/icons/"+iconSize+"/SoftModelling_smallCircle76_B.png"))
 				.updateSize();
 		spl = cp5
 				.addKnob("SP_LENGTH")
@@ -570,54 +570,54 @@ public class Gui {
 
 		if ((bEdges.isMousePressed()) || (bVertex.isMousePressed())) {
 			bFaces.setImages(
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_A.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"));
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_A.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_B.png"));
 		}
 		if ((bFaces.isMousePressed())) {
 			bFaces.setImages(
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_A.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_C.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelFace_C.png"));
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_A.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_C.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelFace_C.png"));
 		}
 
 		if ((bFaces.isMousePressed()) || (bVertex.isMousePressed())) {
 			bEdges.setImages(
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_A.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"));
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_A.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_B.png"));
 		}
 		if ((bEdges.isMousePressed())) {
 			bEdges.setImages(
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_A.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_C.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelEdge_C.png"));
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_A.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_C.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelEdge_C.png"));
 		}
 
 		if ((bEdges.isMousePressed()) || (bFaces.isMousePressed())) {
 			bVertex.setImages(
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_A.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"));
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_A.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_B.png"));
 		}
 		if ((bVertex.isMousePressed())) {
 			bVertex.setImages(
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_A.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_C.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SelVertex_C.png"));
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_A.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_C.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SelVertex_C.png"));
 		}
 		if ((gravityOn.isMouseOver())) {
 			gravityOn.setImage(p5
-					.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_B.png"));
+					.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_B.png"));
 		} else {
 			gravityOn.setImages(
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_A.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_C.png"),
-					p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Gravity_C.png"));
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_A.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_C.png"),
+					p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Gravity_C.png"));
 		}
 
 		if (p5.activeMover) {
-			bMove.setImage(p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Move_B.png"));
+			bMove.setImage(p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Move_B.png"));
 			bMoveUp.show();
 			bMoveDown.show();
 			bMoveLeft.show();
@@ -626,7 +626,7 @@ public class Gui {
 			bMoveZDown.show();
 
 		} else {
-			bMove.setImage(p5.loadImage("icons/"+iconSize+"/SoftModelling_Icon_Move_A.png"));
+			bMove.setImage(p5.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_Move_A.png"));
 			bMoveUp.hide();
 			bMoveDown.hide();
 			bMoveLeft.hide();
@@ -639,12 +639,12 @@ public class Gui {
 				&& ((!bVertex.isMouseOver()))) {
 			if (p5.activeSPLen) {
 				bSPLen.setImage(p5
-						.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SPLen_C.png"));
+						.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SPLen_C.png"));
 				bc7.show();
 				spl.show();
 			} else {
 				bSPLen.setImage(p5
-						.loadImage("icons/"+iconSize+"/SoftModelling_Icon_SPLen_A.png"));
+						.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_SPLen_A.png"));
 				bc7.hide();
 				spl.hide();
 			}
@@ -853,10 +853,10 @@ public class Gui {
 		}
 		if (p5.showIndex) {
 			this.bShowindex.setImage(p5
-					.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_.png"));
+					.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_.png"));
 		} else {
 			this.bShowindex.setImage(p5
-					.loadImage("icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_A.png"));
+					.loadImage("data/icons/"+iconSize+"/SoftModelling_Icon_ShowKeys_A.png"));
 		}
 
 	}

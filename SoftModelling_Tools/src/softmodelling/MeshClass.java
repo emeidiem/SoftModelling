@@ -442,7 +442,7 @@ public class MeshClass extends HE_Mesh {
 				stn[j] = (String) bezierlines.get(j);
 			}
 			p5.saveStrings(
-					"Bezierlines/beziers_" + p5.year() + "-" + p5.month() + "-"
+					"data/Bezierlines/beziers_" + p5.year() + "-" + p5.month() + "-"
 							+ p5.day() + "_" + p5.hour() + "-" + p5.minute()
 							+ "-" + p5.second() + "_" + p5.frameCount + ".txt",
 					stn);

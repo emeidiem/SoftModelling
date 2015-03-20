@@ -642,7 +642,7 @@ public class SoftModelling extends PApplet {
 
 	void EXPORT_OBJ() {
 
-		String filename = "MeshesExport/SoftModelling_mesh_" + this.year()
+		String filename = "data/MeshesExport/SoftModelling_mesh_" + this.year()
 				+ "-" + this.month() + "-" + this.day() + "_" + this.hour()
 				+ "-" + this.minute() + "-" + this.second() + "_" + frameCount
 				+ ".obj";
@@ -918,14 +918,14 @@ public class SoftModelling extends PApplet {
 	void saveFrames() {
 		String PicName;
 		// PicName = ("Images/frame_" + frameCount + ".png");
-		PicName = ("Images/frame_" + this.year() + "-" + this.month() + "-"
+		PicName = ("data/Images/frame_" + this.year() + "-" + this.month() + "-"
 				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
 				+ this.second() + "_" + frameCount + ".png");
 		saveFrame(PicName);
 
 		String PicName2;
 		// PicName = ("Images/frame_" + frameCount + ".png");
-		PicName2 = ("Images/frame_" + this.year() + "-" + this.month() + "-"
+		PicName2 = ("data/Images/frame_" + this.year() + "-" + this.month() + "-"
 				+ this.day() + "_" + this.hour() + "-" + this.minute() + "-"
 				+ this.second() + "_" + frameCount + ".tiff");
 		saveFrame(PicName2);
@@ -934,7 +934,7 @@ public class SoftModelling extends PApplet {
 	void saveVideoFrames() {
 		String PicName;
 		// PicName = ("Images/frame_" + frameCount + ".png");
-		PicName = ("VideoFrames/frame_" + this.frameCount);
+		PicName = ("data/VideoFrames/frame_" + this.frameCount);
 		saveFrame(PicName);
 	}
 
