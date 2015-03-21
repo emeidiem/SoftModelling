@@ -1,8 +1,10 @@
 package softmodelling;
 
+import processing.core.PApplet;
 import toxi.geom.Vec3D;
 import toxi.physics.VerletParticle;
 import toxi.physics.VerletSpring;
+import wblut.hemesh.HE_Face;
 
 public class Spring extends VerletSpring {
 	SoftModelling p5;
@@ -12,6 +14,7 @@ public class Spring extends VerletSpring {
 	boolean delete = false;
 	boolean isSelected = false;
 	Vec3D centroid;
+	
 
 	// ////////////////CONSTRUCTOR
 	Spring(SoftModelling _p5, Particle _a, Particle _b, float _len, float _str,
@@ -28,7 +31,7 @@ public class Spring extends VerletSpring {
 	// /////////////////////////
 
 	void run() {
-		render();
+		if (!p5.justBeziersOn)render();
 		calculateCentroid();
 	}
 
@@ -36,6 +39,16 @@ public class Spring extends VerletSpring {
 		Vec3D midpt = (b.sub(a)).scaleSelf(.5f);
 		centroid = midpt.add(a);
 	}
+	
+	float distanceSpringCam() {
+
+		Vec3D camPos = new Vec3D(p5.cam.getPosition()[0],
+				p5.cam.getPosition()[1], p5.cam.getPosition()[2]);
+		float d = this.centroid.distanceTo(camPos);
+
+		return d;
+	}
+
 
 	void render() {
 		p5.strokeWeight(1);
@@ -45,20 +58,24 @@ public class Spring extends VerletSpring {
 			else
 				p5.stroke(255);
 		} else {
-			p5.stroke(1, 0, 1, .05f);
+			
+//			float mapFactorStrokeWeight = PApplet.map(distanceSpringCam(), p5.mesh.minDistanceCam, p5.mesh.maxDistanceCam, 3, .2f);
+			float mapFactorStroke = p5.map(distanceSpringCam(), p5.mesh.minDistanceCam, p5.mesh.maxDistanceCam, 1, .2f);
+			
+			p5.stroke(1, 0, 1, .05f*mapFactorStroke);
 			p5.strokeWeight(5);
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
-			p5.stroke(1, 1, 1, .09f);
+			p5.stroke(1, 1, 1, .09f*mapFactorStroke); //0.9f
 //			p5.strokeWeight(5);
 //			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
-			p5.strokeWeight(3.5f);
+			p5.strokeWeight(3.5f); //3.5f
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
-			p5.strokeWeight(1.5f);
+			p5.strokeWeight(1.5f); //1.5f
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
-			p5.strokeWeight(2.1f);
+			p5.strokeWeight(2.1f); //2.1f
 			p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
-			p5.stroke(1, 1, 1, .2f);
-			p5.strokeWeight(1f);
+			p5.stroke(1, 1, 1, .2f); //.2f
+			p5.strokeWeight(1f*mapFactorStroke);
 		}
 		p5.line(a.x, a.y, a.z, b.x, b.y, b.z);
 

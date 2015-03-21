@@ -34,6 +34,10 @@ public class MeshClass extends HE_Mesh {
 	HE_Selection selection;
 	ArrayList beziersArrayList;
 	HEC_FromObjFile meshimport;
+	HE_Face[] faceslist;
+	float[] faceCamDistances;
+	float minDistanceCam, maxDistanceCam;
+	float[] springCamDistances;
 
 	// ////////////////CONSTRUCTOR
 	MeshClass(SoftModelling _p5, HEC_FromFacelist facelistCreator) {
@@ -53,6 +57,8 @@ public class MeshClass extends HE_Mesh {
 		if (p5.displayMesh) {
 			rendermesh();
 		}
+		if (p5.showAlphaBlending)
+			calculateAllFacesCamDistances();
 		if (p5.displaySelectors) {
 			if (p5.selectionMode == 1)
 				renderSelectorsEdges();
@@ -80,7 +86,7 @@ public class MeshClass extends HE_Mesh {
 	public void chooseFile() {
 		// Assumes PApplet's reference. Won't find callback:
 		// pa.selectInput("Select a mesh to process:", "fileSelected");
-		
+
 		// Specifies Mesh's reference. Callback is found:
 		p5.selectInput("Select a mesh to process:", "fileSelected", null, this);
 
@@ -106,7 +112,7 @@ public class MeshClass extends HE_Mesh {
 			p5.println("Gotta be '.3dm' or '.obj' extension file!");
 		}
 	}
-	
+
 	public void importMesh(String meshimportPath) {
 
 		meshimport = new HEC_FromObjFile(meshimportPath);
@@ -246,13 +252,69 @@ public class MeshClass extends HE_Mesh {
 
 	}
 
+	float distanceFaceCam(HE_Face face) {
+
+		Vec3D fcenter = new Vec3D(face.getFaceCenter().xf(), face
+				.getFaceCenter().yf(), face.getFaceCenter().zf());
+		Vec3D camPos = new Vec3D(p5.cam.getPosition()[0],
+				p5.cam.getPosition()[1], p5.cam.getPosition()[2]);
+		float d = fcenter.distanceTo(camPos);
+
+		return d;
+	}
+
+	void calculateAllFacesCamDistances() {
+
+		faceslist = this.getFacesAsArray();
+		faceCamDistances = new float[faceslist.length];
+
+		float max = 0f;
+		float min = 10000000000000000000000000000000000f;
+		float d;
+
+		for (int i = 0; i < faceslist.length; i++) {
+			HE_Face f = faceslist[i];
+			d = distanceFaceCam(f);
+			faceCamDistances[i] = d;
+
+			if (d > max)
+				max = d;
+			if (d < min)
+				min = d;
+		}
+
+		minDistanceCam = min;
+		maxDistanceCam = max;
+		p5.println("minDistanceCam = " + min);
+		p5.println("maxDistanceCam = " + max);
+
+	}
+
 	void renderSelectorsFaces() {
 
 		ArrayList bezierlines = new ArrayList(); //
+		float d = 0;
+		float mapFactorStrokeWeight = 0;
+		float mapFactorStroke = 0;
 
 		for (int i = 0; i < this.getFacesAsList().size(); i++) {
 			HE_Face f = (HE_Face) getFacesAsList().get(i);
 			WB_Point3d fc = (WB_Point3d) f.getFaceCenter();
+
+			if (p5.showAlphaBlending) {
+				d = this.faceCamDistances[i];
+				// float factor = (700 * 700) / (d * d);
+				mapFactorStrokeWeight = p5.map(d, this.minDistanceCam,
+						this.maxDistanceCam, 3, 1f);
+				mapFactorStroke = p5.map(d, this.minDistanceCam,
+						this.maxDistanceCam, 1, .1f);
+			}
+			// float constrainFactor = p5.constrain(factor, .5f, 3.5f);
+			// float constrainMapFactor = p5.constrain(mapFactor, .2f, 1f);
+			// p5.println("distanceFaceCam = "+d);
+			// p5.println("factor = "+factor);
+			// p5.println("mapFactor = "+mapFactor);
+
 			p5.strokeWeight(15);
 			if (!selection.contains(f)) {
 				p5.stroke(100, 255);
@@ -261,9 +323,10 @@ public class MeshClass extends HE_Mesh {
 				if (!p5.showAlphaBlending)
 					p5.stroke(255, 0, 0, 255);
 				else
-					p5.stroke(1, 0, 1, .3f);
+					p5.stroke(1, 0, 1, mapFactorStroke);
 			}
-			p5.point(fc.xf(), fc.yf(), fc.zf());
+			if (!p5.justBeziersOn)
+				p5.point(fc.xf(), fc.yf(), fc.zf());
 			Vec3D faceCenter = new Vec3D(fc.xf(), fc.yf(), fc.zf());
 			Vec3D faceNormal = new Vec3D(f.getFaceNormal().xf(), f
 					.getFaceNormal().yf(), f.getFaceNormal().zf());
@@ -271,34 +334,12 @@ public class MeshClass extends HE_Mesh {
 			Vec3D projectedNormal = new Vec3D(f.getFaceNormal().xf(), f
 					.getFaceNormal().yf(), 0); // Vec3D
 
-			// float angleZ = (float) Math.atan(f.getFaceNormal().yf() /
-			// f.getFaceNormal().xf()); // float, atan
-			// // minuscula
-			// float angleY = (float) Math.atan(f.getFaceNormal().zf()/
-			// projectedNormal.magnitude()); // susituir
-			// // .Length
-
 			float angleX = PApplet.atan(f.getFaceNormal().zf()
 					/ f.getFaceNormal().yf());
 			float angleY = PApplet.atan(f.getFaceNormal().zf()
 					/ -f.getFaceNormal().xf());
 
-			// angleX *= (f.getFaceNormal().yf()>0)? 1 : -1;
-			// angleY *= (f.getFaceNormal().xf()>0)? 1 : -1;
-
-			// if (f.getFaceNormal().xf()>0)angleX +=p5.PI;
-			// if (f.getFaceNormal().yf()>0)angleY +=p5.PI;
-
-			// Vec3D faceNormalX = new Vec3D(f.getFaceNormal().xf(), 0, f
-			// .getFaceNormal().zf());
-			// Vec3D faceNormalY = new Vec3D(0, f.getFaceNormal().yf(), f
-			// .getFaceNormal().zf());
-
-			// WB_R xz = new Vec3D (f.getFaceNormal.x,0,f.getFaceNormal.z);
-			// float angleNormalX =
-			// f.getFaceCenter().angleBetween(f.getFaceNormal())
-
-			if (!p5.showAlphaBlending) {
+			if ((!p5.showAlphaBlending) && (!p5.justBeziersOn)) {
 				if (!selection.contains(f))
 					p5.stroke(255, 255);
 				else
@@ -316,51 +357,55 @@ public class MeshClass extends HE_Mesh {
 
 				float radius = (float) (p5.sqrt((float) f.getFaceArea()) / 1);
 
-				// Draw normals
-				p5.strokeWeight(1);
-				p5.pushMatrix();
-				p5.translate(fc.xf(), fc.yf(), fc.zf());
-				p5.stroke(1);
-				p5.line(0, 0, 0, f.getFaceNormal().scale(radius / 6 + 1).xf(),
-						f.getFaceNormal().scale(radius / 6 + 1).yf(), f
-								.getFaceNormal().scale(radius / 6 + 1).zf());
-				p5.stroke(1, 0, 1, .4f);
-				p5.strokeWeight(4);
-				p5.line(0, 0, 0, f.getFaceNormal().scale(radius / 9 + 1).xf(),
-						f.getFaceNormal().scale(radius / 9 + 1).yf(), f
-								.getFaceNormal().scale(radius / 9 + 1).zf());
+				if (!p5.justBeziersOn) {
+					// Draw normals
+					p5.strokeWeight(mapFactorStroke);
+					p5.pushMatrix();
+					p5.translate(fc.xf(), fc.yf(), fc.zf());
+					p5.stroke(1, mapFactorStroke);
+					p5.line(0, 0, 0, f.getFaceNormal().scale(radius / 6 + 1)
+							.xf(),
+							f.getFaceNormal().scale(radius / 6 + 1).yf(), f
+									.getFaceNormal().scale(radius / 6 + 1).zf());
+					p5.stroke(1, 0, 1, mapFactorStroke / 2f);
+					p5.strokeWeight(mapFactorStroke * 2);
+					p5.line(0, 0, 0, f.getFaceNormal().scale(radius / 9 + 1)
+							.xf(),
+							f.getFaceNormal().scale(radius / 9 + 1).yf(), f
+									.getFaceNormal().scale(radius / 9 + 1).zf());
 
-				// p5.text(("(" + p5.nf(fnx, 2, 2) + "," + p5.nf(fny, 2, 2) +
-				// ","
-				// + p5.nf(fnz, 2, 2) + ")"), 0, 0, 0);
-				p5.popMatrix();
+					// p5.text(("(" + p5.nf(fnx, 2, 2) + "," + p5.nf(fny, 2, 2)
+					// +
+					// ","
+					// + p5.nf(fnz, 2, 2) + ")"), 0, 0, 0);
+					p5.popMatrix();
 
-				// draw ellipse
+					// draw ellipse
 
-				p5.pushMatrix();
-				p5.translate(fc.xf(), fc.yf(), fc.zf());
-				p5.rotateX(angleX);
-				Vec3D vertical = new Vec3D(1, 0, 0);
-				float angleZ = faceNormal.angleBetween(vertical);
-				angleZ *= (f.getFaceNormal().yf() > 0) ? 1 : -1;
-				p5.rotateZ(angleZ);
-				p5.rotateY(p5.PI / 2);
+					p5.pushMatrix();
+					p5.translate(fc.xf(), fc.yf(), fc.zf());
+					p5.rotateX(angleX);
+					Vec3D vertical = new Vec3D(1, 0, 0);
+					float angleZ = faceNormal.angleBetween(vertical);
+					angleZ *= (f.getFaceNormal().yf() > 0) ? 1 : -1;
+					p5.rotateZ(angleZ);
+					p5.rotateY(p5.PI / 2);
 
-				p5.renderImageAB(p5.particleImg, new Vec3D(), radius, col, .3f);
+					p5.renderImageAB(p5.particleImg, new Vec3D(), radius, col,
+							mapFactorStroke / 2f);
+					p5.stroke(1, mapFactorStroke / 3f);
+					p5.strokeWeight(10);
+					p5.noFill();
+					// p5.rotateY(angleY);
+					// p5.rectMode(p5.CENTER);
+					// p5.rect(0, 0, radius / 4, radius / 4);
+					p5.ellipse(0, 0, radius / 3, radius / 3);
+					p5.stroke(1, mapFactorStroke / 1.2f);
+					p5.strokeWeight(mapFactorStroke);
+					p5.ellipse(0, 0, radius / 3, radius / 3);
 
-				p5.stroke(1, .2f);
-				p5.strokeWeight(10);
-				p5.noFill();
-				// p5.rotateY(angleY);
-				// p5.rectMode(p5.CENTER);
-				// p5.rect(0, 0, radius / 4, radius / 4);
-
-				p5.ellipse(0, 0, radius / 3, radius / 3);
-				p5.stroke(1, .8f);
-				p5.strokeWeight(1);
-				p5.ellipse(0, 0, radius / 3, radius / 3);
-
-				p5.popMatrix();
+					p5.popMatrix();
+				}
 
 				// ////////////////////////////////////////////////////////////////////
 				ArrayList<Line3D> l = new ArrayList<Line3D>();
@@ -389,25 +434,7 @@ public class MeshClass extends HE_Mesh {
 
 				}
 				WB_Point3d p1, p2, p3, p4;
-				// fullcircle
-				p5.strokeWeight(1);
-				p5.stroke(1, .3f);
-				for (int j = 0; j < f.getFaceVertices().size(); j++) {
-					p1 = crvPoints.get(j * 3 + 1);
-					p2 = crvPoints.get(j * 3 + 2);
-					if (j < f.getFaceVertices().size() - 1) {
-						p3 = crvPoints.get(j * 3 + 3);
-						p4 = crvPoints.get(j * 3 + 4);
-					} else {
-						p3 = crvPoints.get(0);
-						p4 = crvPoints.get(1);
-					}
-					p5.bezier((float) p1.x, (float) p1.y, (float) p1.z,
-							(float) p2.x, (float) p2.y, (float) p2.z,
-							(float) p3.x, (float) p3.y, (float) p3.z,
-							(float) p4.x, (float) p4.y, (float) p4.z);
 
-				}
 				// incompletecircle
 				p5.strokeWeight(3);
 				p5.stroke(1, 1f);
@@ -416,6 +443,12 @@ public class MeshClass extends HE_Mesh {
 					p2 = crvPoints.get(j * 3 + 2);
 					p3 = crvPoints.get(j * 3 + 3);
 					p4 = crvPoints.get(j * 3 + 4);
+
+					p5.noFill();
+
+					p5.strokeWeight(mapFactorStrokeWeight);
+					if (p5.justBeziersOn)
+						p5.stroke(1, mapFactorStroke, 1, mapFactorStroke);
 
 					p5.bezier((float) p1.x, (float) p1.y, (float) p1.z,
 							(float) p2.x, (float) p2.y, (float) p2.z,
@@ -432,6 +465,28 @@ public class MeshClass extends HE_Mesh {
 					}
 
 				}
+				
+				if (!p5.justBeziersOn) {
+					// fullcircle
+					p5.strokeWeight(1);
+					p5.stroke(1, mapFactorStroke / 3f);
+					for (int j = 0; j < f.getFaceVertices().size(); j++) {
+						p1 = crvPoints.get(j * 3 + 1);
+						p2 = crvPoints.get(j * 3 + 2);
+						if (j < f.getFaceVertices().size() - 1) {
+							p3 = crvPoints.get(j * 3 + 3);
+							p4 = crvPoints.get(j * 3 + 4);
+						} else {
+							p3 = crvPoints.get(0);
+							p4 = crvPoints.get(1);
+						}
+							p5.bezier((float) p1.x, (float) p1.y, (float) p1.z,
+									(float) p2.x, (float) p2.y, (float) p2.z,
+									(float) p3.x, (float) p3.y, (float) p3.z,
+									(float) p4.x, (float) p4.y, (float) p4.z);
+
+					}
+				}
 
 			}
 
@@ -442,10 +497,10 @@ public class MeshClass extends HE_Mesh {
 				stn[j] = (String) bezierlines.get(j);
 			}
 			p5.saveStrings(
-					"data/Bezierlines/beziers_" + p5.year() + "-" + p5.month() + "-"
-							+ p5.day() + "_" + p5.hour() + "-" + p5.minute()
-							+ "-" + p5.second() + "_" + p5.frameCount + ".txt",
-					stn);
+					"data/Bezierlines/beziers_" + p5.year() + "-" + p5.month()
+							+ "-" + p5.day() + "_" + p5.hour() + "-"
+							+ p5.minute() + "-" + p5.second() + "_"
+							+ p5.frameCount + ".txt", stn);
 			p5.exportBeziersOn = false;
 		}
 

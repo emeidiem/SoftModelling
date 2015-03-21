@@ -33,7 +33,7 @@ public class Particle extends VerletParticle {
 			if (!p5.showAlphaBlending) {
 				render();
 			} else {
-				renderAlphaBlending();
+				if (!p5.justBeziersOn)renderAlphaBlending();
 			}
 			renderSelector();
 		}
@@ -44,15 +44,25 @@ public class Particle extends VerletParticle {
 		if (this.isSelected) {
 		}
 	}
+	
+	float distanceSpringCam() {
+
+		Vec3D camPos = new Vec3D(p5.cam.getPosition()[0],
+				p5.cam.getPosition()[1], p5.cam.getPosition()[2]);
+		float d = this.distanceTo(camPos);
+
+		return d;
+	}
 
 	void renderAlphaBlending() {
+		float mapFactorStroke = p5.map(distanceSpringCam(), p5.mesh.minDistanceCam, p5.mesh.maxDistanceCam, 1, .2f);
 		// color c = color( agePer, agePer*.75, 1.0 - agePer );
 		int c = p5.color(1.0f, 1.0f, 1.0f);
 		float radius = 20;
 		if (p5.selectionMode != 0) {
 			radius = 9;
 		}
-		p5.renderImageAB(p5.particleImg, pos, radius, c, 1.0f);
+		p5.renderImageAB(p5.particleImg, pos, radius, c, mapFactorStroke);
 
 	}
 

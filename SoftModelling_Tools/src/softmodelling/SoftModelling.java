@@ -126,6 +126,7 @@ public class SoftModelling extends PApplet {
 
 	int exportIndex = 106;
 	boolean exportBeziersOn = false;
+	boolean justBeziersOn = false;
 	String[] myInputFileContents;
 	String myFilePath;
 
@@ -223,6 +224,7 @@ public class SoftModelling extends PApplet {
 		mesh.validate(true, true);
 		mesh.collapseDegenerateEdges();
 		mesh.selection = new HE_Selection(mesh);
+		
 	}
 
 	void fileSelected(File selection) {
@@ -815,6 +817,9 @@ public class SoftModelling extends PApplet {
 		}
 		if (key == 'l' || key == 'L') {
 			exportBeziersOn = true;
+		}
+		if (key == 'o' || key == 'O') {
+			justBeziersOn = !justBeziersOn;
 		}
 
 		// -----------------------------------------------------------------------tut014//
